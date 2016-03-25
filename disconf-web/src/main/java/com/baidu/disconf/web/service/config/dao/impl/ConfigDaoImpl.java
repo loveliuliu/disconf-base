@@ -135,7 +135,7 @@ public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDa
 
     @Override
     public List<Config> getConfigMetas(Long appId, Long envId, String version) {
-        return this.findBySQL(SQL_SELECT_META, Arrays.asList(new Object[]{appId, envId, version}),
+        return this.findBySQL(SQL_SELECT_META, Arrays.asList(appId, envId, version),
                 new RowMapper<Config>( ) {
 
                     @Override

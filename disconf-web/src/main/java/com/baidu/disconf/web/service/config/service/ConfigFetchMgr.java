@@ -30,5 +30,10 @@ public interface ConfigFetchMgr {
      * @return
      */
     Config getConfByParameter(Long appId, Long envId, String env, String key, DisConfigTypeEnum disConfigTypeEnum);
+    
+    
+    ValueVo getConfMetas(Long appId, Long envId, String version);
+    
+    ValueVo getConfigItemValues(Long appId, Long envId, String version);
 
 }

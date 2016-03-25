@@ -1,5 +1,7 @@
 package com.baidu.disconf.web.service.config.service.impl;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,24 @@ public class ConfigFetchMgrImpl implements ConfigFetchMgr {
         valueVo.setValue(config.getValue());
         valueVo.setStatus(Constants.OK);
 
+        return valueVo;
+    }
+
+    @Override
+    public ValueVo getConfMetas(Long appId, Long envId, String version) {
+        List<Config> configs = configDao.getConfigMetas(appId, envId, version);
+        ValueVo valueVo = new ValueVo( );
+        valueVo.setStatus(Constants.OK);
+        valueVo.setValue(ConfigUtils.getMetasJson(configs));
+        return valueVo;
+    }
+
+    @Override
+    public ValueVo getConfigItemValues(Long appId, Long envId, String version) {
+        List<Config> configs = configDao.getConfigItems(appId, envId, version);
+        ValueVo valueVo = new ValueVo( );
+        valueVo.setStatus(Constants.OK);
+        valueVo.setValue(ConfigUtils.getValuesJson(configs));
         return valueVo;
     }
 }

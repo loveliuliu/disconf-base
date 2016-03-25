@@ -2,7 +2,6 @@ package com.baidu.disconf.web.web.config.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import com.baidu.disconf.web.service.config.form.ConfForm;
 import com.baidu.disconf.web.service.config.service.ConfigFetchMgr;
 import com.baidu.disconf.web.service.config.utils.ConfigUtils;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
-import com.baidu.disconf.web.web.config.validator.ConfigValidator;
 import com.baidu.disconf.web.web.config.validator.ConfigValidator4Fetch;
 import com.baidu.dsp.common.annotation.NoAuth;
 import com.baidu.dsp.common.constant.WebConstants;
@@ -37,9 +35,6 @@ import com.baidu.dsp.common.exception.DocumentNotFoundException;
 public class ConfigFetcherController {
 
     protected static final Logger LOG = LoggerFactory.getLogger(ConfigFetcherController.class);
-
-    @Autowired
-    private ConfigValidator configValidator;
 
     @Autowired
     private ConfigValidator4Fetch configValidator4Fetch;
@@ -68,7 +63,7 @@ public class ConfigFetcherController {
         try {
             configModel = configValidator4Fetch.verifyConfForm(confForm);
         } catch (Exception e) {
-            LOG.warn(e.toString());
+            LOG.error(e.toString());
             return ConfigUtils.getErrorVo(e.getMessage());
         }
 
@@ -148,6 +143,63 @@ public class ConfigFetcherController {
         header.set("Content-Disposition", "attachment; filename=" + name);
         header.setContentLength(res.length);
         return new HttpEntity<byte[]>(res, header);
+    }
+    
+    /**
+     * 获取所有配置Meta
+     * 当前仅.NET客户端使用
+     * 返回的ValueVo的value是一个json, 示例：
+     * [{"upateTime":"20140909123020","name":"c1","type":"1"},{"upateTime":"20150909123020","name":"c2","type":"0"}]
+     * 
+     * @param confForm
+     */
+    @NoAuth
+    @RequestMapping(value = "/metas", method = RequestMethod.GET)
+    @ResponseBody
+    public ValueVo getConfigMetas( ConfForm confForm ) {
+        LOG.info(confForm.toString());
+
+        //
+        // 校验
+        //
+        ConfigFullModel configModel = null;
+        try {
+            configModel = configValidator4Fetch.verifyConfFormIgnoreKeyEmpty(confForm);
+        } catch (Exception e) {
+            LOG.error(e.toString());
+            return ConfigUtils.getErrorVo(e.getMessage());
+        }
+
+        return configFetchMgr.getConfMetas(configModel.getApp().getId(), configModel.getEnv().getId(), configModel.getVersion());
+    }
+    
+    
+    /**
+     * 获取所有配置项的值(不包含配置文件)
+     * 当前仅.NET客户端使用
+     * 返回的ValueVo的value是一个json, 示例：
+     * [{"name":"c1","value":"c1Value"},{"name":"c2","value":"c2Value"}]
+     * 
+     * @param confForm
+     */
+    @NoAuth
+    @RequestMapping(value = "/item/values", method = RequestMethod.GET)
+    @ResponseBody
+    public ValueVo getConfigItemValues(ConfForm confForm ) {
+        LOG.info(confForm.toString());
+
+        //
+        // 校验
+        //
+        ConfigFullModel configModel = null;
+        try {
+            configModel = configValidator4Fetch.verifyConfFormIgnoreKeyEmpty(confForm);
+        } catch (Exception e) {
+            LOG.error(e.toString());
+            return ConfigUtils.getErrorVo(e.getMessage());
+        }
+
+        return configFetchMgr.getConfigItemValues(configModel.getApp().getId(), configModel.getEnv().getId(), configModel.getVersion());
     }
 
 }

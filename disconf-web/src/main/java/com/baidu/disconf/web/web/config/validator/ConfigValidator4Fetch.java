@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import com.baidu.disconf.web.service.app.bo.App;
 import com.baidu.disconf.web.service.app.service.AppMgr;
 import com.baidu.disconf.web.service.config.form.ConfForm;
-import com.baidu.disconf.web.service.config.service.ConfigMgr;
 import com.baidu.disconf.web.service.env.bo.Env;
 import com.baidu.disconf.web.service.env.service.EnvMgr;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
@@ -24,15 +23,22 @@ public class ConfigValidator4Fetch {
     @Autowired
     private EnvMgr envMgr;
 
-    @Autowired
-    private ConfigMgr configMgr;
-
     /**
      * 此接口是客户的接口，非常 重要，目前没有权限的控制
      *
      * @param confForm
      */
     public ConfigFullModel verifyConfForm(ConfForm confForm) throws Exception {
+
+        if (StringUtils.isEmpty(confForm.getKey())) {
+            throw new Exception("key is empty");
+        }
+
+        return verifyConfFormIgnoreKeyEmpty( confForm );
+    }
+    
+    
+    public ConfigFullModel verifyConfFormIgnoreKeyEmpty(ConfForm confForm) throws Exception {
 
         //
         // app
@@ -56,13 +62,6 @@ public class ConfigValidator4Fetch {
         Env env = envMgr.getByName(confForm.getEnv());
         if (env == null) {
             throw new Exception("env " + confForm.getEnv() + " doesn't exist in db.");
-        }
-
-        //
-        // key
-        //
-        if (StringUtils.isEmpty(confForm.getKey())) {
-            throw new Exception("key is empty");
         }
 
         //
