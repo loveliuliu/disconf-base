@@ -35,7 +35,7 @@ public class ConfigUtils {
             Map<String, String> map = new HashMap<String, String>( );
             map.put("name", config.getName());
             map.put("type", config.getType() == null ? null : "" + config.getType() );
-            map.put("upateTime", config.getUpdateTime());
+            map.put("updateTime", config.getUpdateTime());
             metas.add(map);
         }
         com.google.gson.Gson gson = new com.google.gson.Gson();
