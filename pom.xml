@@ -10,6 +10,7 @@
     <modules>
         <module>disconf-client</module>
         <module>disconf-core</module>
+        <module>disconf-web</module>
     </modules>
 
     <inceptionYear>2015</inceptionYear>
@@ -18,6 +19,7 @@
             <name>Apache 2</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
+
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
