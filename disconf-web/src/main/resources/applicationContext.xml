@@ -42,7 +42,6 @@
                 <value>classpath*:/jdbc-mysql.properties</value>
                 <value>classpath*:/application.properties</value>
                 <value>classpath*:/zoo.properties</value>
-                <value>classpath*:/redis-config.properties</value>
                 <value>classpath*:/application.properties</value>
             </list>
         </property>
@@ -68,7 +67,6 @@
     </bean>
 
     <!-- import -->
-    <import resource="classpath*:myconfig/applicationContext-cache.xml"/>
     <import resource="classpath*:myconfig/applicationContext-springcache.xml"/>
 
     <!-- profile -->

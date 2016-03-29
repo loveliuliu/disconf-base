@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
@@ -53,13 +54,17 @@ public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDa
     @Override
     public List<Config> getConfByAppEnv(Long appId, Long envId) {
 
+        List<Order> orders = Lists.newArrayList(new Order(Columns.CREATE_TIME,true),new Order(Columns.CONFIG_ID,true));
+        List<Match> matches = Lists.newArrayList();
         if (envId == null) {
-            return find(new Match(Columns.APP_ID, appId), new Match(Columns.STATUS, Constants.STATUS_NORMAL));
+            matches.add(new Match(Columns.APP_ID, appId));
+            matches.add(new Match(Columns.STATUS, Constants.STATUS_NORMAL));
+            return find(matches,orders);
         } else {
-
-            return find(new Match(Columns.APP_ID, appId), new Match(Columns.ENV_ID, envId),
-                    new Match(Columns.STATUS, Constants.STATUS_NORMAL));
-
+            matches.add(new Match(Columns.APP_ID, appId));
+            matches.add(new Match(Columns.ENV_ID, envId));
+            matches.add(new Match(Columns.STATUS, Constants.STATUS_NORMAL));
+            return find(matches,orders);
         }
     }
 

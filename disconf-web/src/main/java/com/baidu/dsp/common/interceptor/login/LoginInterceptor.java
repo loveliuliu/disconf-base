@@ -101,27 +101,14 @@ public class LoginInterceptor extends WebCommonInterceptor {
         Visitor visitor = (Visitor) session.getAttribute(UserConstant.USER_KEY);
 
         //
-        // session中没有该信息,则从 redis上获取，并更新session的数据
+        // session中没有该信息 就是没有登录
         //
         if (visitor == null) {
 
-            Visitor redisVisitor = redisLogin.isLogin(request);
-
-            //
-            // 有登录信息
-            //
-            if (redisVisitor != null) {
-
-                // 更新session中的登录信息
-                redisLogin.updateSessionVisitor(session, redisVisitor);
-
-            } else {
-
-                // 还是没有登录
-                returnJsonSystemError(request, response, "login.error", ErrorCode.LOGIN_ERROR);
-                return false;
-            }
-        } else {
+            // 还是没有登录
+            returnJsonSystemError(request, response, "login.error", ErrorCode.LOGIN_ERROR);
+            return false;
+        }else {
 
             // 每次都更新session中的登录信息
             redisLogin.updateSessionVisitor(session, visitor);

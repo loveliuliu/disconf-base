@@ -20,7 +20,7 @@ import com.github.knightliao.apollo.utils.web.CookieUtils;
  */
 public class RedisLoginImpl implements RedisLogin {
 
-    @Autowired
+    @Autowired(required = false)
     private RedisCacheManager redisCacheMgr;
 
     /**
@@ -89,7 +89,7 @@ public class RedisLoginImpl implements RedisLogin {
         //
         // 更新Redis数据
         //
-        updateRedisVisitor(visitor, request, expireTime);
+        // updateRedisVisitor(visitor, request, expireTime); 去掉redis登录
     }
 
     /**
@@ -144,7 +144,7 @@ public class RedisLoginImpl implements RedisLogin {
         updateSessionVisitor(request.getSession(), null);
 
         // 更新redis
-        updateRedisVisitor(null, request, 0);
+        //updateRedisVisitor(null, request, 0);
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.web.service.config.bo.Config;
+import com.baidu.disconf.web.service.config.form.ConfCopyForm;
 import com.baidu.disconf.web.service.config.form.ConfListForm;
 import com.baidu.disconf.web.service.config.form.ConfNewItemForm;
 import com.baidu.disconf.web.service.config.vo.ConfListVo;
@@ -67,7 +68,7 @@ public interface ConfigMgr {
      * @param confNewForm
      * @param disConfigTypeEnum
      */
-    void newConfig(ConfNewItemForm confNewForm, DisConfigTypeEnum disConfigTypeEnum);
+    Config newConfig(ConfNewItemForm confNewForm, DisConfigTypeEnum disConfigTypeEnum);
 
     void delete(Long configId);
 
@@ -78,4 +79,18 @@ public interface ConfigMgr {
      */
     List<File> getDisconfFileList(ConfListForm confListForm);
 
+
+    /**
+     * 复制配置
+     * @param confCopyForm
+     */
+    void copyConfig(ConfCopyForm confCopyForm);
+
+
+    /**
+     *
+     * @param confCopyForm
+     * @return
+     */
+    Boolean isEnvAndVersionExist(ConfCopyForm confCopyForm);
 }

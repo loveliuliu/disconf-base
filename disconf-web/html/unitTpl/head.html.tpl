@@ -29,9 +29,9 @@
 
                         <span class="span2"> </span>
                         <form class="navbar-form pull-left">
-                            <button class="btn btn-warning" title="GitHub" type="button" style=""  onclick="window.open('https://github.com/knightliao/disconf', '_blank');">
+                            <!-- <button class="btn btn-warning" title="GitHub" type="button" style=""  onclick="window.open('https://github.com/knightliao/disconf', '_blank');">
                                 <i class="icon-circle-arrow-up  icon-white"></i> <b>GitHub</b>
-                            </button>
+                            </button> -->
                         </form>
                         
                         <ul class="nav pull-right" >
@@ -51,6 +51,7 @@
                                         <li><a href="/newapp.html">新建APP</a></li>
                                         <li><a href="/newconfig_item.html">新建配置项</a></li>
                                         <li><a href="/newconfig_file.html">新建配置文件</a></li>
+                                        <li><a href="/newconfig_copy.html">复制配置</a></li>
                                     </ul>
                                 </li>
                                 &nbsp;&nbsp;&nbsp;&nbsp;

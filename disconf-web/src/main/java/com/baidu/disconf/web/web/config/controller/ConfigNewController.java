@@ -3,6 +3,7 @@ package com.baidu.disconf.web.web.config.controller;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.baidu.disconf.web.service.config.bo.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,12 @@ public class ConfigNewController extends BaseController {
         configValidator.validateNew(confNewForm, DisConfigTypeEnum.ITEM);
 
         //
-        configMgr.newConfig(confNewForm, DisConfigTypeEnum.ITEM);
+        Config config = configMgr.newConfig(confNewForm, DisConfigTypeEnum.ITEM);
+
+        //
+        // 通知ZK
+        //
+        configMgr.notifyZookeeper(config.getId());
 
         return buildSuccess("创建成功");
     }
@@ -109,8 +115,11 @@ public class ConfigNewController extends BaseController {
         // 业务校验
         configValidator.validateNew(confNewItemForm, DisConfigTypeEnum.FILE);
 
+        Config config = configMgr.newConfig(confNewItemForm, DisConfigTypeEnum.FILE);
+
+        // 通知ZK
         //
-        configMgr.newConfig(confNewItemForm, DisConfigTypeEnum.FILE);
+        configMgr.notifyZookeeper(config.getId());
 
         return buildSuccess("创建成功");
     }
@@ -140,8 +149,12 @@ public class ConfigNewController extends BaseController {
         configValidator.validateNew(confNewItemForm, DisConfigTypeEnum.FILE);
 
         //
-        configMgr.newConfig(confNewItemForm, DisConfigTypeEnum.FILE);
+        Config config = configMgr.newConfig(confNewItemForm, DisConfigTypeEnum.FILE);
 
+        //
+        // 通知ZK
+        //
+        configMgr.notifyZookeeper(config.getId());
         return buildSuccess("创建成功");
     }
 }
