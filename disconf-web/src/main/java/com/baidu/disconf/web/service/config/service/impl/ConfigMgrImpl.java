@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.baidu.disconf.web.service.config.form.ConfCopyForm;
+import com.baidu.dsp.common.utils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -49,6 +51,7 @@ import com.baidu.ub.common.db.DaoPageResult;
 import com.github.knightliao.apollo.utils.data.GsonUtils;
 import com.github.knightliao.apollo.utils.io.OsUtil;
 import com.github.knightliao.apollo.utils.time.DateUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author liaoqiqi
@@ -406,12 +409,11 @@ public class ConfigMgrImpl implements ConfigMgr {
     /**
      * 更新 配置项/配置文件 的值
      */
-    @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = RuntimeException.class)
-    public String updateItemValue(Long configId, String value) {
+    public void updateOneItemValue(Config config, String value) {
 
-        Config config = getConfigById(configId);
         String oldValue = config.getValue();
+        Long configId = config.getId();
 
         //
         // 配置数据库的值 encode to db
@@ -419,6 +421,16 @@ public class ConfigMgrImpl implements ConfigMgr {
         configDao.updateValue(configId, CodeUtils.utf8ToUnicode(value));
         configHistoryMgr.createOne(configId, oldValue, CodeUtils.utf8ToUnicode(value));
 
+    }
+
+    @Override
+
+    public String updateItemValue(Long configId,String value){
+
+        Config config = getConfigById(configId);
+        String oldValue = config.getValue();
+
+        this.updateOneItemValue(config,value);
         //
         // 发送邮件通知
         //
@@ -503,7 +515,7 @@ public class ConfigMgrImpl implements ConfigMgr {
      * 新建配置
      */
     @Override
-    public void newConfig(ConfNewItemForm confNewForm, DisConfigTypeEnum disConfigTypeEnum) {
+    public Config newConfig(ConfNewItemForm confNewForm, DisConfigTypeEnum disConfigTypeEnum) {
 
         Config config = new Config();
 
@@ -530,6 +542,7 @@ public class ConfigMgrImpl implements ConfigMgr {
             logMailBean.sendHtmlEmail(toEmails, " config new", getNewValue(confNewForm.getValue(), config.toString(),
                     getConfigUrlHtml(config)));
         }
+        return config;
     }
 
     /**
@@ -546,4 +559,56 @@ public class ConfigMgrImpl implements ConfigMgr {
         configDao.deleteItem(configId);
     }
 
+
+    @Override
+    @Transactional
+    public void copyConfig(ConfCopyForm confCopyForm) {
+
+        List<Config> configList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getEnvId(), confCopyForm.getVersion());
+
+        List<Config> existConfigList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getNewEnvId(), confCopyForm.getNewVersion());
+
+        Boolean isNew = true;
+        String oldTime = "";
+        if(!CollectionUtils.isEmpty(existConfigList)){//如果存在 则直接删除
+//            configDao.delete(existConfigList);
+            oldTime = existConfigList.get(0).getCreateTime();
+            for(Config config : existConfigList){
+                configDao.deleteItem(config.getId());
+            }
+            isNew = false;
+        }
+        List<Config> newList = new ArrayList<Config>();
+
+        String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
+        for(Config config:configList){
+
+            Config newConfig = (Config)BeanUtils.getClone(config);
+            newConfig.setId(null);
+            newConfig.setVersion(confCopyForm.getNewVersion());
+            newConfig.setEnvId(confCopyForm.getNewEnvId());
+            if(!isNew){// 新版本 使用当前时间  老版本使用 老版本创建时间  防止排序乱掉
+                curTime = oldTime;
+            }
+            newConfig.setCreateTime(curTime);
+            newConfig.setUpdateTime(curTime);
+
+            newList.add(newConfig);
+        }
+
+        if(!CollectionUtils.isEmpty(newList)){
+            configDao.insert(newList);
+        }
+    }
+
+    @Override
+    public Boolean isEnvAndVersionExist(ConfCopyForm confCopyForm) {
+
+        List<Config> configList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getNewEnvId(), confCopyForm.getNewVersion());
+
+        if(!CollectionUtils.isEmpty(configList)){
+            return true;
+        }
+        return false;
+    }
 }
