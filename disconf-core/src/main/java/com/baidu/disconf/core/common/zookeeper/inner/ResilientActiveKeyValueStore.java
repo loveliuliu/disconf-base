@@ -113,13 +113,10 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
 
                 if (stat == null) {
 
-                    return zk.create(path, value.getBytes(CHARSET), Ids.OPEN_ACL_UNSAFE, createMode);
+                    return zk.create(path, null == value? null : value.getBytes(CHARSET), Ids.OPEN_ACL_UNSAFE, createMode);
 
                 } else {
-
-                    if (value != null) {
-                        zk.setData(path, value.getBytes(CHARSET), stat.getVersion());
-                    }
+                    zk.setData(path, null == value? null : value.getBytes(CHARSET), stat.getVersion());
                 }
 
                 return path;
