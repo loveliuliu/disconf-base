@@ -29,7 +29,7 @@ public class ReleaseConfigConsistencyLock implements Runnable{
             TimeUnit.MILLISECONDS.sleep(Constants.CONFIG_CONSISTENCY_LOCK_TIME);//sleep
             zooKeeperDriver.releaseConfigConsistencyLock();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.warn("release lock error:{}",e.getCause());
         } finally {
 
             LOG.info("-------删除锁!");

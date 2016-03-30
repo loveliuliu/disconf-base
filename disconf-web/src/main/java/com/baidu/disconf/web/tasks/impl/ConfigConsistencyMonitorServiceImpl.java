@@ -74,28 +74,20 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
     @Override
     public void check() {
 
+        if (!applicationPropertyConfig.isCheckConsistencyOn()) {
+            return;
+        }
 
         if(zooKeeperDriver.tryLockConfigConsistency()){
             LOG.info("-------获取到锁，开始执行!");
-            MDC.put(SessionInterceptor.SESSION_KEY, TokenUtil.generateToken());
-
-            /**
-             *
-             */
-            if (!applicationPropertyConfig.isCheckConsistencyOn()) {
-                return;
-            }
-
             try {
-                Thread.sleep(1000 * 10);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                MDC.put(SessionInterceptor.SESSION_KEY, TokenUtil.generateToken());
+
+                checkMgr();
+
+            } finally {
+                proExecutor.execute(new ReleaseConfigConsistencyLock(zooKeeperDriver));
             }
-
-            checkMgr();
-
-            proExecutor.execute(new ReleaseConfigConsistencyLock(zooKeeperDriver));
         }else {
             LOG.info("-------未获取到锁，退出!");
         }
