@@ -337,7 +337,17 @@
     <build>
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
-
+    	<plugins>
+      		<plugin>
+        	<artifactId>maven-war-plugin</artifactId>
+        	<version>2.6</version>
+        	<configuration>
+          		<packagingExcludes>
+          			WEB-INF/classes/config/**
+          		</packagingExcludes>
+        	</configuration>
+      </plugin>
+    </plugins>
     </build>
 
 </project>
