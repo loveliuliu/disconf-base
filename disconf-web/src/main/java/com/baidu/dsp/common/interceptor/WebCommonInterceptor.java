@@ -13,7 +13,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import com.baidu.dsp.common.constant.ErrorCode;
 import com.baidu.dsp.common.vo.JsonObjectBase;
 import com.baidu.dsp.common.vo.JsonObjectUtils;
-import com.github.knightliao.apollo.utils.data.JsonUtils;
 
 /**
  * @author liaoqiqi
@@ -57,7 +56,8 @@ public class WebCommonInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Cache-Control", "no-cache");
         response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
-
-        response.getWriter().write(JsonUtils.toJson(jsonObjectBase));
+        
+        com.google.gson.Gson gson = new com.google.gson.Gson();
+        response.getWriter().write(gson.toJson(jsonObjectBase));
     }
 }
