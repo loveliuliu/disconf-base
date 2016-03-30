@@ -1,2 +1,0 @@
-default_process_types:
-  web: bash jpaas_control

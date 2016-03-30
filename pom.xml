@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.baidu.disconf</groupId>
+    <groupId>com.ymatou.disconf</groupId>
     <artifactId>disconf-base</artifactId>
     <version>2.6.31</version>
     <packaging>pom</packaging>
@@ -25,6 +25,10 @@
     </licenses>
 
     <properties>
+    
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.test.skip>true</maven.test.skip>
+        
         <!-- 模块版本号 -->
         <disconf-core.version>2.6.31</disconf-core.version>
         <disconf-client.version>2.6.31</disconf-client.version>
@@ -36,9 +40,9 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
 
         <!-- JAVA环境 -->
-        <java.version>1.6</java.version>
-        <source.version>1.6</source.version>
-        <target.version>1.6</target.version>
+        <java.version>1.7</java.version>
+        <source.version>1.7</source.version>
+        <target.version>1.7</target.version>
         <spring.version>4.1.7.RELEASE</spring.version>
         <spring.amqp.version>1.4.5.RELEASE</spring.amqp.version>
         <junit.version>4.10</junit.version>
@@ -806,93 +810,9 @@
         </plugins>
     </reporting>
 
-    <developers>
-        <developer>
-            <name>Liao Qiqi</name>
-            <id>knightliao</id>
-            <email>knightliao@gmail.com</email>
-            <roles>
-                <role>Developer</role>
-            </roles>
-            <timezone>+8</timezone>
-        </developer>
-    </developers>
-
-    <organization>
-        <name>KNIGHT</name>
-        <url>http://www.liaoqiqi.com</url>
-    </organization>
-
-    <scm>
-        <url>scm:git:git@github.com:knightliao/disconf</url>
-        <connection>scm:git:git@github.com:knightliao/disconf</connection>
-        <tag>disconf-base</tag>
-    </scm>
 
     <url>https://github.com/knightliao/disconf</url>
     <name>disconf</name>
     <description>Distributed Configuration Management Platform.</description>
-
-    <profiles>
-        <profile>
-            <id>release</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>nexus-release</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-                </snapshotRepository>
-                <repository>
-                    <id>nexus-release</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <!-- Source -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2.1</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- Javadoc -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
