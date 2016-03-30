@@ -2,13 +2,13 @@ package com.baidu.disconf.web.innerapi.zookeeper.impl;
 
 import java.nio.charset.Charset;
 import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.baidu.disconf.core.common.constants.Constants;
+import com.baidu.dsp.common.constant.DataFormatConstants;
+import com.github.knightliao.apollo.utils.time.DateUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
@@ -328,5 +328,60 @@ public class ZookeeperDriverImpl implements ZooKeeperDriver, InitializingBean, D
             ZookeeperMgr.getInstance().init(zooConfig.getZooHosts(), zooConfig.getZookeeperUrlPrefix(), false);
             isInit = true;
         }
+    }
+
+    @Override
+    public boolean tryLockConfigConsistency() {
+
+        LOG.info("-------尝试开始获取锁");
+        //增加zookeeper 临时节点  不存在则可以执行校验
+        String baseLockPath = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), Constants.LOCK_PATH);
+        String path = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), Constants.CONFIG_CONSISTENCY_LOCK_PATH);
+        String curTime = String.valueOf(new Date().getTime());
+
+        //创建父节点 locks
+        ZookeeperMgr zookeeperMgr = ZookeeperMgr.getInstance();
+        zookeeperMgr.makeDir(baseLockPath,curTime);
+
+        boolean locked = false;
+        try {
+
+            boolean isExist = ZookeeperMgr.getInstance().exists(path);
+            if (!isExist) {
+
+                zookeeperMgr.createEphemeralNode(path, curTime, CreateMode.EPHEMERAL);
+                locked = true;
+
+            }else {// 防止 某台机器获取到锁后 挂了 没有释放锁
+                ZooKeeper zooKeeper = zookeeperMgr.getZk();
+                byte[] data = zooKeeper.getData(path, null, null);
+                if (data != null) {
+                    Long lastUpdateTime = Long.valueOf(new String(data, CHARSET)); //节点上次更新时间
+                    Long duration = Long.valueOf(curTime) - lastUpdateTime; //当前时间距离上次更新时间
+                    Long constantsDuration = Constants.CONFIG_CONSISTENCY_SCHEDULE_TIME - Constants.CONFIG_CONSISTENCY_LOCK_TIME;
+                    if (duration >= constantsDuration) {//锁没有释放 更新节点
+                        zookeeperMgr.createEphemeralNode(path, curTime, CreateMode.EPHEMERAL);
+                        locked = true;
+                    }
+                }else {//data 为空 更新节点
+                    zookeeperMgr.createEphemeralNode(path, curTime, CreateMode.EPHEMERAL);
+                    locked = true;
+                }
+            }
+
+        } catch (Exception e) {
+
+            LOG.error(e.toString(), e);
+            throw new RemoteException("zk.notify.error", e);
+        }
+        return locked;
+    }
+
+    @Override
+    public void releaseConfigConsistencyLock() {
+
+        String path = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), Constants.CONFIG_CONSISTENCY_LOCK_PATH);
+
+        ZookeeperMgr.getInstance().deleteNode(path);
     }
 }

@@ -568,41 +568,34 @@ public class ConfigMgrImpl implements ConfigMgr {
 
         List<Config> existConfigList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getNewEnvId(), confCopyForm.getNewVersion());
 
-        Boolean isNew = true;
-        String oldTime = "";
         if(!CollectionUtils.isEmpty(existConfigList)){//如果存在 则直接删除
-//            configDao.delete(existConfigList);
-            oldTime = existConfigList.get(0).getCreateTime();
             for(Config config : existConfigList){
                 configDao.deleteItem(config.getId());
             }
-            isNew = false;
         }
-        List<Config> newList = new ArrayList<Config>();
 
-        String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
-        for(Config config:configList){
+        if(!CollectionUtils.isEmpty(configList)){
+            String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
+            List<Config> newList = new ArrayList<Config>();
+            for(Config config:configList){
 
-            Config newConfig = (Config)BeanUtils.getClone(config);
-            newConfig.setId(null);
-            newConfig.setVersion(confCopyForm.getNewVersion());
-            newConfig.setEnvId(confCopyForm.getNewEnvId());
-            if(!isNew){// 新版本 使用当前时间  老版本使用 老版本创建时间  防止排序乱掉
-                curTime = oldTime;
+                Config newConfig = (Config)BeanUtils.getClone(config);
+                newConfig.setId(null);
+                newConfig.setVersion(confCopyForm.getNewVersion());
+                newConfig.setEnvId(confCopyForm.getNewEnvId());
+
+                newConfig.setCreateTime(curTime);
+                newConfig.setUpdateTime(curTime);
+
+                newList.add(newConfig);
             }
-            newConfig.setCreateTime(curTime);
-            newConfig.setUpdateTime(curTime);
 
-            newList.add(newConfig);
-        }
-
-        if(!CollectionUtils.isEmpty(newList)){
             configDao.insert(newList);
         }
     }
 
     @Override
-    public Boolean isEnvAndVersionExist(ConfCopyForm confCopyForm) {
+    public boolean isEnvAndVersionExist(ConfCopyForm confCopyForm) {
 
         List<Config> configList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getNewEnvId(), confCopyForm.getNewVersion());
 

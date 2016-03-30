@@ -5,7 +5,6 @@ package com.baidu.disconf.web.tasks;
  */
 public interface IConfigConsistencyMonitorService {
 
-    void myTest();
 
     void check();
 }

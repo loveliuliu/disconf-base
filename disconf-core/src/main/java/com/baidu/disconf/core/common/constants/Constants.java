@@ -26,6 +26,8 @@ public class Constants {
     public static final Integer OK = 1;
     public static final Integer NOTOK = 0;
 
+    public final static String SEP_STRING = "/";
+
     /**
      * zookeeper的一些常量设置
      */
@@ -33,9 +35,13 @@ public class Constants {
     public final static String STORE_ITEM_URL_KEY = "item";
     public final static String ZOO_HOSTS_URL_KEY = "hosts";
     public final static String ZOO_HOSTS_URL_PREFIX_KEY = "prefix";
+    public final static String LOCK_PATH = "locks";
+    public final static String CONFIG_CONSISTENCY_LOCK_PATH = LOCK_PATH + SEP_STRING + "configConsistencyLock";
+    public final static long CONFIG_CONSISTENCY_SCHEDULE_TIME = 30L * 60 * 1000; //定时任务时间间隔
+    public final static long CONFIG_CONSISTENCY_LOCK_TIME = 5L * 60 * 1000; //锁住时间
+
+
 
     // 通知Zookeeper更新配置的消息
     public final static String ZOO_UPDATE_STRING = "UPDATE-NOTIFYING";
-
-    public final static String SEP_STRING = "/";
 }

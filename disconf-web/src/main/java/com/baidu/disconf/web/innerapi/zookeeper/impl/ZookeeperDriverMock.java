@@ -38,4 +38,14 @@ public class ZookeeperDriverMock implements ZooKeeperDriver {
     public void destroy() throws Exception {
 
     }
+
+    @Override
+    public boolean tryLockConfigConsistency() {
+        return false;
+    }
+
+    @Override
+    public void releaseConfigConsistencyLock() {
+
+    }
 }

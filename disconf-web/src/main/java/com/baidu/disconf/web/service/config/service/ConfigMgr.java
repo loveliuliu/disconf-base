@@ -92,5 +92,5 @@ public interface ConfigMgr {
      * @param confCopyForm
      * @return
      */
-    Boolean isEnvAndVersionExist(ConfCopyForm confCopyForm);
+    boolean isEnvAndVersionExist(ConfCopyForm confCopyForm);
 }

@@ -17,7 +17,7 @@ import com.baidu.disconf.web.service.user.bo.User;
 import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.disconf.web.service.user.vo.VisitorVo;
 import com.baidu.disconf.web.web.auth.constant.LoginConstant;
-import com.baidu.disconf.web.web.auth.login.RedisLogin;
+import com.baidu.disconf.web.web.auth.login.SessionLogin;
 import com.baidu.disconf.web.web.auth.validator.AuthValidator;
 import com.baidu.dsp.common.annotation.NoAuth;
 import com.baidu.dsp.common.constant.ErrorCode;
@@ -45,7 +45,7 @@ public class UserController extends BaseController {
     private SignMgr signMgr;
 
     @Autowired
-    private RedisLogin redisLogin;
+    private SessionLogin sessionLogin;
 
     /**
      * GET 获取
@@ -98,8 +98,8 @@ public class UserController extends BaseController {
             expireTime = LoginConstant.SESSION_EXPIRE_TIME2;
         }
 
-        // redis login
-        redisLogin.login(request, user, expireTime);
+
+        sessionLogin.login(request, user, expireTime);
 
         VisitorVo visitorVo = userMgr.getCurVisitor();
 
@@ -118,7 +118,7 @@ public class UserController extends BaseController {
     @ResponseBody
     public JsonObjectBase signout(HttpServletRequest request) {
 
-        redisLogin.logout(request);
+        sessionLogin.logout(request);
 
         return buildSuccess("ok", "ok");
     }

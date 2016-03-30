@@ -3,10 +3,14 @@ package com.baidu.disconf.web.tasks.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.baidu.disconf.core.common.constants.Constants;
+import com.baidu.disconf.web.innerapi.zookeeper.ZooKeeperDriver;
+import com.baidu.disconf.web.tasks.runnable.ReleaseConfigConsistencyLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -55,40 +59,47 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
     @Autowired
     private LogMailBean logMailBean;
 
-    // 每3分钟执行一次自动化校验
-    @Scheduled(fixedDelay = 3 * 60 * 1000)
-    @Override
-    public void myTest() {
-        LOG.info("task schedule just testing, every 1 min");
-    }
+    @Autowired
+    private ZooKeeperDriver zooKeeperDriver;
+
+    @Autowired
+    private TaskExecutor proExecutor;
+
 
     /**
      *
      */
     // 每30分钟执行一次自动化校验
-    @Scheduled(fixedDelay = 30 * 60 * 1000)
+    @Scheduled(fixedDelay = Constants.CONFIG_CONSISTENCY_SCHEDULE_TIME)
     @Override
     public void check() {
 
-        MDC.put(SessionInterceptor.SESSION_KEY, TokenUtil.generateToken());
 
-        /**
-         *
-         */
-        if (!applicationPropertyConfig.isCheckConsistencyOn()) {
-            return;
+        if(zooKeeperDriver.tryLockConfigConsistency()){
+            LOG.info("-------获取到锁，开始执行!");
+            MDC.put(SessionInterceptor.SESSION_KEY, TokenUtil.generateToken());
+
+            /**
+             *
+             */
+            if (!applicationPropertyConfig.isCheckConsistencyOn()) {
+                return;
+            }
+
+            try {
+                Thread.sleep(1000 * 10);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            checkMgr();
+
+            proExecutor.execute(new ReleaseConfigConsistencyLock(zooKeeperDriver));
+        }else {
+            LOG.info("-------未获取到锁，退出!");
         }
 
-        try {
-            Thread.sleep(1000 * 10);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        checkMgr();
-
-        return;
     }
 
     /**

@@ -53,4 +53,14 @@ public interface ZooKeeperDriver {
 
     void destroy() throws Exception;
 
+    /**
+     * 尝试获取一致性执行权限
+     * @return
+     */
+    boolean tryLockConfigConsistency();
+
+    /**
+     * 删除一致性锁
+     */
+    void releaseConfigConsistencyLock();
 }

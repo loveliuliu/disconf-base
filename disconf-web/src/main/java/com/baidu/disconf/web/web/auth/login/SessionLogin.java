@@ -10,16 +10,8 @@ import com.baidu.disconf.web.service.user.dto.Visitor;
  * @author liaoqiqi
  * @version 2014-2-4
  */
-public interface RedisLogin {
+public interface SessionLogin {
 
-    /**
-     * 判断是否登录
-     *
-     * @param request
-     *
-     * @return
-     */
-    Visitor isLogin(HttpServletRequest request);
 
     /**
      * 登录

@@ -25,7 +25,7 @@ $("#item_submit").on("click", function (e) {
     }
     if (version == newVersion && envId == newEnvId) {
         $("#error").removeClass("hide");
-        $("#error").html("配置源不能和配置目的一样！");
+        $("#error").html("配置源不能和配置目的地一样！");
         return;
     }
     var needConfirm = false;

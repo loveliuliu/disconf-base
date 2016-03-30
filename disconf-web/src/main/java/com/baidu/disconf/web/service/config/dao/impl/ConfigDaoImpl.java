@@ -54,7 +54,7 @@ public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDa
     @Override
     public List<Config> getConfByAppEnv(Long appId, Long envId) {
 
-        List<Order> orders = Lists.newArrayList(new Order(Columns.CREATE_TIME,true),new Order(Columns.CONFIG_ID,true));
+        List<Order> orders = Lists.newArrayList(new Order(Columns.VERSION,false));
         List<Match> matches = Lists.newArrayList();
         if (envId == null) {
             matches.add(new Match(Columns.APP_ID, appId));

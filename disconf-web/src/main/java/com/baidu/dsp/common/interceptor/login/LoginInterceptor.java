@@ -16,7 +16,7 @@ import com.baidu.disconf.web.service.user.constant.UserConstant;
 import com.baidu.disconf.web.service.user.dto.Visitor;
 import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.disconf.web.web.auth.constant.LoginConstant;
-import com.baidu.disconf.web.web.auth.login.RedisLogin;
+import com.baidu.disconf.web.web.auth.login.SessionLogin;
 import com.baidu.dsp.common.constant.ErrorCode;
 import com.baidu.dsp.common.interceptor.WebCommonInterceptor;
 import com.github.knightliao.apollo.utils.tool.TokenUtil;
@@ -36,7 +36,7 @@ public class LoginInterceptor extends WebCommonInterceptor {
     private UserMgr userMgr;
 
     @Autowired
-    private RedisLogin redisLogin;
+    private SessionLogin sessionLogin;
 
     private List<String> notJsonPathList;
 
@@ -111,7 +111,7 @@ public class LoginInterceptor extends WebCommonInterceptor {
         }else {
 
             // 每次都更新session中的登录信息
-            redisLogin.updateSessionVisitor(session, visitor);
+            sessionLogin.updateSessionVisitor(session, visitor);
         }
 
         return true;
