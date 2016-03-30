@@ -73,9 +73,10 @@ public interface ConfigDao extends BaseDao<Long, Config> {
      * @param appId
      * @param envId
      * @param version
+     * @param name
      * @return
      */
-    List<Config> getConfigMetas(Long appId, Long envId, String version );
+    List<Config> getConfigMetas(Long appId, Long envId, String version, String name );
     
     /**
      * 返回配置项（不包含配置文件）

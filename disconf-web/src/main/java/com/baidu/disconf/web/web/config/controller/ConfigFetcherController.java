@@ -146,7 +146,7 @@ public class ConfigFetcherController {
     }
     
     /**
-     * 获取所有配置Meta
+     * 获取所有配置或指定Key的Meta
      * 当前仅.NET客户端使用
      * 返回的ValueVo的value是一个json, 示例：
      * [{"upateTime":"20140909123020","name":"c1","type":"1"},{"upateTime":"20150909123020","name":"c2","type":"0"}]
@@ -170,7 +170,7 @@ public class ConfigFetcherController {
             return ConfigUtils.getErrorVo(e.getMessage());
         }
 
-        return configFetchMgr.getConfMetas(configModel.getApp().getId(), configModel.getEnv().getId(), configModel.getVersion());
+        return configFetchMgr.getConfMetas(configModel.getApp().getId(), configModel.getEnv().getId(), configModel.getVersion(), configModel.getKey());
     }
     
     

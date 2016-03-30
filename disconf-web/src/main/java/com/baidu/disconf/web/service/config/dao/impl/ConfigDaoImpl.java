@@ -34,7 +34,8 @@ import com.github.knightliao.apollo.utils.time.DateUtils;
 @Service
 public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDao {
     
-    private String SQL_SELECT_META = "select name, type, update_time from disconf.config where app_id=? and env_id=? and version=? and status=1";
+    private String SQL_SELECT_METAS = "select name, type, update_time from disconf.config where app_id=? and env_id=? and version=? and status=1";
+    private String SQL_SELECT_META = "select name, type, update_time from disconf.config where app_id=? and env_id=? and version=? and name=? and status=1";
 
     /**
      *
@@ -139,8 +140,10 @@ public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDa
     }
 
     @Override
-    public List<Config> getConfigMetas(Long appId, Long envId, String version) {
-        return this.findBySQL(SQL_SELECT_META, Arrays.asList(appId, envId, version),
+    public List<Config> getConfigMetas(Long appId, Long envId, String version, String name) {
+        boolean isNameSpecified = name != null && !name.isEmpty();
+        return this.findBySQL(isNameSpecified ? SQL_SELECT_META : SQL_SELECT_METAS,
+                isNameSpecified ? Arrays.asList(appId, envId, version, name) : Arrays.asList(appId, envId, version),
                 new RowMapper<Config>( ) {
 
                     @Override

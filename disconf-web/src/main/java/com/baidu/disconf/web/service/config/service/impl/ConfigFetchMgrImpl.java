@@ -55,8 +55,8 @@ public class ConfigFetchMgrImpl implements ConfigFetchMgr {
     }
 
     @Override
-    public ValueVo getConfMetas(Long appId, Long envId, String version) {
-        List<Config> configs = configDao.getConfigMetas(appId, envId, version);
+    public ValueVo getConfMetas(Long appId, Long envId, String version, String name ) {
+        List<Config> configs = configDao.getConfigMetas(appId, envId, version, name);
         ValueVo valueVo = new ValueVo( );
         valueVo.setStatus(Constants.OK);
         valueVo.setValue(ConfigUtils.getMetasJson(configs));

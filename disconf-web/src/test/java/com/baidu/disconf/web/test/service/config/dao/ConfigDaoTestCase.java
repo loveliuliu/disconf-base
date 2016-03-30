@@ -60,7 +60,7 @@ public class ConfigDaoTestCase extends BaseTestCase {
     
     @Test
     public void testGetConfigMetas( ) {
-        List<Config> configs = configDao.getConfigMetas(1L, 1L, "1_0_0_0");
+        List<Config> configs = configDao.getConfigMetas(1L, 1L, "1_0_0_0", "varA");
         LOG.info("All config metas:{}, {}", configs);
     }
 
