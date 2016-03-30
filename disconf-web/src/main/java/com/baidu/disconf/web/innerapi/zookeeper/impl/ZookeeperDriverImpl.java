@@ -352,7 +352,7 @@ public class ZookeeperDriverImpl implements ZooKeeperDriver, InitializingBean, D
                 zookeeperMgr.createEphemeralNode(path, curTime, CreateMode.EPHEMERAL);
                 locked = true;
 
-            }else {// 防止 某台机器获取到锁后 挂了 没有释放锁
+            }else {// 防止 某台机器获取到锁后 没有释放锁
                 ZooKeeper zooKeeper = zookeeperMgr.getZk();
                 byte[] data = zooKeeper.getData(path, null, null);
                 if (data != null) {
