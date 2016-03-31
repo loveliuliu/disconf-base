@@ -7,14 +7,13 @@
             http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd"
     default-lazy-init="true">
 
-    <context:property-placeholder location="classpath*:/spring-cache.properties"
-        ignore-unresolvable="true" />
+    <context:property-placeholder location="classpath*:/spring-cache.properties"/>
 
     <cache:annotation-driven cache-manager="cacheManager" />
 
     <bean id="cacheManagerFactory"
         class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
-        p:configLocation="classpath:/${ehcache_path}" p:shared="true" />
+        p:shared="true" />
 
     <bean id="cacheManager"
         class="org.springframework.cache.ehcache.EhCacheCacheManager"

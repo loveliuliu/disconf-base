@@ -7,8 +7,6 @@
     <property name="log.base" value="/var/log/disconf/disconf-web"/>
     <property name="log.monitor" value="/var/log/disconf/monitor"/>
 
-    <jmxConfigurator/>
-
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <Encoding>UTF-8</Encoding>
         <encoder>
