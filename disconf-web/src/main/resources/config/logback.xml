@@ -2,8 +2,6 @@
 <!-- copy it to /opt/conf/disconf  -->
 <included>
 
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
-
     <property name="log.base" value="/var/log/disconf/disconf-web"/>
     <property name="log.monitor" value="/var/log/disconf/monitor"/>
 
