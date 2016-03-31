@@ -85,10 +85,12 @@ VALUES
 
 INSERT INTO `env` (`env_id`, `name`)
 VALUES
-    (1, 'rd'),
-    (2, 'qa'),
-    (3, 'local'),
-    (4, 'online');
+    (1, 'DEV'),
+    (2, 'SIT1'),
+    (3, 'SIT2'),
+    (4, 'UAT'),
+    (5, 'STG'),
+    (6, 'PRD');
 
 INSERT INTO `role` (`role_id`, `role_name`, `create_time`, `create_by`, `update_time`, `update_by`)
 VALUES
