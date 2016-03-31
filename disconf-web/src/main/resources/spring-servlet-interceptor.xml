@@ -29,6 +29,7 @@
                         <value>/api/config/item</value>
                         <value>/api/config/file</value>
                         <value>/api/config/metas</value>
+                        <value>/</value>
                     </list>
                 </property>
                 <property name="XONE_COOKIE_DOMAIN_STRING">
