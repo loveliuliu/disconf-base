@@ -1,34 +1,15 @@
 package com.baidu.disconf.web.service.config.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import com.baidu.disconf.web.service.config.form.ConfCopyForm;
-import com.baidu.dsp.common.utils.BeanUtils;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.web.common.Constants;
+import com.baidu.disconf.web.common.SupportFileTypeEnum;
 import com.baidu.disconf.web.config.ApplicationPropertyConfig;
 import com.baidu.disconf.web.innerapi.zookeeper.ZooKeeperDriver;
 import com.baidu.disconf.web.service.app.bo.App;
 import com.baidu.disconf.web.service.app.service.AppMgr;
 import com.baidu.disconf.web.service.config.bo.Config;
 import com.baidu.disconf.web.service.config.dao.ConfigDao;
+import com.baidu.disconf.web.service.config.form.ConfCopyForm;
 import com.baidu.disconf.web.service.config.form.ConfListForm;
 import com.baidu.disconf.web.service.config.form.ConfNewItemForm;
 import com.baidu.disconf.web.service.config.service.ConfigHistoryMgr;
@@ -44,6 +25,7 @@ import com.baidu.disconf.web.utils.CodeUtils;
 import com.baidu.disconf.web.utils.DiffUtils;
 import com.baidu.disconf.web.utils.MyStringUtils;
 import com.baidu.dsp.common.constant.DataFormatConstants;
+import com.baidu.dsp.common.utils.BeanUtils;
 import com.baidu.dsp.common.utils.DataTransfer;
 import com.baidu.dsp.common.utils.ServiceUtil;
 import com.baidu.dsp.common.utils.email.LogMailBean;
@@ -51,7 +33,20 @@ import com.baidu.ub.common.db.DaoPageResult;
 import com.github.knightliao.apollo.utils.data.GsonUtils;
 import com.github.knightliao.apollo.utils.io.OsUtil;
 import com.github.knightliao.apollo.utils.time.DateUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @author liaoqiqi
@@ -215,7 +210,7 @@ public class ConfigMgrImpl implements ConfigMgr {
 
             if (config.getType().equals(DisConfigTypeEnum.FILE.getType())) {
 
-                List<String> errorKeyList = compareConfig(zkDisconfDataItem.getValue(), config.getValue());
+                List<String> errorKeyList = compareConfig(zkDisconfDataItem.getValue(), config);
 
                 if (errorKeyList.size() != 0) {
                     zkDisconfDataItem.setErrorList(errorKeyList);
@@ -293,32 +288,62 @@ public class ConfigMgrImpl implements ConfigMgr {
     /**
      *
      */
-    private List<String> compareConfig(String zkData, String dbData) {
+    private List<String> compareConfig(String zkData, Config config) {
+
+        String dbData = config.getValue();
+        String configName = config.getName();
 
         List<String> errorKeyList = new ArrayList<String>();
 
+        //首先 直接字符串比对  相同退出、不相同则进一步 ： 暂时只针对properties文件key value对比 非properties文件则直接不一至
+
+        if(!zkData.equals(dbData)){
+            if(SupportFileTypeEnum.PROPERTIES == SupportFileTypeEnum.getByFileName(configName)){
+                comparePropertiesConfig(errorKeyList,zkData,dbData);
+            }else {
+                errorKeyList.add(zkData);
+            }
+        }
+
+        return errorKeyList;
+    }
+    private Properties loadPropertiesFromString(String properties) throws Exception{
+
         Properties prop = new Properties();
+
+        prop.load(IOUtils.toInputStream(properties));
+
+        return prop;
+    }
+
+    private void comparePropertiesConfig(List<String> errorKeyList,String zkData,String dbData){
+
+        Properties zkProp = null;
         try {
-            prop.load(IOUtils.toInputStream(dbData));
+            zkProp = this.loadPropertiesFromString(zkData);
         } catch (Exception e) {
             LOG.error(e.toString());
             errorKeyList.add(zkData);
-            return errorKeyList;
         }
 
-        Map<String, String> zkMap = GsonUtils.parse2Map(zkData);
-        for (String keyInZk : zkMap.keySet()) {
+        Properties dbProp = null;
+        try {
+            dbProp = this.loadPropertiesFromString(dbData);
+        } catch (Exception e) {
+            LOG.error(e.toString());
+            errorKeyList.add(zkData);
+        }
 
-            Object valueInDb = prop.get(keyInZk);
-            String zkDataStr = zkMap.get(keyInZk);
 
-            // convert zk data to utf-8
-            //zkMap.put(keyInZk, CodeUtils.unicodeToUtf8(zkDataStr));
+        for (Object keyInZk : zkProp.keySet()) {
+
+            String zkDataStr = (String)zkProp.get(keyInZk);
+            String valueInDb = (String)dbProp.get(keyInZk);
 
             try {
 
                 if ((zkDataStr == null && valueInDb != null) || (zkDataStr != null && valueInDb == null)) {
-                    errorKeyList.add(keyInZk);
+                    errorKeyList.add((String)keyInZk);
 
                 } else {
 
@@ -346,11 +371,9 @@ public class ConfigMgrImpl implements ConfigMgr {
 
             } catch (Exception e) {
 
-                LOG.warn(e.toString() + " ; " + keyInZk + " ; " + zkMap.get(keyInZk) + " ; " + valueInDb);
+                LOG.warn(e.toString() + " ; " + keyInZk + " ; " + zkProp.get(keyInZk) + " ; " + valueInDb);
             }
         }
-
-        return errorKeyList;
     }
 
     /**
