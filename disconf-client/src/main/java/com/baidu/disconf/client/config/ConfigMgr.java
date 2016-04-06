@@ -23,7 +23,7 @@ public class ConfigMgr {
      *
      * @throws Exception
      */
-    public synchronized static void init() throws Exception {
+    public synchronized static void init(String propertiesPath ) throws Exception {
 
         LOGGER.info("--------------- LOAD CONFIG START ---------------");
 
@@ -31,13 +31,13 @@ public class ConfigMgr {
         LOGGER.info("Finer print: " + DisClientComConfig.getInstance().getInstanceFingerprint());
 
         // 导入系统配置
-        DisClientSysConfig.getInstance().loadConfig(null);
+        DisClientSysConfig.getInstance().loadConfig( );
 
         // 校验 系统配置
         DisInnerConfigHelper.verifySysConfig();
 
         // 导入用户配置
-        DisClientConfig.getInstance().loadConfig(null);
+        DisClientConfig.getInstance().loadConfig(propertiesPath);
 
         // 校验 用户配置
         DisInnerConfigHelper.verifyUserConfig();
@@ -53,18 +53,5 @@ public class ConfigMgr {
         return isInit;
     }
 
-    /**
-     */
-    public static void main(String[] args) {
-
-        try {
-
-            ConfigMgr.init();
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
 
 }

@@ -75,10 +75,6 @@ public class ScanDynamicStoreAdapter {
             }
 
             //
-            // 配置项
-            processItems(inverseMap, disconfUpdateService, iDisconfUpdate);
-
-            //
             // 配置文件
             processFiles(inverseMap, disconfUpdateService, iDisconfUpdate);
 
@@ -91,21 +87,6 @@ public class ScanDynamicStoreAdapter {
         return scanDynamicModel;
     }
 
-    /**
-     * 获取回调对应配置项列表
-     */
-    private static void processItems(Map<DisconfKey, List<IDisconfUpdate>> inverseMap,
-                                     DisconfUpdateService disconfUpdateService, IDisconfUpdate iDisconfUpdate) {
-
-        List<String> itemKeys = Arrays.asList(disconfUpdateService.itemKeys());
-
-        // 反索引
-        for (String key : itemKeys) {
-
-            DisconfKey disconfKey = new DisconfKey(DisConfigTypeEnum.ITEM, key);
-            addOne2InverseMap(disconfKey, inverseMap, iDisconfUpdate);
-        }
-    }
 
     /**
      * 获取回调对应的配置文件列表
@@ -184,7 +165,6 @@ public class ScanDynamicStoreAdapter {
             List<IDisconfUpdate>> disconfUpdateServiceInverseIndexMap) {
 
         DisconfStoreProcessor disconfStoreProcessorFile = DisconfStoreProcessorFactory.getDisconfStoreFileProcessor();
-        DisconfStoreProcessor disconfStoreProcessorItem = DisconfStoreProcessorFactory.getDisconfStoreItemProcessor();
 
         for (DisconfKey disconfKey : disconfUpdateServiceInverseIndexMap.keySet()) {
 
@@ -203,16 +183,10 @@ public class ScanDynamicStoreAdapter {
                             disconfUpdateServiceInverseIndexMap
                                     .get(disconfKey));
 
-                } else if (disconfKey.getDisConfigTypeEnum().equals(DisConfigTypeEnum.ITEM)) {
-
-                    if (!disconfStoreProcessorItem.hasThisConf(disconfKey.getKey())) {
-                        throw new Exception();
-                    }
-
-                    disconfStoreProcessorItem.addUpdateCallbackList(disconfKey.getKey(),
-                            disconfUpdateServiceInverseIndexMap
-                                    .get(disconfKey));
+                } else  {
+                    throw new RuntimeException("Unknown disconfType:" + disconfKey.getDisConfigTypeEnum());
                 }
+
 
             } catch (Exception e) {
                 // 找不到回调对应的配置，这是用户配置 错误了

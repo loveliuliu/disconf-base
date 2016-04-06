@@ -61,4 +61,10 @@ public final class ClassLoaderUtil {
     public static ClassLoader getLoader() {
         return loader;
     }
+    
+    public static void main( String[] args ) {
+        System.out.println( ClassLoaderUtil.classPath );
+        System.out.println(ClassLoaderUtil.getLoader());
+        System.out.println(System.getProperty("user.dir"));
+    }
 }

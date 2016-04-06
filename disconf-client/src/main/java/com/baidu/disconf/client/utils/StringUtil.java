@@ -79,7 +79,7 @@ public abstract class StringUtil {
                                                        String token) {
 
         if (StringUtils.isBlank(source) || StringUtils.isEmpty(token)) {
-            return null;
+            return new ArrayList<String>();
         }
 
         List<String> result = new ArrayList<String>();

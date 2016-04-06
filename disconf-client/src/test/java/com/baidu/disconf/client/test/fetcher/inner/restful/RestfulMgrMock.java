@@ -59,9 +59,8 @@ public class RestfulMgrMock extends MockUp<RestfulMgr> {
      * @throws Exception
      */
     @Mock
-    public String downloadFromServer(RemoteUrl remoteUrl, String fileName, String localFileDir, String localFileDirTemp,
-                                     String copy2TargetDirPath, boolean download2Classpath, int retryTimes,
-                                     int retrySleepSeconds)
+    public String downloadFromServer(RemoteUrl remoteUrl, String fileName, String localFileDir, 
+            int retryTimes, int retrySleepSeconds)
             throws Exception {
 
         File tempFile = DirUtils.createTempDirectory();

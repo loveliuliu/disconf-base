@@ -12,7 +12,7 @@ import com.baidu.disconf.client.common.model.InstanceFingerprint;
 
 /**
  * 一些通用的数据
- *
+ * FIXME: IP
  * @author liaoqiqi
  * @version 2014-7-1
  */

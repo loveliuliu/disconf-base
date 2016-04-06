@@ -47,9 +47,7 @@ public class DisconfCoreMgrImpl implements DisconfCoreMgr {
                 DisconfCoreProcessorFactory.getDisconfCoreProcessorFile(watchMgr, fetcherMgr, registry);
         disconfCoreProcessorList.add(disconfCoreProcessorFile);
 
-        DisconfCoreProcessor disconfCoreProcessorItem =
-                DisconfCoreProcessorFactory.getDisconfCoreProcessorItem(watchMgr, fetcherMgr, registry);
-        disconfCoreProcessorList.add(disconfCoreProcessorItem);
+
     }
 
     /**

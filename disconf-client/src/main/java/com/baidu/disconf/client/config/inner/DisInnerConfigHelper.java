@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.baidu.disconf.client.config.DisClientConfig;
 import com.baidu.disconf.client.config.DisClientSysConfig;
 import com.baidu.disconf.client.utils.StringUtil;
-import com.baidu.disconf.core.common.utils.ClassLoaderUtil;
 import com.baidu.disconf.core.common.utils.OsUtil;
 
 /**
@@ -79,17 +78,18 @@ public class DisInnerConfigHelper {
         //
         // 是否使用远程的配置
         LOGGER.info("SERVER disconf.enable.remote.conf: " + DisClientConfig.getInstance().ENABLE_DISCONF);
+        
+        
+        if (StringUtils.isEmpty(DisClientConfig.getInstance().userDefineDownloadDir)) {
+
+            throw new Exception("settings: " + "user_define_download_dir " + "  cannot find");
+        }
+        LOGGER.info("SERVER " + "user_define_download_dir" + ": " + DisClientConfig.getInstance().userDefineDownloadDir);
+        OsUtil.makeDirs(DisClientConfig.getInstance().userDefineDownloadDir);
 
         //
         // debug mode
         LOGGER.info("SERVER disconf.debug: " + DisClientConfig.getInstance().DEBUG);
-
-        // 用户下载文件夹
-        if (!StringUtils.isEmpty(DisClientConfig.getInstance().userDefineDownloadDir)) {
-            OsUtil.makeDirs(DisClientConfig.getInstance().userDefineDownloadDir);
-            LOGGER.info("SERVER disconf.user_define_download_dir: " + DisClientConfig.getInstance()
-                    .userDefineDownloadDir);
-        }
 
         //
         // 忽略哪些分布式配置
@@ -112,17 +112,6 @@ public class DisInnerConfigHelper {
         LOGGER.debug("SERVER conf_server_url_retry_sleep_seconds: " +
                 DisClientConfig.getInstance().confServerUrlRetrySleepSeconds);
 
-        // 是否将文件放在classpath目录下
-        if (DisClientConfig.getInstance().enableLocalDownloadDirInClassPath) {
-
-            String classpath = ClassLoaderUtil.getClassPath();
-
-            if (classpath.isEmpty()) {
-                LOGGER.warn("CLASSPATH is null. we will not transfer your config file to classpath in the following");
-            } else {
-                LOGGER.debug("classpath: " + classpath);
-            }
-        }
     }
 
     /**
@@ -149,26 +138,6 @@ public class DisInnerConfigHelper {
             throw new Exception("settings: CONF_SERVER_ZOO_ACTION cannot find");
         }
         LOGGER.debug("SERVER CONF_SERVER_ZOO_ACTION: " + DisClientSysConfig.getInstance().CONF_SERVER_ZOO_ACTION);
-
-        // CONF_SERVER_MASTER_NUM_ACTION
-        if (StringUtils.isEmpty(DisClientSysConfig.getInstance().CONF_SERVER_MASTER_NUM_ACTION)) {
-
-            throw new Exception("settings: CONF_SERVER_MASTER_NUM_ACTION  cannot find");
-        }
-        LOGGER.debug("SERVER CONF_SERVER_MASTER_NUM_ACTION Action URL: " +
-                DisClientSysConfig.getInstance().CONF_SERVER_MASTER_NUM_ACTION);
-
-        //
-        // 本地相关
-        //
-
-        if (StringUtils.isEmpty(DisClientSysConfig.getInstance().LOCAL_DOWNLOAD_DIR)) {
-            throw new Exception("settings: LOCAL_TMP_DIR cannot find");
-        }
-
-        // LOCAL_DOWNLOAD_DIR
-        LOGGER.debug("SERVER LOCAL_DOWNLOAD_DIR: " + DisClientSysConfig.getInstance().LOCAL_DOWNLOAD_DIR);
-        OsUtil.makeDirs(DisClientSysConfig.getInstance().LOCAL_DOWNLOAD_DIR);
     }
 
 }

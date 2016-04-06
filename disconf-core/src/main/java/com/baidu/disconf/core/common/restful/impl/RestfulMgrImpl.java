@@ -12,7 +12,6 @@ import com.baidu.disconf.core.common.restful.core.UnreliableInterface;
 import com.baidu.disconf.core.common.restful.retry.RetryStrategy;
 import com.baidu.disconf.core.common.restful.type.FetchConfFile;
 import com.baidu.disconf.core.common.restful.type.RestfulGet;
-import com.baidu.disconf.core.common.utils.ClassLoaderUtil;
 import com.baidu.disconf.core.common.utils.MyStringUtils;
 import com.baidu.disconf.core.common.utils.OsUtil;
 import com.baidu.disconf.core.common.utils.http.HttpClientUtil;
@@ -79,7 +78,6 @@ public class RestfulMgrImpl implements RestfulMgr {
      * @param remoteUrl          远程地址
      * @param fileName           文件名
      * @param localFileDir       本地文件地址
-     * @param copy2TargetDirPath 下载完后，还需要复制到此文件夹下
      * @param retryTimes
      * @param retrySleepSeconds
      *
@@ -88,8 +86,7 @@ public class RestfulMgrImpl implements RestfulMgr {
      * @throws Exception
      */
     @Override
-    public String downloadFromServer(RemoteUrl remoteUrl, String fileName, String localFileDir, String localFileDirTemp,
-                                     String copy2TargetDirPath, boolean enableLocalDownloadDirInClassPath,
+    public String downloadFromServer(RemoteUrl remoteUrl, String fileName, String localFileDir,
                                      int retryTimes, int retrySleepSeconds)
             throws Exception {
 
@@ -99,25 +96,14 @@ public class RestfulMgrImpl implements RestfulMgr {
         //
         // 进行下载、mv、copy
         //
-
         try {
 
             // 可重试的下载
-            File tmpFilePathUniqueFile = retryDownload(localFileDirTemp, fileName, remoteUrl, retryTimes,
+            File tmpFilePathUniqueFile = retryDownload(OsUtil.pathJoin(localFileDir, "temp_download"), fileName, remoteUrl, retryTimes,
                     retrySleepSeconds);
 
             // 将 tmp file copy localFileDir
             localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, localFileDir, fileName, false);
-
-            // mv 到指定目录
-            if (copy2TargetDirPath != null) {
-
-                //
-                if (enableLocalDownloadDirInClassPath == true || !copy2TargetDirPath.equals(ClassLoaderUtil.getClassPath
-                        ())) {
-                    localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, copy2TargetDirPath, fileName, true);
-                }
-            }
 
             LOGGER.debug("Move to: " + localFile.getAbsolutePath());
 
@@ -126,29 +112,10 @@ public class RestfulMgrImpl implements RestfulMgr {
             LOGGER.warn("download file failed, using previous download file.", e);
         }
 
-        //
-        // 判断是否下载失败
-        //
-
-        if (!localFile.exists()) {
+        if (localFile == null || !localFile.exists()) {
             throw new Exception("target file cannot be found! " + fileName);
         }
 
-        //
-        // 下面为下载成功
-        //
-
-        // 返回相对路径
-        if (localFileDir != null) {
-            String relativePathString = OsUtil.getRelativePath(localFile, new File(localFileDir));
-            if (relativePathString != null) {
-                if (new File(relativePathString).isFile()) {
-                    return relativePathString;
-                }
-            }
-        }
-
-        // 否则, 返回全路径
         return localFile.getAbsolutePath();
     }
 
@@ -167,14 +134,12 @@ public class RestfulMgrImpl implements RestfulMgr {
      *
      * @throws Exception
      */
-    private File retryDownload(String localFileDirTemp, String fileName, RemoteUrl remoteUrl, int retryTimes, int
+    private File retryDownload(String tempDir, String fileName, RemoteUrl remoteUrl, int retryTimes, int
             retrySleepSeconds)
             throws Exception {
-
-        if (localFileDirTemp == null) {
-            localFileDirTemp = "./disconf/download";
-        }
-        String tmpFilePath = OsUtil.pathJoin(localFileDirTemp, fileName);
+        OsUtil.makeDirs(tempDir);
+            
+        String tmpFilePath = OsUtil.pathJoin(tempDir, fileName);
         String tmpFilePathUnique = MyStringUtils.getRandomName(tmpFilePath);
         File tmpFilePathUniqueFile = new File(tmpFilePathUnique);
         retry4ConfDownload(remoteUrl, tmpFilePathUniqueFile, retryTimes, retrySleepSeconds);
@@ -200,15 +165,10 @@ public class RestfulMgrImpl implements RestfulMgr {
         OsUtil.makeDirs(copy2TargetDirPath);
 
         File targetPath = new File(OsUtil.pathJoin(copy2TargetDirPath, fileName));
-        if (targetPath != null) {
-            // 从下载文件 复制/mv 到targetPath 原子性的做转移
-            OsUtil.transferFileAtom(srcFile, targetPath, isMove);
-            return targetPath;
-
-        } else {
-            LOGGER.warn("targetPath is null, cannot transfer " + fileName + " to targetPath");
-            return null;
-        }
+            
+        // 从下载文件 复制/mv 到targetPath 原子性的做转移
+        OsUtil.transferFileAtom(srcFile, targetPath, isMove);
+        return targetPath;
     }
 
     /**

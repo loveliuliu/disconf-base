@@ -19,36 +19,44 @@ public class FileTypeProcessorUtilsTestCase {
         try {
 
             Map<String, Object> map =
-                FileTypeProcessorUtils.getKvMap(SupportFileTypeEnum.PROPERTIES, "testProperties" + ".properties");
+                FileTypeProcessorUtils.getKvMap(SupportFileTypeEnum.PROPERTIES, getFilePath("testProperties.properties"));
 
             System.out.println(map.toString());
             Assert.assertEquals(map.get("staticvar2"), "100");
             Assert.assertEquals(map.get("staticvar"), "50");
 
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.assertTrue(false);
         }
 
         try {
 
-            Map<String, Object> map = FileTypeProcessorUtils.getKvMap(SupportFileTypeEnum.XML, "testXml.xml");
+            Map<String, Object> map = FileTypeProcessorUtils.getKvMap(SupportFileTypeEnum.XML, getFilePath("testXml.xml"));
 
             System.out.println(map.toString());
             Assert.assertEquals(0, map.keySet().size());
 
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.assertTrue(false);
         }
 
         try {
 
-            Map<String, Object> map = FileTypeProcessorUtils.getKvMap(SupportFileTypeEnum.ANY, "testJson.json");
+            Map<String, Object> map = FileTypeProcessorUtils.getKvMap(SupportFileTypeEnum.ANY, getFilePath("testJson.json"));
 
             System.out.println(map.toString());
             Assert.assertEquals(0, map.keySet().size());
 
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.assertTrue(false);
         }
+    }
+    
+    
+    public String getFilePath( String resource ) {
+        return FileTypeProcessorUtilsTestCase.class.getResource("/" + resource).getFile();
     }
 }

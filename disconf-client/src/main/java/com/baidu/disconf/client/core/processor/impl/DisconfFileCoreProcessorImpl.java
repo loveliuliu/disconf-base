@@ -1,5 +1,6 @@
 package com.baidu.disconf.client.core.processor.impl;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,9 +17,9 @@ import com.baidu.disconf.client.store.DisconfStoreProcessor;
 import com.baidu.disconf.client.store.DisconfStoreProcessorFactory;
 import com.baidu.disconf.client.store.processor.model.DisconfValue;
 import com.baidu.disconf.client.support.registry.Registry;
+import com.baidu.disconf.client.utils.ConfigLoaderUtils;
 import com.baidu.disconf.client.watch.WatchMgr;
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
-import com.baidu.disconf.core.common.utils.GsonUtils;
 
 /**
  * 配置文件处理器实现
@@ -61,7 +62,14 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
         for (String fileName : disconfStoreProcessor.getConfKeySet()) {
 
             processOneItem(fileName);
+
         }
+    }
+    
+    
+    public boolean existsLocalFile( String fileName ) {
+        DisconfCenterFile disconfCenterFile = (DisconfCenterFile) disconfStoreProcessor.getConfData(fileName);
+        return new File(disconfCenterFile.getFilePath()).exists();
     }
 
     @Override
@@ -77,6 +85,12 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
         } catch (Exception e) {
             LOGGER.error(e.toString(), e);
         }
+        
+        
+        if ( !existsLocalFile(key)) {
+            //本地无配置文件，不让程序启动
+            throw new RuntimeException("Not found config file in local: " + key);
+        }
     }
 
     /**
@@ -88,7 +102,7 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
             throw new Exception("cannot find disconfCenterFile " + fileName);
         }
 
-        String filePath = fileName;
+
         Map<String, Object> dataMap = new HashMap<String, Object>();
 
         //
@@ -102,19 +116,13 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
             try {
 
                 String url = disconfCenterFile.getRemoteServerUrl();
-                filePath = fetcherMgr.downloadFileFromServer(url, fileName, disconfCenterFile.getFileDir());
+                fetcherMgr.downloadFileFromServer(url, fileName, DisconfCenterFile.getFileDir());
 
             } catch (Exception e) {
-
                 //
                 // 下载失败了, 尝试使用本地的配置
                 //
-
-                LOGGER.error(e.toString(), e);
-                LOGGER.warn("using local properties in class path: " + fileName);
-
-                // change file path
-                filePath = fileName;
+                LOGGER.error("Failed to download {}, try to use local file", fileName, e);
             }
             LOGGER.debug("download ok.");
         }
@@ -123,13 +131,13 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
             dataMap = FileTypeProcessorUtils.getKvMap(disconfCenterFile.getSupportFileTypeEnum(),
                     disconfCenterFile.getFilePath());
         } catch (Exception e) {
-            LOGGER.error("cannot get kv data for " + filePath, e);
+            LOGGER.error("cannot get kv data for " + fileName, e);
         }
 
         //
         // 注入到仓库中
         //
-        disconfStoreProcessor.inject2Store(fileName, new DisconfValue(null, dataMap));
+        disconfStoreProcessor.inject2Store(fileName, new DisconfValue(dataMap));
         LOGGER.debug("inject ok.");
 
         //
@@ -142,7 +150,7 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
             DisConfCommonModel disConfCommonModel = disconfStoreProcessor.getCommonModel(fileName);
             if (watchMgr != null) {
                 watchMgr.watchPath(this, disConfCommonModel, fileName, DisConfigTypeEnum.FILE,
-                        GsonUtils.toJson(disconfCenterFile.getKV()));
+                        ConfigLoaderUtils.loadFile(disconfCenterFile.getFilePath()));
                 LOGGER.debug("watch ok.");
             } else {
                 LOGGER.warn("cannot monitor {} because watch mgr is null", fileName);

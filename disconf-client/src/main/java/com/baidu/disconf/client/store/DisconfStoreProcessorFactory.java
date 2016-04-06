@@ -1,7 +1,7 @@
 package com.baidu.disconf.client.store;
 
 import com.baidu.disconf.client.store.processor.impl.DisconfStoreFileProcessorImpl;
-import com.baidu.disconf.client.store.processor.impl.DisconfStoreItemProcessorImpl;
+
 
 /**
  * 仓库算子仓库
@@ -19,11 +19,4 @@ public class DisconfStoreProcessorFactory {
         return new DisconfStoreFileProcessorImpl();
     }
 
-    /**
-     * 获取配置项仓库算子
-     */
-    public static DisconfStoreProcessor getDisconfStoreItemProcessor() {
-
-        return new DisconfStoreItemProcessorImpl();
-    }
 }

@@ -1,13 +1,14 @@
 package com.baidu.disconf.client.utils;
 
+import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,8 @@ public final class ConfigLoaderUtils {
 
     protected static final Logger LOGGER = LoggerFactory
             .getLogger(ConfigLoaderUtils.class);
+    
+    public static final String WORK_DIR = System.getProperty("user.dir");
 
     private ConfigLoaderUtils() {
 
@@ -37,7 +40,7 @@ public final class ConfigLoaderUtils {
      * @author liaoqiqi
      * @date 2013-6-19
      */
-    private static Properties loadWithTomcatMode(final String propertyFilePath)
+    public static Properties loadWithTomcatMode(final String propertyFilePath)
             throws Exception {
 
         Properties props = new Properties();
@@ -59,54 +62,6 @@ public final class ConfigLoaderUtils {
         return props;
     }
 
-    /**
-     * @param propertyFilePath
-     *
-     * @return void
-     *
-     * @Description: 使用普通模式导入
-     * @author liaoqiqi
-     * @date 2013-6-19
-     */
-    private static Properties loadWithNormalMode(final String propertyFilePath)
-            throws Exception {
-
-        Properties props = new Properties();
-        props.load(new FileInputStream(propertyFilePath));
-        return props;
-    }
-
-    /**
-     * @param propertyFilePath
-     *
-     * @return Properties
-     *
-     * @throws Exception
-     * @Description: 配置文件载入器助手
-     * @author liaoqiqi
-     * @date 2013-6-19
-     */
-    public static Properties loadConfig(final String propertyFilePath)
-            throws Exception {
-
-        try {
-
-            // 用TOMCAT模式 来载入试试
-            return ConfigLoaderUtils.loadWithTomcatMode(propertyFilePath);
-
-        } catch (Exception e1) {
-
-            try {
-                // 用普通模式进行载入
-                return loadWithNormalMode(propertyFilePath);
-
-            } catch (Exception e2) {
-
-                throw new Exception("cannot load config file: "
-                        + propertyFilePath);
-            }
-        }
-    }
 
     /**
      * @param filePath
@@ -115,30 +70,24 @@ public final class ConfigLoaderUtils {
      *
      * @Description: 采用两种方式来载入文件
      * @author liaoqiqi
+     * @throws IOException 
      * @date 2013-6-20
      */
-    public static InputStream loadFile(String filePath) {
+    public static String loadFile(String filePath) throws IOException {
 
         InputStream in = null;
-
+        File f = null;
         try {
-
-            // 先用TOMCAT模式进行导入
-            in = ClassLoaderUtil.getLoader().getResourceAsStream(filePath);
-            if (in == null) {
-
-                // 使用普通模式导入
-                try {
-
-                    return new FileInputStream(filePath);
-
-                } catch (FileNotFoundException e) {
-                    return null;
-                }
+            if ( filePath.startsWith("/")) {
+                f = new File(filePath);
             } else {
-
-                return in;
+                f = new File(WORK_DIR, filePath );
             }
+            if (!f.exists()) {
+                return null;
+            }
+            in = new FileInputStream(f);
+            return IOUtils.toString(in, "UTF-8");
 
         } finally {
 
@@ -151,4 +100,33 @@ public final class ConfigLoaderUtils {
             }
         }
     }
+    
+    
+
+    /**
+     * Load from file system, not from class path
+     * @param propertyFilePath
+     * @return
+     * @throws Exception
+     */
+    public static Properties loadFromFileSystem(final String propertyFilePath)
+            throws Exception {
+
+        Properties props = new Properties();
+        if ( propertyFilePath.startsWith("/")) {
+            props.load(new FileInputStream(propertyFilePath));
+        } else {
+            File f = new File(WORK_DIR, propertyFilePath);
+            props.load(new FileInputStream(f));
+        }
+        return props;
+    }
+    
+    
+    public static void main(String[] args ) throws Exception {
+        System.out.println(ConfigLoaderUtils.loadFromFileSystem("/opt/config/disconf/application.properties"));
+        System.out.println(ConfigLoaderUtils.loadFromFileSystem("src/test/resources/disconf.properties"));
+    }
+    
+    
 }

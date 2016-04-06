@@ -8,7 +8,7 @@ package com.baidu.disconf.core.common.constants;
  */
 public enum DisConfigTypeEnum {
 
-    FILE(0, "配置文件"), ITEM(1, "配置项");
+    FILE(0, "配置文件");
 
     private int type = 0;
     private String modelName = null;

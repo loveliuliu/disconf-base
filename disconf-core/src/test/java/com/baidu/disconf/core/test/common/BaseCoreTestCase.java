@@ -48,18 +48,6 @@ public class BaseCoreTestCase {
     private static void setupRemoteData() {
 
         //
-        // 配置项
-        //
-        ValueVo valueVo = new ValueVo();
-        valueVo.setMessage("");
-        valueVo.setStatus(Constants.OK);
-        valueVo.setValue(RemoteMockServer.DEFAULT_ITEM_VALUE);
-        // System.out.println(GsonUtils.toJson(valueVo));
-        stubFor(get(urlEqualTo(RemoteMockServer.ITEM_URL))
-                .willReturn(aResponse().withHeader("Content-Type", RemoteMockServer.CONTENT_TYPE).withStatus(200)
-                        .withBody(GsonUtils.toJson(valueVo))));
-
-        //
         // 配置文件
         //
         stubFor(get(urlEqualTo(RemoteMockServer.FILE_URL))
@@ -75,7 +63,7 @@ public class BaseCoreTestCase {
                 .willReturn(aResponse().withHeader("Content-Type", "text/html;charset=UTF-8")
                         .withHeader("Content-Disposition",
                                 "attachment; filename=" + RemoteMockServer.EMPTY_FILE_URL)
-                        .withStatus(200).withBody(RemoteMockServer.FILE_CONTENT.getBytes())));
+                        .withStatus(200).withBody((byte[])null)));
 
         //
         // 静态 配置文件
@@ -109,7 +97,7 @@ public class BaseCoreTestCase {
         //
         // ZOO
         //
-        valueVo = new ValueVo();
+        ValueVo valueVo = new ValueVo();
         valueVo.setMessage("");
         valueVo.setStatus(Constants.OK);
         valueVo.setValue(RemoteMockServer.ZOO_HOSTS);
@@ -131,6 +119,5 @@ public class BaseCoreTestCase {
 
     @Test
     public void pass() {
-
     }
 }

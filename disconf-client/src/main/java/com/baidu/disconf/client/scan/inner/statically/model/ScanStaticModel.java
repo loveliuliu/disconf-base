@@ -27,9 +27,6 @@ public class ScanStaticModel {
     // 配置文件及其函数的MAP, KEY为配置文件类
     private Map<Class<?>, Set<Method>> disconfFileItemMap;
 
-    //
-    // 配置ITEM
-    private Set<Method> disconfItemMethodSet;
 
     //
     // 主从切换的回调函数类
@@ -69,13 +66,6 @@ public class ScanStaticModel {
         this.disconfFileItemMap = disconfFileItemMap;
     }
 
-    public Set<Method> getDisconfItemMethodSet() {
-        return disconfItemMethodSet;
-    }
-
-    public void setDisconfItemMethodSet(Set<Method> disconfItemMethodSet) {
-        this.disconfItemMethodSet = disconfItemMethodSet;
-    }
 
     public Set<Method> getDisconfFileItemMethodSet() {
         return disconfFileItemMethodSet;
@@ -124,7 +114,6 @@ public class ScanStaticModel {
                    ", disconfFileClassSet=" + disconfFileClassSet +
                    ", disconfFileItemMethodSet=" + disconfFileItemMethodSet +
                    ", disconfFileItemMap=" + disconfFileItemMap +
-                   ", disconfItemMethodSet=" + disconfItemMethodSet +
                    ", disconfActiveBackupServiceClassSet=" + disconfActiveBackupServiceClassSet +
                    ", disconfUpdateService=" + disconfUpdateService +
                    ", justHostFiles=" + justHostFiles +

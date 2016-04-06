@@ -25,12 +25,16 @@ import com.baidu.disconf.client.utils.StringUtil;
  * @version 2014-6-17
  */
 public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, PriorityOrdered, ApplicationContextAware {
+    
+    public final static String ENV_VAR_NAME_PROPERTIES_PATH = "disconfPropertiesPath";
 
     public final static String SCAN_SPLIT_TOKEN = ",";
 
     private ApplicationContext applicationContext;
 
     private String scanPackage = null;
+    
+    private String propertiesPath = null;
 
     public void destroy() {
 
@@ -39,6 +43,12 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
     public void setScanPackage(String scanPackage) {
         this.scanPackage = scanPackage;
+    }
+    
+    
+
+    public void setPropertiesPath(String propertiesPath) {
+        this.propertiesPath = propertiesPath;
     }
 
     @Override
@@ -72,7 +82,21 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
         // 进行扫描
         DisconfMgr.getInstance().setApplicationContext(applicationContext);
-        DisconfMgr.getInstance().firstScan(scanPackList);
+        
+        //disconf配置文件路径，环境变量优先 
+        if (System.getenv(ENV_VAR_NAME_PROPERTIES_PATH) != null ) {
+            propertiesPath = System.getenv(ENV_VAR_NAME_PROPERTIES_PATH);
+        }
+        if ( propertiesPath == null || propertiesPath.trim().isEmpty()) {
+            throw new RuntimeException("propertiesPath field not provided for " + this.getClass());
+        }
+        propertiesPath = propertiesPath.trim();
+        
+        try {
+            DisconfMgr.getInstance().firstScan(scanPackList, propertiesPath); 
+        } catch ( Exception e ) {
+            throw new RuntimeException("Disconf client init failure", e );
+        }
 
         // register java bean
         registerAspect(registry);

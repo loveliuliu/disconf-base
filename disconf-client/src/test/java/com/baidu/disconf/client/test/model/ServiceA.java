@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.baidu.disconf.client.common.annotations.DisconfItem;
 
 /**
  * 服务A，他使用的是 ConfA
@@ -34,13 +33,5 @@ public class ServiceA {
         return confA.getVarA2();
     }
 
-    @DisconfItem(key = ServiceA.keyA)
-    public int getVarAA() {
-        return varAA;
-    }
-
-    public void setVarAA(int varAA) {
-        this.varAA = varAA;
-    }
 
 }

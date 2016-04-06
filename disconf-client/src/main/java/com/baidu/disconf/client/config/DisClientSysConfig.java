@@ -22,7 +22,7 @@ public class DisClientSysConfig {
         return INSTANCE;
     }
 
-    protected static final String filename = "disconf_sys.properties";
+    protected static final String fileName = "disconf_sys.properties";
 
     private boolean isLoaded = false;
 
@@ -37,20 +37,13 @@ public class DisClientSysConfig {
     /**
      * load config normal
      */
-    public synchronized void loadConfig(String filePath) throws Exception {
+    public synchronized void loadConfig( ) throws Exception {
 
         if (isLoaded) {
             return;
         }
 
-        String filePathInternal = filename;
-
-        if (filePath != null) {
-
-            filePathInternal = filePath;
-        }
-
-        DisconfAutowareConfig.autowareConfig(INSTANCE, filePathInternal);
+        DisconfAutowareConfig.autowareConfigFromClassPath(INSTANCE, fileName);
 
         isLoaded = true;
     }
@@ -72,23 +65,5 @@ public class DisClientSysConfig {
      */
     @DisInnerConfigAnnotation(name = "disconf.conf_server_zoo_action")
     public String CONF_SERVER_ZOO_ACTION;
-
-    /**
-     * 获取远程主机个数的URL
-     *
-     * @author
-     * @since 1.0.0
-     */
-    @DisInnerConfigAnnotation(name = "disconf.conf_server_master_num_action")
-    public String CONF_SERVER_MASTER_NUM_ACTION;
-
-    /**
-     * 下载文件夹, 远程文件下载后会放在这里
-     *
-     * @author
-     * @since 1.0.0
-     */
-    @DisInnerConfigAnnotation(name = "disconf.local_download_dir")
-    public String LOCAL_DOWNLOAD_DIR;
 
 }

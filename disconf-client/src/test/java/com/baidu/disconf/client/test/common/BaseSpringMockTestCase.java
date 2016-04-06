@@ -7,14 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.baidu.disconf.client.config.ConfigMgr;
-import com.baidu.disconf.client.config.DisClientConfig;
-import com.baidu.disconf.client.config.DisClientSysConfig;
-import com.baidu.disconf.client.test.utils.NetUtils;
-import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
-import com.baidu.disconf.core.test.common.BaseCoreTestCase;
-
-import junit.framework.Assert;
 
 /**
  * Spring的测试方法 + WireMock 方法
@@ -23,7 +15,7 @@ import junit.framework.Assert;
  * @version 2014-6-11
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:applicationContext.xml")
+@ContextConfiguration(locations = {"/applicationContext.xml"})
 public class BaseSpringMockTestCase extends BaseCoreTestCase {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(BaseSpringTestCase.class);
@@ -33,29 +25,9 @@ public class BaseSpringMockTestCase extends BaseCoreTestCase {
 
     }
 
-    /**
-     * @return
-     */
-    @Deprecated
-    protected boolean checkNetWork() {
-
-        //
-        // 如果网络不通则认为测试通过
-        //
-        try {
-            ConfigMgr.init();
-        } catch (Exception e) {
-            Assert.assertTrue(false);
-        }
-
-        if (!NetUtils.pingUrl(DisClientConfig.getInstance().getHostList().get(0) + DisconfWebPathMgr
-                .getZooHostsUrl
-                        (DisClientSysConfig
-                                .getInstance().CONF_SERVER_ZOO_ACTION))) {
-            return false;
-        }
-
-        return true;
+    
+    public static void main( String[] args ) {
+        System.out.println(BaseSpringMockTestCase.class.getResource("/applicationContext.xml"));
     }
 
 }

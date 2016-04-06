@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
-import com.baidu.disconf.client.common.annotations.DisconfItem;
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 
 /**
@@ -33,10 +32,7 @@ public class MethodUtils {
             // 根据用户设定的注解来获取
             fieldName = disconfFileItem.associateField();
         } else {
-            DisconfItem disItem = method.getAnnotation(DisconfItem.class);
-
-            // 根据用户设定的注解来获取
-            fieldName = disItem.associateField();
+            throw new RuntimeException("Unknown disconfType:" + disConfigTypeEnum);
         }
 
         //

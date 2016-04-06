@@ -52,19 +52,21 @@ public class DisconfMgr implements ApplicationContextAware {
     }
 
     /**
-     * 总入口
+     * @throws Exception 
+     * 
      */
-    public synchronized void start(List<String> scanPackageList) {
+    public synchronized void start(List<String> scanPackageList, String propertiesPath ) throws Exception {
 
-        firstScan(scanPackageList);
+        firstScan(scanPackageList, propertiesPath);
 
         secondScan();
     }
 
     /**
      * 第一次扫描，静态扫描 for annotation config
+     * @throws Exception 
      */
-    protected synchronized void firstScan(List<String> scanPackageList) {
+    protected synchronized void firstScan(List<String> scanPackageList, String propertiesPath ) throws Exception {
 
         // 该函数不能调用两次
         if (isFirstInit) {
@@ -76,35 +78,29 @@ public class DisconfMgr implements ApplicationContextAware {
         //
         //
 
-        try {
 
-            // 导入配置
-            ConfigMgr.init();
+        // 导入配置
+        ConfigMgr.init( propertiesPath );
 
-            LOGGER.info("******************************* DISCONF START FIRST SCAN *******************************");
+        LOGGER.info("******************************* DISCONF START FIRST SCAN *******************************");
 
-            // registry
-            Registry registry = RegistryFactory.getSpringRegistry(applicationContext);
+        // registry
+        Registry registry = RegistryFactory.getSpringRegistry(applicationContext);
 
-            // 扫描器
-            scanMgr = ScanFactory.getScanMgr(registry);
+        // 扫描器
+        scanMgr = ScanFactory.getScanMgr(registry);
 
-            // 第一次扫描并入库
-            scanMgr.firstScan(scanPackageList);
+        // 第一次扫描并入库
+        scanMgr.firstScan(scanPackageList);
 
-            // 获取数据/注入/Watch
-            disconfCoreMgr = DisconfCoreFactory.getDisconfCoreMgr(registry);
-            disconfCoreMgr.process();
+        // 获取数据/注入/Watch
+        disconfCoreMgr = DisconfCoreFactory.getDisconfCoreMgr(registry);
+        disconfCoreMgr.process();
 
-            //
-            isFirstInit = true;
+        //
+        isFirstInit = true;
 
-            LOGGER.info("******************************* DISCONF END FIRST SCAN *******************************");
-
-        } catch (Exception e) {
-
-            LOGGER.error(e.toString(), e);
-        }
+        LOGGER.info("******************************* DISCONF END FIRST SCAN *******************************");
     }
 
     /**
@@ -156,9 +152,6 @@ public class DisconfMgr implements ApplicationContextAware {
 
             //
             LOGGER.info("Conf File Map: {}", DisconfStoreProcessorFactory.getDisconfStoreFileProcessor()
-                    .confToString());
-            //
-            LOGGER.info("Conf Item Map: {}", DisconfStoreProcessorFactory.getDisconfStoreItemProcessor()
                     .confToString());
         }
         LOGGER.info("******************************* DISCONF END *******************************");

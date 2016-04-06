@@ -14,10 +14,11 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import com.baidu.disconf.client.DisconfMgr;
+import com.baidu.disconf.client.common.model.DisconfCenterFile;
 
 /**
  * A properties factory bean that creates a reconfigurable Properties object.
@@ -53,69 +54,29 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
     public void setLocations(List<String> fileNames) {
 
         List<Resource> resources = new ArrayList<Resource>();
-        for (String filename : fileNames) {
+        for (String fileName : fileNames) {
 
             // trim
-            filename = filename.trim();
-
-            String realFileName = getFileName(filename);
+            fileName = fileName.trim();
 
             //
             // register to disconf
             //
-            DisconfMgr.getInstance().reloadableScan(realFileName);
+            DisconfMgr.getInstance().reloadableScan(fileName);
 
             //
             // only properties will reload
             //
-            String ext = FilenameUtils.getExtension(filename);
+            String ext = FilenameUtils.getExtension(fileName);
             if (ext.equals("properties")) {
-
-                PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver =
-                        new PathMatchingResourcePatternResolver();
-                try {
-                    Resource[] resourceList = pathMatchingResourcePatternResolver.getResources(filename);
-                    for (Resource resource : resourceList) {
-                        resources.add(resource);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Resource resource = new FileSystemResource(DisconfCenterFile.getFilePath(fileName));
+                resources.add(resource);
             }
         }
 
         this.locations = resources.toArray(new Resource[resources.size()]);
         lastModified = new long[locations.length];
         super.setLocations(locations);
-    }
-
-    /**
-     * get file name from resource
-     *
-     * @param fileName
-     *
-     * @return
-     */
-    private String getFileName(String fileName) {
-
-        if (fileName != null) {
-            int index = fileName.indexOf(':');
-            if (index < 0) {
-                return fileName;
-            } else {
-
-                fileName = fileName.substring(index + 1);
-
-                index = fileName.lastIndexOf('/');
-                if (index < 0) {
-                    return fileName;
-                } else {
-                    return fileName.substring(index + 1);
-                }
-
-            }
-        }
-        return null;
     }
 
     protected Resource[] getLocations() {
