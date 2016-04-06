@@ -41,11 +41,6 @@
                 <value>classpath*:config/jdbc-mysql.properties</value>
                 <value>classpath*:config/application.properties</value>
                 <value>classpath*:config/zoo.properties</value>
-                
-                <value>file:/opt/config/disconf/jdbc-mysql.properties</value>
-                <value>file:/opt/config/disconf/application.properties</value>
-                <value>file:/opt/config/disconf/zoo.properties</value>
-                
             </list>
         </property>
     </bean>
