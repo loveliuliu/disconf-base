@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.baidu.disconf.client.fetcher.FetcherMgr;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
@@ -90,10 +89,12 @@ public class FetcherMgrImpl implements FetcherMgr {
         RemoteUrl remoteUrl = new RemoteUrl(url, hostList);
 
         // 下载
-        return restfulMgr
+        String localFile = restfulMgr
                 .downloadFromServer(remoteUrl, fileName, localDir, 
                         retryTime,
                         retrySleepSeconds);
+        
+        return localFile;
 
     }
 

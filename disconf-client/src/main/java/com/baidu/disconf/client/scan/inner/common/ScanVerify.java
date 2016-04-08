@@ -43,7 +43,7 @@ public class ScanVerify {
      */
     public static boolean isDisconfFileTypeRight(DisconfFile disconfFile) {
 
-        String fileName = disconfFile.filename();
+        String fileName = disconfFile.fileName();
 
         SupportFileTypeEnum supportFileTypeEnum = SupportFileTypeEnum.getByFileName(fileName);
 

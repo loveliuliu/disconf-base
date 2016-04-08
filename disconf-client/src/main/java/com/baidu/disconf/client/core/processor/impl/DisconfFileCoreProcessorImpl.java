@@ -1,6 +1,5 @@
 package com.baidu.disconf.client.core.processor.impl;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,10 +50,11 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
     }
 
     /**
+     * @throws Exception 
      *
      */
     @Override
-    public void processAllItems() {
+    public void processAllItems() throws Exception {
 
         /**
          * 配置文件列表处理
@@ -66,42 +66,24 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
         }
     }
     
-    
-    public boolean existsLocalFile( String fileName ) {
-        DisconfCenterFile disconfCenterFile = (DisconfCenterFile) disconfStoreProcessor.getConfData(fileName);
-        return new File(disconfCenterFile.getFilePath()).exists();
-    }
 
     @Override
-    public void processOneItem(String key) {
+    public void processOneItem(String key) throws Exception {
 
         LOGGER.debug("==============\tstart to process disconf file: " + key +
                 "\t=============================");
 
         DisconfCenterFile disconfCenterFile = (DisconfCenterFile) disconfStoreProcessor.getConfData(key);
 
-        try {
-            updateOneConfFile(key, disconfCenterFile);
-        } catch (Exception e) {
-            LOGGER.error(e.toString(), e);
-        }
-        
-        
-        if ( !existsLocalFile(key)) {
-            //本地无配置文件，不让程序启动
-            throw new RuntimeException("Not found config file in local: " + key);
-        }
+        updateOneConfFile(key, disconfCenterFile, true);
+
     }
 
     /**
      * 更新 一個配置文件, 下载、注入到仓库、Watch 三步骤
      */
-    private void updateOneConfFile(String fileName, DisconfCenterFile disconfCenterFile) throws Exception {
-
-        if (disconfCenterFile == null) {
-            throw new Exception("cannot find disconfCenterFile " + fileName);
-        }
-
+    private void updateOneConfFile(String fileName, DisconfCenterFile disconfCenterFile,
+            boolean isInStartup) throws Exception {
 
         Map<String, Object> dataMap = new HashMap<String, Object>();
 
@@ -113,31 +95,22 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
             //
             // 下载配置
             //
-            try {
 
-                String url = disconfCenterFile.getRemoteServerUrl();
-                fetcherMgr.downloadFileFromServer(url, fileName, DisconfCenterFile.getFileDir());
-
-            } catch (Exception e) {
-                //
-                // 下载失败了, 尝试使用本地的配置
-                //
-                LOGGER.error("Failed to download {}, try to use local file", fileName, e);
-            }
-            LOGGER.debug("download ok.");
+            String url = disconfCenterFile.getRemoteServerUrl();
+            fetcherMgr.downloadFileFromServer(url, fileName, DisconfCenterFile.getFileDir());
         }
 
         try {
             dataMap = FileTypeProcessorUtils.getKvMap(disconfCenterFile.getSupportFileTypeEnum(),
                     disconfCenterFile.getFilePath());
         } catch (Exception e) {
-            LOGGER.error("cannot get kv data for " + fileName, e);
+            throw new Exception("cannot get kv data for " + fileName, e);
         }
 
         //
         // 注入到仓库中
         //
-        disconfStoreProcessor.inject2Store(fileName, new DisconfValue(dataMap));
+        disconfStoreProcessor.inject2Store(fileName, new DisconfValue(dataMap), isInStartup);
         LOGGER.debug("inject ok.");
 
         //
@@ -147,13 +120,17 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
             //
             // Watch
             //
-            DisConfCommonModel disConfCommonModel = disconfStoreProcessor.getCommonModel(fileName);
-            if (watchMgr != null) {
-                watchMgr.watchPath(this, disConfCommonModel, fileName, DisConfigTypeEnum.FILE,
-                        ConfigLoaderUtils.loadFile(disconfCenterFile.getFilePath()));
-                LOGGER.debug("watch ok.");
-            } else {
-                LOGGER.warn("cannot monitor {} because watch mgr is null", fileName);
+            try {
+                DisConfCommonModel disConfCommonModel = disconfStoreProcessor.getCommonModel(fileName);
+                if (watchMgr != null) {
+                    watchMgr.watchPath(this, disConfCommonModel, fileName, DisConfigTypeEnum.FILE,
+                            ConfigLoaderUtils.loadFile(disconfCenterFile.getFilePath()));
+                    LOGGER.debug("watch ok.");
+                } else {
+                    LOGGER.warn("cannot monitor {} because watch mgr is null", fileName);
+                }
+            } catch (Throwable t) {
+                LOGGER.error("register file to zookeeper failue:" + fileName, t);
             }
         }
     }
@@ -181,52 +158,37 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
         if (disconfCenterFile != null) {
 
             // 更新仓库
-            updateOneConfFile(fileName, disconfCenterFile);
+            updateOneConfFile(fileName, disconfCenterFile, false);
 
             // 更新实例
-            inject2OneConf(fileName, disconfCenterFile);
+            inject2OneConf(fileName, disconfCenterFile, false);
         }
     }
 
     /**
      * 为某个配置文件进行注入实例中
+     * @throws Exception 
      */
-    private void inject2OneConf(String fileName, DisconfCenterFile disconfCenterFile) {
+    private void inject2OneConf(String fileName, DisconfCenterFile disconfCenterFile, boolean isInStartup) throws Exception {
 
         if (disconfCenterFile == null) {
             return;
         }
 
-        try {
+        Object object;
 
-            //
-            // 获取实例
-            //
-
-            Object object;
-            try {
-
-                object = disconfCenterFile.getObject();
-                if (object == null) {
-                    object = registry.getFirstByType(disconfCenterFile.getCls(), true);
-                }
-
-            } catch (Exception e) {
-
-                LOGGER.error(e.toString());
-                object = null;
-            }
-
-            // 注入实体中
-            disconfStoreProcessor.inject2Instance(object, fileName);
-
-        } catch (Exception e) {
-            LOGGER.warn(e.toString(), e);
+        object = disconfCenterFile.getObject();
+        if (object == null) {
+            object = registry.getFirstByType(disconfCenterFile.getCls(), true);
         }
+
+        // 注入实体中
+        disconfStoreProcessor.inject2Instance(object, fileName, isInStartup);
+
     }
 
     @Override
-    public void inject2Conf() {
+    public void inject2Conf() throws Exception {
 
         /**
          * 配置文件列表处理
@@ -238,7 +200,7 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
 
             DisconfCenterFile disconfCenterFile = (DisconfCenterFile) disconfStoreProcessor.getConfData(key);
 
-            inject2OneConf(key, disconfCenterFile);
+            inject2OneConf(key, disconfCenterFile, true);
         }
     }
 }

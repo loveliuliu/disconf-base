@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
 import com.baidu.disconf.client.config.inner.DisInnerConfigAnnotation;
@@ -100,10 +101,11 @@ public final class DisconfAutowareConfig {
     }
     
     
-    public static void autowareConfigFromFileSystem(final Object obj, final String propertyFilePath ) throws Exception {
+    public static void autowareConfigFromFileSystem(final Object obj, Resource propertiesLocation ) throws Exception {
 
         // 读配置文件
-        Properties prop = ConfigLoaderUtils.loadFromFileSystem(propertyFilePath);
+        Properties prop = new Properties();
+        prop.load(propertiesLocation.getInputStream());
  
         autowareConfig(obj, prop);
     }

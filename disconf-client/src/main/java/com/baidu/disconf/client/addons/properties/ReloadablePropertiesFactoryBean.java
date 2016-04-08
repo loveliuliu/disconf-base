@@ -62,7 +62,11 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
             //
             // register to disconf
             //
-            DisconfMgr.getInstance().reloadableScan(fileName);
+            try {
+                DisconfMgr.getInstance().reloadableScan(fileName);
+            } catch (Throwable t ) {
+                throw new RuntimeException("Failed to load config in DisConf NonAnnotation Mode:" + fileName, t);
+            }
 
             //
             // only properties will reload

@@ -11,22 +11,64 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         ">
 
-    <context:component-scan base-package="com.baidu"/>
+    <context:component-scan base-package="com.baidu.disconf.client.test.integration"/>
 
-	<!--  
-    <aop:aspectj-autoproxy proxy-target-class="true"/>
-    -->
 
     <!-- 使用disconf必须添加以下配置 -->
     <bean id="disconfMgrBean" class="com.baidu.disconf.client.DisconfMgrBean"
           destroy-method="destroy" >
         <property name="scanPackage" value="com.baidu.disconf.client.test.integration"/>
         
-        <!-- not existent propertiesPath -->
-        <property name="propertiesPath" value="tttt"/>
+        <property name="propertiesLocation" value="/integration/disconf.properties"/>
+
     </bean>
     <bean id="disconfMgrBean2" class="com.baidu.disconf.client.DisconfMgrBeanSecond"
           init-method="init" destroy-method="destroy">
     </bean>
+    
+    
+    <!-- 使用托管方式的disconf配置(无代码侵入, 配置更改会自动reload)-->
+    <bean id="configproperties_disconf"
+          class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>nonAnotation1.properties</value>
+            </list>
+        </property>
+    </bean>
 
+
+    <bean id="propertyConfigurer"
+          class="com.baidu.disconf.client.addons.properties.ReloadingPropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="configproperties_disconf"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean class="com.baidu.disconf.client.test.integration.NonAnotationConfig1">
+    	<property name="config1" value="${config1}"></property>
+    	<property name="config2" value="${config2}"></property>
+    	<property name="config3" value="${config3}"></property>
+    </bean>
+    
+    
+    <bean id="configproperties_disconf2"
+          class="com.baidu.disconf.client.addons.properties.ReloadablePropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>nonAnotation2.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="propertyConfigurer2"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="configproperties_disconf2"/>
+            </list>
+        </property>
+	</bean>
 </beans>

@@ -81,8 +81,11 @@ public class DisInnerConfigHelper {
         
         
         if (StringUtils.isEmpty(DisClientConfig.getInstance().userDefineDownloadDir)) {
-
-            throw new Exception("settings: " + "user_define_download_dir " + "  cannot find");
+            //默认的配置文件下载目录
+            DisClientConfig.getInstance().userDefineDownloadDir = "/opt/config/" 
+                    + DisClientConfig.getInstance().APP + "/" 
+                    + DisClientConfig.getInstance().ENV + "/"
+                    + DisClientConfig.getInstance().VERSION;
         }
         LOGGER.info("SERVER " + "user_define_download_dir" + ": " + DisClientConfig.getInstance().userDefineDownloadDir);
         OsUtil.makeDirs(DisClientConfig.getInstance().userDefineDownloadDir);

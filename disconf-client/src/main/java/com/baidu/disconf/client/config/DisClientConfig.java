@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.config.inner.DisInnerConfigAnnotation;
 import com.baidu.disconf.client.support.DisconfAutowareConfig;
@@ -43,13 +44,13 @@ public final class DisClientConfig {
      *
      * @throws Exception
      */
-    public synchronized void loadConfig(String filePath) throws Exception {
+    public synchronized void loadConfig(Resource propertiesLocation) throws Exception {
 
         if (isLoaded) {
             return;
         }
 
-        DisconfAutowareConfig.autowareConfigFromFileSystem(INSTANCE, filePath);
+        DisconfAutowareConfig.autowareConfigFromFileSystem(INSTANCE, propertiesLocation);
 
         isLoaded = true;
     }
@@ -58,7 +59,7 @@ public final class DisClientConfig {
      * 配置文件服务器 HOST
      */
     public static final String CONF_SERVER_HOST_NAME = "disconf.conf_server_host";
-    @DisInnerConfigAnnotation(name = DisClientConfig.CONF_SERVER_HOST_NAME)
+    @DisInnerConfigAnnotation(name = DisClientConfig.CONF_SERVER_HOST_NAME, defaultValue="disconf.iapi.ymatou.com")
     public String CONF_SERVER_HOST;
 
     private List<String> hostList;
@@ -80,7 +81,7 @@ public final class DisClientConfig {
      * @since 1.0.0
      */
     public static final String VERSION_NAME = "disconf.version";
-    @DisInnerConfigAnnotation(name = DisClientConfig.VERSION_NAME, defaultValue = Constants.DEFAULT_VERSION)
+    @DisInnerConfigAnnotation(name = DisClientConfig.VERSION_NAME)
     public String VERSION = Constants.DEFAULT_VERSION;
 
 
@@ -91,7 +92,7 @@ public final class DisClientConfig {
      * @since 1.0.0
      */
     public static final String ENV_NAME = "disconf.env";
-    @DisInnerConfigAnnotation(name = DisClientConfig.ENV_NAME, defaultValue = Constants.DEFAULT_ENV)
+    @DisInnerConfigAnnotation(name = DisClientConfig.ENV_NAME)
     public String ENV = Constants.DEFAULT_ENV;
 
     /**
@@ -101,8 +102,8 @@ public final class DisClientConfig {
      * @since 1.0.0
      */
     private static final String ENABLE_REMOTE_CONF_NAME = "disconf.enable.remote.conf";
-    @DisInnerConfigAnnotation(name = DisClientConfig.ENABLE_REMOTE_CONF_NAME, defaultValue = "false")
-    public boolean ENABLE_DISCONF = false;
+    @DisInnerConfigAnnotation(name = DisClientConfig.ENABLE_REMOTE_CONF_NAME, defaultValue = "true")
+    public boolean ENABLE_DISCONF = true;
 
     /**
      * 是否开启DEBUG模式: 默认不开启，
@@ -136,7 +137,7 @@ public final class DisClientConfig {
 
 
     /**
-     * 获取远程配置 重试时休眠时间，默认是5秒
+     * 获取远程配置 重试时休眠时间，默认是2秒
      *
      * @author
      * @since 1.0.0

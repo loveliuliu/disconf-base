@@ -103,17 +103,17 @@ public class RestfulMgrImpl implements RestfulMgr {
                     retrySleepSeconds);
 
             // 将 tmp file copy localFileDir
-            localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, localFileDir, fileName, false);
+            localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, localFileDir, fileName, true);
 
             LOGGER.debug("Move to: " + localFile.getAbsolutePath());
 
         } catch (Exception e) {
 
-            LOGGER.warn("download file failed, using previous download file.", e);
+            LOGGER.error("download file failed, using previous download file.", e);
         }
 
         if (localFile == null || !localFile.exists()) {
-            throw new Exception("target file cannot be found! " + fileName);
+            throw new Exception("Faied to download and not local file existence: " + fileName);
         }
 
         return localFile.getAbsolutePath();

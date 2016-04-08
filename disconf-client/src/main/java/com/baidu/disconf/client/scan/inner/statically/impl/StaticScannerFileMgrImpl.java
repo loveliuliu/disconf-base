@@ -94,11 +94,11 @@ public class StaticScannerFileMgrImpl extends StaticScannerMgrImplBase implement
 
         //
         // file name
-        disconfCenterFile.setFileName(disconfFileAnnotation.filename());
+        disconfCenterFile.setFileName(disconfFileAnnotation.fileName());
 
 
         // file type
-        disconfCenterFile.setSupportFileTypeEnum(SupportFileTypeEnum.getByFileName(disconfFileAnnotation.filename()));
+        disconfCenterFile.setSupportFileTypeEnum(SupportFileTypeEnum.getByFileName(disconfFileAnnotation.fileName()));
 
         //
         // disConfCommonModel

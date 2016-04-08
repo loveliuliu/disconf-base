@@ -2,6 +2,7 @@ package com.baidu.disconf.client.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.config.inner.DisClientComConfig;
 import com.baidu.disconf.client.config.inner.DisInnerConfigHelper;
@@ -23,7 +24,7 @@ public class ConfigMgr {
      *
      * @throws Exception
      */
-    public synchronized static void init(String propertiesPath ) throws Exception {
+    public synchronized static void init(Resource propertiesLocation ) throws Exception {
 
         LOGGER.info("--------------- LOAD CONFIG START ---------------");
 
@@ -37,7 +38,7 @@ public class ConfigMgr {
         DisInnerConfigHelper.verifySysConfig();
 
         // 导入用户配置
-        DisClientConfig.getInstance().loadConfig(propertiesPath);
+        DisClientConfig.getInstance().loadConfig(propertiesLocation);
 
         // 校验 用户配置
         DisInnerConfigHelper.verifyUserConfig();

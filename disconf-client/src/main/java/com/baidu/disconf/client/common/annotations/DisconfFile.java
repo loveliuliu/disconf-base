@@ -20,5 +20,5 @@ public @interface DisconfFile {
     /**
      * 配置文件名,必须指定
      */
-    String filename();
+    String fileName();
 }

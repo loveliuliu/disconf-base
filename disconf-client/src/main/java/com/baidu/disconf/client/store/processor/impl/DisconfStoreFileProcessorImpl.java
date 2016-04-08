@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.baidu.disconf.client.addons.properties.ReloadConfigurationMonitor;
 import com.baidu.disconf.client.common.constants.SupportFileTypeEnum;
 import com.baidu.disconf.client.common.model.DisConfCommonModel;
@@ -94,7 +93,7 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
      *
      */
     @Override
-    public void inject2Instance(Object object, String fileName) {
+    public void inject2Instance(Object object, String fileName, boolean isInStartup) {
 
         DisconfCenterFile disconfCenterFile = getInstance().getConfFileMap().get(fileName);
 
@@ -159,6 +158,9 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
 
             } catch (Exception e) {
                 LOGGER.error("inject2Instance fileName " + fileName + " " + e.toString(), e);
+                if ( isInStartup) {
+                    throw new RuntimeException("Inject2Instance failure. file:" + fileName + " fileItem:" + fileItem);
+                }
             }
         }
     }
@@ -189,7 +191,7 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
      *
      */
     @Override
-    public void inject2Store(String fileName, DisconfValue disconfValue) {
+    public void inject2Store(String fileName, DisconfValue disconfValue, boolean isInStartup) throws Exception {
 
         DisconfCenterFile disconfCenterFile = getInstance().getConfFileMap().get(fileName);
 
@@ -229,7 +231,9 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
                     }
 
                 } catch (Exception e) {
-                    LOGGER.error("inject2Store filename: " + fileName + " " + e.toString(), e);
+                    if (isInStartup) {
+                        throw new Exception("inject2Store failure filename: " + fileName + " fileItem:" + fileItem, e);
+                    }
                 }
             }
         } else {

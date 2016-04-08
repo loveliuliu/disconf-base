@@ -153,10 +153,10 @@ public final class OsUtil {
         File lockFile = new File(dest + ".lock");
         FileOutputStream outStream = null;
         FileLock lock = null;
-
+        FileChannel channel = null;
         try {
             outStream = new FileOutputStream(lockFile);
-            FileChannel channel = outStream.getChannel();
+            channel = outStream.getChannel();
             try {
 
                 int tryTime = 0;
@@ -195,31 +195,36 @@ public final class OsUtil {
                     try {
                         Thread.sleep(1000 * tryTime);
                     } catch (Exception e) {
-                        System.out.print("");
+                        
                     }
                 }
-
             } catch (IOException e) {
-                logger.warn(e.toString());
+                logger.warn(e.toString(), e);
             }
 
         } catch (FileNotFoundException e) {
-            logger.warn(e.toString());
+            logger.warn(e.toString(), e);
 
         } finally {
-
-            if (null != lock) {
-                try {
+            try {
+                if (lock != null ) {
                     lock.release();
-                } catch (IOException e) {
-                    logger.warn(e.toString());
                 }
+                if (channel != null ) {
+                    channel.close();
+                }
+                if (outStream != null ) {
+                    outStream.close();
+                }
+                lockFile.delete();
+            } catch (Exception e ) {
+                logger.warn(e.toString(), e );
             }
             if (outStream != null) {
                 try {
                     outStream.close();
                 } catch (IOException e) {
-                    logger.warn(e.toString());
+                    logger.warn(e.toString(), e);
                 }
             }
         }

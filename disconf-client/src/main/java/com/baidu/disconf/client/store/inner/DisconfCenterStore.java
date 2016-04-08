@@ -61,7 +61,7 @@ public class DisconfCenterStore {
 
         if (confFileMap.containsKey(fileName)) {
 
-            LOGGER.error("There are two same fileName!!!! " + "first: " + confFileMap.get(fileName).toString() +
+            throw new RuntimeException("There are two same configure fileName " + "first: " + confFileMap.get(fileName).toString() +
                              ", Second: " + disconfCenterFile.toString());
         } else {
             confFileMap.put(fileName, disconfCenterFile);

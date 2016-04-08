@@ -108,7 +108,7 @@ public class ScanDynamicStoreAdapter {
                 continue;
             }
 
-            DisconfKey disconfKey = new DisconfKey(DisConfigTypeEnum.FILE, disconfFile.filename());
+            DisconfKey disconfKey = new DisconfKey(DisConfigTypeEnum.FILE, disconfFile.fileName());
             addOne2InverseMap(disconfKey, inverseMap, iDisconfUpdate);
         }
 
@@ -195,7 +195,7 @@ public class ScanDynamicStoreAdapter {
                 for (IDisconfUpdate serClass : disconfUpdateServiceInverseIndexMap.get(disconfKey)) {
                     sb.append(serClass.toString() + "\t");
                 }
-                LOGGER.error(sb.toString());
+                throw new RuntimeException( sb.toString());
             }
         }
     }

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.utils.GsonUtils;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 
 /**
@@ -25,7 +26,8 @@ public class BaseCoreTestCase {
 
     @ClassRule
     @Rule
-    public static WireMockClassRule wireMockRule = new WireMockClassRule(RemoteMockServer.PORT);
+    public static WireMockClassRule wireMockRule = new WireMockClassRule(9289);
+
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(BaseCoreTestCase.class);
 
@@ -92,6 +94,42 @@ public class BaseCoreTestCase {
                                 "attachment; filename=" + RemoteMockServer.NON_ANOTATION_FILE_NAME2)
                         .withStatus(200)
                         .withBody(RemoteMockServer.NON_ANOTATTION_FILE_CONTENT2.getBytes())));
+        
+        stubFor(get(urlEqualTo(RemoteMockServer.INTG_TEST_FILE_APP_URL))
+                .willReturn(aResponse().withHeader("Content-Type", "text/html;charset=UTF-8")
+                        .withHeader("Content-Disposition",
+                                "attachment; filename=" + RemoteMockServer.INTG_TEST_FILE_APP_NAME)
+                        .withStatus(200)
+                        .withBody(RemoteMockServer.INTG_TEST_FILE_APP_CONTENT.getBytes())));
+        
+        stubFor(get(urlEqualTo(RemoteMockServer.INTG_TEST_FILE_NON_ANOTATION1_URL))
+                .willReturn(aResponse().withHeader("Content-Type", "text/html;charset=UTF-8")
+                        .withHeader("Content-Disposition",
+                                "attachment; filename=" + RemoteMockServer.INTG_TEST_FILE_NON_ANOTATION1_NAME)
+                        .withStatus(200)
+                        .withBody(RemoteMockServer.INTG_TEST_FILE_NON_ANOTATION1_CONTENT.getBytes())));
+        
+        
+        stubFor(get(urlEqualTo(RemoteMockServer.INTG_TEST_FILE_NON_ANOTATION2_URL))
+                .willReturn(aResponse().withHeader("Content-Type", "text/html;charset=UTF-8")
+                        .withHeader("Content-Disposition",
+                                "attachment; filename=" + RemoteMockServer.INTG_TEST_FILE_NON_ANOTATION2_NAME)
+                        .withStatus(200)
+                        .withBody(RemoteMockServer.INTG_TEST_FILE_NON_ANOTATION2_CONTENT.getBytes())));
+        
+        stubFor(get(urlEqualTo(RemoteMockServer.INTG_TEST_FILE_WRONG_CONFIG_URL))
+                .willReturn(aResponse().withHeader("Content-Type", "text/html;charset=UTF-8")
+                        .withHeader("Content-Disposition",
+                                "attachment; filename=" + RemoteMockServer.INTG_TEST_FILE_WRONG_CONFIG_NAME)
+                        .withStatus(200)
+                        .withBody(RemoteMockServer.INTG_TEST_FILE_WRONG_CONFIG_CONTENT.getBytes())));
+        
+        stubFor(get(urlEqualTo(RemoteMockServer.INTG_TEST_FILE_ANY_URL))
+                .willReturn(aResponse().withHeader("Content-Type", "text/html;charset=UTF-8")
+                        .withHeader("Content-Disposition",
+                                "attachment; filename=" + RemoteMockServer.INTG_TEST_FILE_ANY_NAME)
+                        .withStatus(200)
+                        .withBody(RemoteMockServer.INTG_TEST_FILE_ANY_CONTENT.getBytes())));
 
         //
         // ZOO

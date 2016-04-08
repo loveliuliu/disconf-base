@@ -1,12 +1,12 @@
 package com.baidu.disconf.client.test;
 
-import java.net.URL;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 
 import com.baidu.disconf.client.DisconfMgr;
 import com.baidu.disconf.client.DisconfMgrBean;
@@ -84,9 +84,9 @@ public class DisconfMgrTestCase extends BaseSpringMockTestCase {
             LOGGER.info("================ BEFORE DISCONF ==============================");
 
             
-            URL url = DisconfMgrTestCase.class.getResource("/disconf.properties");
+            
             DisconfMgr.getInstance().start(StringUtil.parseStringToStringList(ScanPackTestCase.SCAN_PACK_NAME,
-                    DisconfMgrBean.SCAN_SPLIT_TOKEN), url.getFile());
+                    DisconfMgrBean.SCAN_SPLIT_TOKEN), new ClassPathResource("disconf.properties"));
 
             //
             LOGGER.info(DisconfStoreProcessorFactory.getDisconfStoreFileProcessor().confToString());

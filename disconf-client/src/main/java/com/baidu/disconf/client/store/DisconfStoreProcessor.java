@@ -49,7 +49,7 @@ public interface DisconfStoreProcessor {
     /**
      * 将对象object中的数据注入配置中
      */
-    void inject2Instance(Object object, String keyName);
+    void inject2Instance(Object object, String keyName, boolean isInStartup) throws Exception;
 
     /**
      * 当是配置文件时，有两个参数<br/>
@@ -60,7 +60,7 @@ public interface DisconfStoreProcessor {
     /**
      * 将配置数据注入到仓库
      */
-    void inject2Store(String fileName, DisconfValue disconfValue);
+    void inject2Store(String fileName, DisconfValue disconfValue, boolean isInStartup) throws Exception;
 
     /**
      * 批量添加配置

@@ -79,7 +79,7 @@ public class ScanPrinterUtils {
 
             LOGGER.info(item.toString());
             DisconfFile disconfFile = item.getAnnotation(DisconfFile.class);
-            LOGGER.info("\tfile name: " + disconfFile.filename());
+            LOGGER.info("\tfile name: " + disconfFile.fileName());
         }
     }
 

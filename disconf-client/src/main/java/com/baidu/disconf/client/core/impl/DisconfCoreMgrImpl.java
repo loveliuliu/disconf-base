@@ -57,7 +57,7 @@ public class DisconfCoreMgrImpl implements DisconfCoreMgr {
      * <p/>
      * 更新 所有配置数据
      */
-    public void process() {
+    public void process() throws Exception {
 
         //
         // 处理
@@ -70,9 +70,10 @@ public class DisconfCoreMgrImpl implements DisconfCoreMgr {
 
     /**
      * 只处理某一个
+     * @throws Exception 
      */
     @Override
-    public void processFile(String fileName) {
+    public void processFile(String fileName) throws Exception {
 
         DisconfCoreProcessor disconfCoreProcessorFile =
                 DisconfCoreProcessorFactory.getDisconfCoreProcessorFile(watchMgr, fetcherMgr, registry);
@@ -82,8 +83,9 @@ public class DisconfCoreMgrImpl implements DisconfCoreMgr {
 
     /**
      * 特殊的，将仓库里的数据注入到 配置项、配置文件 的实体中
+     * @throws Exception 
      */
-    public void inject2DisconfInstance() {
+    public void inject2DisconfInstance() throws Exception {
 
         //
         // 处理

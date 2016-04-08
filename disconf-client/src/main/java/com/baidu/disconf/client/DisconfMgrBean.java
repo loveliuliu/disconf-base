@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.store.aspect.DisconfAspectJ;
 import com.baidu.disconf.client.store.inner.DisconfCenterHostFilesStore;
@@ -25,8 +26,6 @@ import com.baidu.disconf.client.utils.StringUtil;
  * @version 2014-6-17
  */
 public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, PriorityOrdered, ApplicationContextAware {
-    
-    public final static String ENV_VAR_NAME_PROPERTIES_PATH = "disconfPropertiesPath";
 
     public final static String SCAN_SPLIT_TOKEN = ",";
 
@@ -34,7 +33,7 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
     private String scanPackage = null;
     
-    private String propertiesPath = null;
+    private Resource propertiesLocation = null;
 
     public void destroy() {
 
@@ -47,8 +46,8 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
     
     
 
-    public void setPropertiesPath(String propertiesPath) {
-        this.propertiesPath = propertiesPath;
+    public void setPropertiesLocation(Resource propertiesLocation) {
+        this.propertiesLocation = propertiesLocation;
     }
 
     @Override
@@ -83,17 +82,17 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
         // 进行扫描
         DisconfMgr.getInstance().setApplicationContext(applicationContext);
         
-        //disconf配置文件路径，环境变量优先 
-        if (System.getenv(ENV_VAR_NAME_PROPERTIES_PATH) != null ) {
-            propertiesPath = System.getenv(ENV_VAR_NAME_PROPERTIES_PATH);
+        
+        if ( propertiesLocation == null ) {
+            //默认从classpath加载disconf.proerties
+            propertiesLocation = applicationContext.getResource("/disconf.properties");
         }
-        if ( propertiesPath == null || propertiesPath.trim().isEmpty()) {
-            throw new RuntimeException("propertiesPath field not provided for " + this.getClass());
+        if (!propertiesLocation.exists() ) {
+            throw new RuntimeException("Failed to load disconf properties from:" + propertiesLocation);
         }
-        propertiesPath = propertiesPath.trim();
         
         try {
-            DisconfMgr.getInstance().firstScan(scanPackList, propertiesPath); 
+            DisconfMgr.getInstance().firstScan(scanPackList, propertiesLocation); 
         } catch ( Exception e ) {
             throw new RuntimeException("Disconf client init failure", e );
         }

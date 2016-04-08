@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.config.ConfigMgr;
 import com.baidu.disconf.client.config.DisClientConfig;
@@ -55,9 +56,9 @@ public class DisconfMgr implements ApplicationContextAware {
      * @throws Exception 
      * 
      */
-    public synchronized void start(List<String> scanPackageList, String propertiesPath ) throws Exception {
+    public synchronized void start(List<String> scanPackageList, Resource propertiesLocation ) throws Exception {
 
-        firstScan(scanPackageList, propertiesPath);
+        firstScan(scanPackageList, propertiesLocation);
 
         secondScan();
     }
@@ -66,7 +67,7 @@ public class DisconfMgr implements ApplicationContextAware {
      * 第一次扫描，静态扫描 for annotation config
      * @throws Exception 
      */
-    protected synchronized void firstScan(List<String> scanPackageList, String propertiesPath ) throws Exception {
+    protected synchronized void firstScan(List<String> scanPackageList, Resource propertiesLocation ) throws Exception {
 
         // 该函数不能调用两次
         if (isFirstInit) {
@@ -80,7 +81,7 @@ public class DisconfMgr implements ApplicationContextAware {
 
 
         // 导入配置
-        ConfigMgr.init( propertiesPath );
+        ConfigMgr.init( propertiesLocation );
 
         LOGGER.info("******************************* DISCONF START FIRST SCAN *******************************");
 
@@ -105,8 +106,9 @@ public class DisconfMgr implements ApplicationContextAware {
 
     /**
      * 第二次扫描, 动态扫描, for annotation config
+     * @throws Exception 
      */
-    protected synchronized void secondScan() {
+    protected synchronized void secondScan() throws Exception {
 
         // 该函数必须第一次运行后才能运行
         if (!isFirstInit) {
@@ -122,22 +124,17 @@ public class DisconfMgr implements ApplicationContextAware {
 
         LOGGER.info("******************************* DISCONF START SECOND SCAN *******************************");
 
-        try {
-
-            // 扫描回调函数
-            if (scanMgr != null) {
-                scanMgr.secondScan();
-            }
-
-            // 注入数据至配置实体中
-            // 获取数据/注入/Watch
-            if (disconfCoreMgr != null) {
-                disconfCoreMgr.inject2DisconfInstance();
-            }
-
-        } catch (Exception e) {
-            LOGGER.error(e.toString(), e);
+        // 扫描回调函数
+        if (scanMgr != null) {
+            scanMgr.secondScan();
         }
+
+        // 注入数据至配置实体中
+        // 获取数据/注入/Watch
+        if (disconfCoreMgr != null) {
+            disconfCoreMgr.inject2DisconfInstance();
+        }
+
 
         isSecondInit = true;
 
@@ -159,8 +156,9 @@ public class DisconfMgr implements ApplicationContextAware {
 
     /**
      * reloadable config file scan, for xml config
+     * @throws Exception 
      */
-    public synchronized void reloadableScan(String filename) {
+    public synchronized void reloadableScan(String filename) throws Exception {
 
         if (!isFirstInit) {
             return;
@@ -173,22 +171,14 @@ public class DisconfMgr implements ApplicationContextAware {
         //
         //
         //
-
-        try {
-
-            if (scanMgr != null) {
-                scanMgr.reloadableScan(filename);
-            }
-
-            if (disconfCoreMgr != null) {
-                disconfCoreMgr.processFile(filename);
-            }
-            LOGGER.debug("disconf reloadable file: {}", filename);
-
-        } catch (Exception e) {
-
-            LOGGER.error(e.toString(), e);
+        if (scanMgr != null) {
+            scanMgr.reloadableScan(filename);
         }
+
+        if (disconfCoreMgr != null) {
+            disconfCoreMgr.processFile(filename);
+        }
+        LOGGER.debug("disconf reloadable file: {}", filename);
     }
 
     /**
