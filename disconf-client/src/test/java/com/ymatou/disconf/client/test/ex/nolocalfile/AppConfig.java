@@ -1,4 +1,4 @@
-package com.ymatou.nolocalfile;
+package com.ymatou.disconf.client.test.ex.nolocalfile;
 
 import org.springframework.stereotype.Component;
 

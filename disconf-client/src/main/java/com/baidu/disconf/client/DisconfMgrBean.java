@@ -33,7 +33,15 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
     private String scanPackage = null;
     
+    //disconf.properties位置
     private Resource propertiesLocation = null;
+    
+    /**
+     * 是否处于单元测试模式
+     * 处于单元测试模式时，所有配置文件都直接从classpath处加载，无需与远程disconf交互
+     * 因此，一般/src/test/resources放置一份配置文件，便于单元测试
+     */
+    private boolean unitTestMode = false;
 
     public void destroy() {
 
@@ -91,8 +99,12 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
             throw new RuntimeException("Failed to load disconf properties from:" + propertiesLocation);
         }
         
+        if (Boolean.valueOf(System.getProperty("disconfUnitTestMode"))) {
+            unitTestMode = true;
+        }
+        
         try {
-            DisconfMgr.getInstance().firstScan(scanPackList, propertiesLocation); 
+            DisconfMgr.getInstance().firstScan(scanPackList, propertiesLocation, unitTestMode); 
         } catch ( Exception e ) {
             throw new RuntimeException("Disconf client init failure", e );
         }

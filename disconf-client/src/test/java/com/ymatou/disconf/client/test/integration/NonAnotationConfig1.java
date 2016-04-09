@@ -1,4 +1,4 @@
-package com.baidu.disconf.client.test.integration;
+package com.ymatou.disconf.client.test.integration;
 
 public class NonAnotationConfig1 {
     

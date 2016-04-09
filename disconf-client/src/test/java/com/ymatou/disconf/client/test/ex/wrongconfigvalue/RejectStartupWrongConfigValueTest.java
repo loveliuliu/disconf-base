@@ -1,4 +1,4 @@
-package com.baidu.disconf.client.test.integration;
+package com.ymatou.disconf.client.test.ex.wrongconfigvalue;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +21,7 @@ import mockit.MockUp;
  * @author tuwenjie
  *
  */
-public class RejectStatupNoLocalFileTest extends BaseCoreTestCase {
+public class RejectStartupWrongConfigValueTest extends BaseCoreTestCase {
 
     @Test
     public void testStartUp( ) {
@@ -45,7 +45,7 @@ public class RejectStatupNoLocalFileTest extends BaseCoreTestCase {
         };
         
         try {
-            ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("/integration/applicationContext-noLocalFile.xml");
+            ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("/integration/applicationContext-wrongConfigValue.xml");
             
             Assert.assertTrue( false );
         } catch ( Throwable t ) {

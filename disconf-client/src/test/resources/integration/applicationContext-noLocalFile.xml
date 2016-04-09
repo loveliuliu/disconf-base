@@ -11,13 +11,13 @@
         http://www.springframework.org/schema/context/spring-context-3.0.xsd
         ">
 
-    <context:component-scan base-package="com.baidu.disconf.client.test.integration,com.ymatou.nolocalfile"/>
+    <context:component-scan base-package="com.ymatou.disconf.client.test.ex.nolocalfile"/>
 
 
     <!-- 使用disconf必须添加以下配置 -->
     <bean id="disconfMgrBean" class="com.baidu.disconf.client.DisconfMgrBean"
           destroy-method="destroy" >
-        <property name="scanPackage" value="com.baidu.disconf.client.test.integration,com.ymatou.nolocalfile"/>
+        <property name="scanPackage" value="com.ymatou.disconf.client.test.ex.nolocalfile"/>
         
         <property name="propertiesLocation" value="/integration/disconf.properties"/>
 

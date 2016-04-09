@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.baidu.disconf.client.common.constants.SupportFileTypeEnum;
 import com.baidu.disconf.client.config.DisClientConfig;
+import com.baidu.disconf.core.common.utils.ClassLoaderUtil;
 import com.baidu.disconf.core.common.utils.OsUtil;
 
 /**
@@ -115,11 +116,19 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
      */
     public String getFilePath( ) {
 
-        return OsUtil.pathJoin(getFileDir( ), fileName);
+        return DisconfCenterFile.getFilePath(fileName);
     }
     
     public static String getFilePath( String fileName ) {
-        return OsUtil.pathJoin(getFileDir( ), fileName);
+        if ( DisClientConfig.getInstance().unitTestMode) {
+            try {
+                return ClassLoaderUtil.getLoader().getResource(fileName).getFile();
+            } catch ( Throwable t ) {
+                throw new RuntimeException("Failed to load conf in classpath with unitTest mode:" + fileName, t);
+            }
+        } else {
+            return OsUtil.pathJoin(getFileDir( ), fileName);
+        }
     }
 
     /**
@@ -127,6 +136,12 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
      */
     public static String getFileDir() {
         return DisClientConfig.getInstance().userDefineDownloadDir;
+    }
+    
+    
+    public static void main(String[] args ) {
+        DisClientConfig.getInstance().unitTestMode = true;
+        System.out.println(DisconfCenterFile.getFilePath("disconf_sys.properties"));
     }
 
     /**

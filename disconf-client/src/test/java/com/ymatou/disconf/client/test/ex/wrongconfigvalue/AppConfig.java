@@ -1,4 +1,4 @@
-package com.ymatou.wrongconfigvalue;
+package com.ymatou.disconf.client.test.ex.wrongconfigvalue;
 
 import org.springframework.stereotype.Component;
 

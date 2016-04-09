@@ -155,7 +155,8 @@ public final class DisClientConfig {
     @DisInnerConfigAnnotation(name = "disconf.user_define_download_dir")
     public String userDefineDownloadDir;
 
-
+    
+    public boolean unitTestMode = false;
 
     public List<String> getHostList() {
         return hostList;

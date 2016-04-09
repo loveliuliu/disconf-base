@@ -1,9 +1,9 @@
-package com.baidu.disconf.client.test.integration;
+package com.ymatou.disconf.client.test.integration;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.baidu.disconf.client.DisConf;
 import com.baidu.disconf.client.core.DisconfCoreFactory;
 import com.baidu.disconf.client.core.DisconfCoreMgr;
 import com.baidu.disconf.client.core.impl.DisconfCoreMgrImpl;
@@ -13,6 +13,8 @@ import com.baidu.disconf.client.support.registry.Registry;
 import com.baidu.disconf.client.test.common.BaseCoreTestCase;
 import com.baidu.disconf.client.test.watch.mock.WatchMgrMock;
 import com.baidu.disconf.client.watch.WatchMgr;
+
+import junit.framework.Assert;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -21,10 +23,11 @@ import mockit.MockUp;
  * @author tuwenjie
  *
  */
-public class RejectStartupWrongConfigValueTest extends BaseCoreTestCase {
+public class StartupTest extends BaseCoreTestCase {
 
     @Test
     public void testStartUp( ) {
+       
         new MockUp<DisconfCoreFactory>() {
 
             @Mock
@@ -44,15 +47,23 @@ public class RejectStartupWrongConfigValueTest extends BaseCoreTestCase {
             }
         };
         
-        try {
-            ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("/integration/applicationContext-wrongConfigValue.xml");
-            
-            Assert.assertTrue( false );
-        } catch ( Throwable t ) {
-            t.printStackTrace();
-        }
-   
-
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("/integration/applicationContext.xml");
+        
+        Assert.assertEquals("config1", appContext.getBean(AppConfig.class).getConfig1());
+        Assert.assertEquals(100, appContext.getBean(AppConfig.class).getConfig2());
+        
+        Assert.assertEquals("config1", appContext.getBean(NonAnotationConfig1.class).getConfig1());
+        Assert.assertEquals(200, appContext.getBean(NonAnotationConfig1.class).getConfig2());
+        Assert.assertEquals("config3", appContext.getBean(NonAnotationConfig1.class).getConfig3());
+        
+        Assert.assertEquals("config4", appContext.getBean(NonAnotationConfig2.class).getConfig4());
+        Assert.assertEquals(500, appContext.getBean(NonAnotationConfig2.class).getConfig5());
+        Assert.assertEquals("config6", appContext.getBean(NonAnotationConfig2.class).getConfig6());
+        
+        System.out.println(DisConf.getLocalConfig("app.properties"));
+        Assert.assertEquals(true, DisConf.getLocalConfig("app.properties").exists());
+        
+        appContext.close();
     }
 
 }

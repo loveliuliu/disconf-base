@@ -72,6 +72,9 @@ public class ReflectionScanStatic implements ScanStaticStrategy {
         for (String packName : packNameList) {
             filterBuilder = filterBuilder.includePackage(packName);
         }
+        
+        
+
         Predicate<String> filter = filterBuilder;
 
         //
