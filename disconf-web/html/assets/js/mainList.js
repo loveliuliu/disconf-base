@@ -6,6 +6,10 @@
     var appId = -1;
     var envId = -1;
     var version = "#";
+    var selectedApp = sessionStorage.selectedApp;
+    var selectedEnv = sessionStorage.selectedEnv;
+    var selectedVersion = sessionStorage.selectedVersion;
+
 
     //
     // 获取APP信息
@@ -29,6 +33,7 @@
                             + '</a></li>';
                     });
                 $("#applist").html(html);
+                reloadConfig();
             }
         });
     $("#applist").on('click', 'li a', function (e) {
@@ -37,6 +42,7 @@
         $("#appDropdownMenuTitle").text($(this).text());
         version = "#";
         fetchVersion(appId, envId);
+        sessionStorage.selectedApp = appId;
     });
 
     //
@@ -44,12 +50,14 @@
     //
     function fetchVersion(appId, envId) {
 
+        if(appId == -1 || envId == -1){
+            return;
+        }
         var base_url = "/api/web/config/versionlist?appId=" + appId;
         url = base_url;
         if (envId != -1) {
             url = base_url + "&envId=" + envId;
         }
-
         $.ajax({
             type: "GET",
             url: url
@@ -57,8 +65,16 @@
             if (data.success === "true") {
                 var html = "";
                 var result = data.page.result;
+                var sVersion = version;
+                var boolSelOld = false;
+                if(selectedVersion) {
+                    sVersion = decodeURIComponent(selectedVersion)
+                }
                 $.each(result, function (index, item) {
-                    html += '<li><a href="#">' + item + '</a></li>';
+                    html += '<li><a href="#" rel="'+item+'">' + item + '</a></li>';
+                    if(item == sVersion){
+                        boolSelOld = true;
+                    }
                 });
                 $("#versionChoice").html(html);
 
@@ -66,17 +82,25 @@
                     $("#versionChoice li:first").addClass("active");
                     version = $("#versionChoice li:first a").text();
                 }
-                fetchMainList();
+
+                if(selectedVersion && boolSelOld){
+                    $("#versionChoice").find("a[rel='"+sVersion+"']").click()
+                }else{
+                    fetchMainList();
+                }
+
             }
         });
-        $("#versionChoice").unbind('click').on('click', 'li a', function (e) {
-            version = $(this).text();
-            $("#versionChoice li").removeClass("active");
-            $(this).parent().addClass("active");
-            fetchMainList();
-            e.stopPropagation();
-        });
     }
+    $("#versionChoice").on('click', 'li a', function (e) {
+        version = $(this).text();
+        $("#versionChoice li").removeClass("active");
+        $(this).parent().addClass("active");
+        fetchMainList();
+        e.stopPropagation();
+
+        sessionStorage.selectedVersion = encodeURIComponent(version);
+    });
 
     //
     // 获取Env信息
@@ -94,6 +118,7 @@
                         + item.name + ' 环境</a></li>';
                 });
                 $("#envChoice").html(html);
+                reloadConfig();
             }
         });
     $("#envChoice").on('click', 'li a', function () {
@@ -103,9 +128,20 @@
         $(this).parent().addClass("active");
         version = "#";
         fetchVersion(appId, envId);
+
+        sessionStorage.selectedEnv = envId;
     });
 
-    fetchMainList();
+    function  reloadConfig() {
+        if(selectedApp){
+            $("#applist").find("[rel='"+selectedApp+"']").click()
+        }
+        if(selectedEnv){
+            $("#envChoice").find("[rel='"+selectedEnv+"']").click()
+        }
+    }
+
+    // fetchMainList();
 
     //
     // 渲染主列表

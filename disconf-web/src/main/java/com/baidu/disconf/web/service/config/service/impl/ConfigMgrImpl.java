@@ -36,6 +36,7 @@ import com.github.knightliao.apollo.utils.time.DateUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,31 +207,35 @@ public class ConfigMgrImpl implements ConfigMgr {
     private MachineListVo getZkData(List<ZkDisconfDataItem> datalist, Config config) {
 
         int errorNum = 0;
-        for (ZkDisconfDataItem zkDisconfDataItem : datalist) {
+        try {
+            for (ZkDisconfDataItem zkDisconfDataItem : datalist) {
 
-            if (config.getType().equals(DisConfigTypeEnum.FILE.getType())) {
+                if (config.getType().equals(DisConfigTypeEnum.FILE.getType())) {
 
-                List<String> errorKeyList = compareConfig(zkDisconfDataItem.getValue(), config);
+                    List<String> errorKeyList = compareConfig(zkDisconfDataItem.getValue(), config);
 
-                if (errorKeyList.size() != 0) {
-                    zkDisconfDataItem.setErrorList(errorKeyList);
-                    errorNum++;
-                }
-            } else {
-
-                //
-                // 配置项
-                //
-
-                if (zkDisconfDataItem.getValue().trim().equals(config.getValue().trim())) {
-
+                    if (errorKeyList.size() != 0) {
+                        zkDisconfDataItem.setErrorList(errorKeyList);
+                        errorNum++;
+                    }
                 } else {
-                    List<String> errorKeyList = new ArrayList<String>();
-                    errorKeyList.add(config.getValue().trim());
-                    zkDisconfDataItem.setErrorList(errorKeyList);
-                    errorNum++;
+
+                    //
+                    // 配置项
+                    //
+
+                    if (zkDisconfDataItem.getValue().trim().equals(config.getValue().trim())) {
+
+                    } else {
+                        List<String> errorKeyList = new ArrayList<String>();
+                        errorKeyList.add(config.getValue().trim());
+                        zkDisconfDataItem.setErrorList(errorKeyList);
+                        errorNum++;
+                    }
                 }
             }
+        } catch (Exception e) {
+            LOG.error("----检查zk 与 db 出现 异常: {}",e.getCause());
         }
 
         MachineListVo machineListVo = new MachineListVo();
@@ -319,19 +324,14 @@ public class ConfigMgrImpl implements ConfigMgr {
     private void comparePropertiesConfig(List<String> errorKeyList,String zkData,String dbData){
 
         Properties zkProp = null;
-        try {
-            zkProp = this.loadPropertiesFromString(zkData);
-        } catch (Exception e) {
-            LOG.error(e.toString());
-            errorKeyList.add(zkData);
-        }
-
         Properties dbProp = null;
         try {
+            zkProp = this.loadPropertiesFromString(zkData);
             dbProp = this.loadPropertiesFromString(dbData);
         } catch (Exception e) {
             LOG.error(e.toString());
             errorKeyList.add(zkData);
+            return;
         }
 
 
@@ -374,6 +374,7 @@ public class ConfigMgrImpl implements ConfigMgr {
                 LOG.warn(e.toString() + " ; " + keyInZk + " ; " + zkProp.get(keyInZk) + " ; " + valueInDb);
             }
         }
+
     }
 
     /**
