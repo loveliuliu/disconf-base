@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.baidu.disconf.client.common.model.DisconfCenterBaseModel;
 import com.baidu.disconf.client.common.model.DisconfCenterFile;
-import com.baidu.disconf.client.common.model.DisconfCenterItem;
 
 /**
  * 配置仓库,是个单例
@@ -44,10 +43,6 @@ public class DisconfCenterStore {
     // value: 配置文件数据
     private Map<String, DisconfCenterFile> confFileMap = new HashMap<String, DisconfCenterFile>();
 
-    // 每个配置Item一条
-    // key: 配置项的Key
-    // value: 配置项数据
-    private Map<String, DisconfCenterItem> confItemMap = new HashMap<String, DisconfCenterItem>();
 
     // 主备切换时的Key列表
     private List<String> activeBackupKeyList;
@@ -66,40 +61,14 @@ public class DisconfCenterStore {
 
         if (confFileMap.containsKey(fileName)) {
 
-            LOGGER.error("There are two same fileName!!!! " + "first: " + confFileMap.get(fileName).toString() +
+            throw new RuntimeException("There are two same configure fileName " + "first: " + confFileMap.get(fileName).toString() +
                              ", Second: " + disconfCenterFile.toString());
         } else {
             confFileMap.put(fileName, disconfCenterFile);
         }
     }
 
-    /**
-     * 存储 一个配置项
-     */
-    public void storeOneItem(DisconfCenterBaseModel disconfCenterBaseModel) {
 
-        DisconfCenterItem disconfCenterItem = (DisconfCenterItem) disconfCenterBaseModel;
-
-        String key = disconfCenterItem.getKey();
-
-        if (confItemMap.containsKey(key)) {
-
-            LOGGER.error("There are two same fileName!!!! " + "first: " + confItemMap.get(key).getClass().toString() +
-                             ", Second: " + disconfCenterItem.getClass().toString());
-        } else {
-            confItemMap.put(key, disconfCenterItem);
-        }
-    }
-
-    /**
-     * 删除一个配置项
-     */
-    public void excludeOneItem(String key) {
-
-        if (confItemMap.containsKey(key)) {
-            confItemMap.remove(key);
-        }
-    }
 
     /**
      * 删除一个配置文件
@@ -115,9 +84,7 @@ public class DisconfCenterStore {
         return confFileMap;
     }
 
-    public Map<String, DisconfCenterItem> getConfItemMap() {
-        return confItemMap;
-    }
+
 
     public List<String> getActiveBackupKeyList() {
         return activeBackupKeyList;

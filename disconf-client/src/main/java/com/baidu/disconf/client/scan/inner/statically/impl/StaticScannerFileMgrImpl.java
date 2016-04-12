@@ -94,18 +94,15 @@ public class StaticScannerFileMgrImpl extends StaticScannerMgrImplBase implement
 
         //
         // file name
-        disconfCenterFile.setFileName(disconfFileAnnotation.filename());
+        disconfCenterFile.setFileName(disconfFileAnnotation.fileName());
 
-        // copy 2 target path
-        disconfCenterFile.setCopy2TargetDirPath(disconfFileAnnotation.copy2TargetDirPath().trim());
 
         // file type
-        disconfCenterFile.setSupportFileTypeEnum(SupportFileTypeEnum.getByFileName(disconfFileAnnotation.filename()));
+        disconfCenterFile.setSupportFileTypeEnum(SupportFileTypeEnum.getByFileName(disconfFileAnnotation.fileName()));
 
         //
         // disConfCommonModel
-        DisConfCommonModel disConfCommonModel =
-                makeDisConfCommonModel(disconfFileAnnotation.env(), disconfFileAnnotation.version());
+        DisConfCommonModel disConfCommonModel = makeDisConfCommonModel();
         disconfCenterFile.setDisConfCommonModel(disConfCommonModel);
 
         // Remote URL

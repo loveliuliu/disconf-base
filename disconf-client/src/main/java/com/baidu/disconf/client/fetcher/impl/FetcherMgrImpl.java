@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.baidu.disconf.client.fetcher.FetcherMgr;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
@@ -30,14 +29,10 @@ public class FetcherMgrImpl implements FetcherMgr {
     // 获取远程配置 重试时休眠时间
     private int retrySleepSeconds = 5;
 
-    // 下载的文件会被迁移到classpath根路径下
-    private boolean enableLocalDownloadDirInClassPath = true;
 
     // 下载文件夹, 远程文件下载后会放在这里
     private String localDownloadDir;
 
-    // temp 临时目录
-    private String localDownloadDirTemp;
 
     //
     private List<String> hostList = new ArrayList<String>();
@@ -49,17 +44,14 @@ public class FetcherMgrImpl implements FetcherMgr {
     // 创建对象
     //
     public FetcherMgrImpl(RestfulMgr restfulMgr, int retryTime, int retrySleepSeconds,
-                          boolean enableLocalDownloadDirInClassPath, String localDownloadDir, String
-                                  localDownloadDirTemp, List<String>
+                         String localDownloadDir,  List<String>
                                   hostList) {
 
         this.restfulMgr = restfulMgr;
 
         this.retrySleepSeconds = retrySleepSeconds;
         this.retryTime = retryTime;
-        this.enableLocalDownloadDirInClassPath = enableLocalDownloadDirInClassPath;
         this.localDownloadDir = localDownloadDir;
-        this.localDownloadDirTemp = localDownloadDirTemp;
         OsUtil.makeDirs(this.localDownloadDir);
 
         this.hostList = hostList;
@@ -97,11 +89,12 @@ public class FetcherMgrImpl implements FetcherMgr {
         RemoteUrl remoteUrl = new RemoteUrl(url, hostList);
 
         // 下载
-        return restfulMgr
-                .downloadFromServer(remoteUrl, fileName, localDir, localDownloadDirTemp, targetFileDir,
-                        enableLocalDownloadDirInClassPath,
+        String localFile = restfulMgr
+                .downloadFromServer(remoteUrl, fileName, localDir, 
                         retryTime,
                         retrySleepSeconds);
+        
+        return localFile;
 
     }
 

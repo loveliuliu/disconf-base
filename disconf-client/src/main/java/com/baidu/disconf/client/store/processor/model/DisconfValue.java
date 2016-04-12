@@ -12,23 +12,13 @@ import java.util.Map;
  */
 public class DisconfValue {
 
-    // 配置项使用
-    private String value;
 
     // 配置文件使用
     private Map<String, Object> fileData = new HashMap<String, Object>();
 
-    public String getValue() {
-        return value;
-    }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+    public DisconfValue(Map<String, Object> fileData) {
 
-    public DisconfValue(String value, Map<String, Object> fileData) {
-        super();
-        this.value = value;
         this.fileData = fileData;
     }
 

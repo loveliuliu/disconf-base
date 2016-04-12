@@ -9,7 +9,7 @@ import com.baidu.disconf.client.common.annotations.DisconfFileItem;
  * @author liaoqiqi
  * @version 2014-8-14
  */
-@DisconfFile(filename = "staticConf.properties")
+@DisconfFile(fileName = "staticConf.properties")
 public class StaticConf {
 
     private static int staticvar = 40;

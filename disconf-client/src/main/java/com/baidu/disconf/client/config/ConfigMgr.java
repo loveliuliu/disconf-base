@@ -2,6 +2,7 @@ package com.baidu.disconf.client.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.config.inner.DisClientComConfig;
 import com.baidu.disconf.client.config.inner.DisInnerConfigHelper;
@@ -23,7 +24,7 @@ public class ConfigMgr {
      *
      * @throws Exception
      */
-    public synchronized static void init() throws Exception {
+    public synchronized static void init(Resource propertiesLocation, boolean unitTestMode ) throws Exception {
 
         LOGGER.info("--------------- LOAD CONFIG START ---------------");
 
@@ -31,13 +32,19 @@ public class ConfigMgr {
         LOGGER.info("Finer print: " + DisClientComConfig.getInstance().getInstanceFingerprint());
 
         // 导入系统配置
-        DisClientSysConfig.getInstance().loadConfig(null);
+        DisClientSysConfig.getInstance().loadConfig( );
 
         // 校验 系统配置
         DisInnerConfigHelper.verifySysConfig();
 
         // 导入用户配置
-        DisClientConfig.getInstance().loadConfig(null);
+        DisClientConfig.getInstance().loadConfig(propertiesLocation);
+        
+        if ( unitTestMode ) {
+            LOGGER.info("Disconf is in UnitTestMode, ALL configures are loaded from classpath");
+            DisClientConfig.getInstance().unitTestMode = true;
+            DisClientConfig.getInstance().ENABLE_DISCONF = false;
+        }
 
         // 校验 用户配置
         DisInnerConfigHelper.verifyUserConfig();
@@ -53,18 +60,5 @@ public class ConfigMgr {
         return isInit;
     }
 
-    /**
-     */
-    public static void main(String[] args) {
-
-        try {
-
-            ConfigMgr.init();
-
-        } catch (Exception e) {
-
-            e.printStackTrace();
-        }
-    }
 
 }

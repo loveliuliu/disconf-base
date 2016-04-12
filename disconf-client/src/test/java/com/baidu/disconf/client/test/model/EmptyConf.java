@@ -10,7 +10,7 @@ import com.baidu.disconf.client.common.annotations.DisconfFile;
  * 2. 当配置文件更新时，可以自动下载到本地
  */
 @Service
-@DisconfFile(filename = "empty.properties")
+@DisconfFile(fileName = "empty.properties")
 public class EmptyConf {
 
 }

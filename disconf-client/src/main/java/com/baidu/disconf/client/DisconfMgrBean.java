@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.store.aspect.DisconfAspectJ;
 import com.baidu.disconf.client.store.inner.DisconfCenterHostFilesStore;
@@ -31,6 +32,16 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
     private ApplicationContext applicationContext;
 
     private String scanPackage = null;
+    
+    //disconf.properties位置
+    private Resource propertiesLocation = null;
+    
+    /**
+     * 是否处于单元测试模式
+     * 处于单元测试模式时，所有配置文件都直接从classpath处加载，无需与远程disconf交互
+     * 因此，一般/src/test/resources放置一份配置文件，便于单元测试
+     */
+    private boolean unitTestMode = false;
 
     public void destroy() {
 
@@ -39,6 +50,12 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
     public void setScanPackage(String scanPackage) {
         this.scanPackage = scanPackage;
+    }
+    
+    
+
+    public void setPropertiesLocation(Resource propertiesLocation) {
+        this.propertiesLocation = propertiesLocation;
     }
 
     @Override
@@ -72,7 +89,25 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
         // 进行扫描
         DisconfMgr.getInstance().setApplicationContext(applicationContext);
-        DisconfMgr.getInstance().firstScan(scanPackList);
+        
+        
+        if ( propertiesLocation == null ) {
+            //默认从classpath加载disconf.proerties
+            propertiesLocation = applicationContext.getResource("/disconf.properties");
+        }
+        if (!propertiesLocation.exists() ) {
+            throw new RuntimeException("Failed to load disconf properties from:" + propertiesLocation);
+        }
+        
+        if (Boolean.valueOf(System.getProperty("disconfUnitTestMode"))) {
+            unitTestMode = true;
+        }
+        
+        try {
+            DisconfMgr.getInstance().firstScan(scanPackList, propertiesLocation, unitTestMode); 
+        } catch ( Exception e ) {
+            throw new RuntimeException("Disconf client init failure", e );
+        }
 
         // register java bean
         registerAspect(registry);

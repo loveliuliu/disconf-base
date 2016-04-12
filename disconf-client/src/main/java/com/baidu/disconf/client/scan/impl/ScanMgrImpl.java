@@ -48,9 +48,6 @@ public class ScanMgrImpl implements ScanMgr {
         // 配置文件
         staticScannerMgrList.add(StaticScannerMgrFactory.getDisconfFileStaticScanner());
 
-        // 配置项
-        staticScannerMgrList.add(StaticScannerMgrFactory.getDisconfItemStaticScanner());
-
         // 非注解 托管的配置文件
         staticScannerMgrList.add(StaticScannerMgrFactory.getDisconfNonAnnotationFileStaticScanner());
     }

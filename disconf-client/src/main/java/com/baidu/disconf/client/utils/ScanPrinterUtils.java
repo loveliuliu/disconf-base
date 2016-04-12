@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
-import com.baidu.disconf.client.common.annotations.DisconfItem;
 import com.google.common.collect.Multimap;
 
 /**
@@ -80,9 +79,7 @@ public class ScanPrinterUtils {
 
             LOGGER.info(item.toString());
             DisconfFile disconfFile = item.getAnnotation(DisconfFile.class);
-            LOGGER.info("\tfile name: " + disconfFile.filename());
-            LOGGER.info("\tenv: " + disconfFile.env());
-            LOGGER.info("\tversion: " + disconfFile.env());
+            LOGGER.info("\tfile name: " + disconfFile.fileName());
         }
     }
 
@@ -101,21 +98,7 @@ public class ScanPrinterUtils {
         }
     }
 
-    /**
-     *
-     */
-    public static void printItem(Set<Field> af1) {
 
-        for (Field item : af1) {
-
-            LOGGER.info(item.toString());
-            DisconfItem disconfItem = item.getAnnotation(DisconfItem.class);
-            LOGGER.info("\tkey: " + disconfItem.key());
-            LOGGER.info("\tenv: " + disconfItem.env());
-            LOGGER.info("\tversion: " + disconfItem.version());
-
-        }
-    }
 
     /**
      *

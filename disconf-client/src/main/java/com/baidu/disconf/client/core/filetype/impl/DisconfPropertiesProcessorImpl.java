@@ -20,7 +20,7 @@ public class DisconfPropertiesProcessorImpl implements DisconfFileTypeProcessor 
         Properties properties;
 
         // 读取配置
-        properties = ConfigLoaderUtils.loadConfig(fileName);
+        properties = ConfigLoaderUtils.loadFromFileSystem(fileName);
         if (properties == null) {
             return null;
         }

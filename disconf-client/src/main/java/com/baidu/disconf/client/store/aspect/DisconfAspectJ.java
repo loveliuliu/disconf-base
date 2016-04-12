@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
-import com.baidu.disconf.client.common.annotations.DisconfItem;
 import com.baidu.disconf.client.config.DisClientConfig;
 import com.baidu.disconf.client.store.DisconfStoreProcessor;
 import com.baidu.disconf.client.store.DisconfStoreProcessorFactory;
@@ -65,9 +64,9 @@ public class DisconfAspectJ {
                 //
                 DisconfStoreProcessor disconfStoreProcessor =
                         DisconfStoreProcessorFactory.getDisconfStoreFileProcessor();
-                Object ret = disconfStoreProcessor.getConfig(disconfFile.filename(), disconfFileItem.name());
+                Object ret = disconfStoreProcessor.getConfig(disconfFile.fileName(), disconfFileItem.name());
                 if (ret != null) {
-                    LOGGER.debug("using disconf store value: " + disconfFile.filename() + " ("
+                    LOGGER.debug("using disconf store value: " + disconfFile.fileName() + " ("
                             + disconfFileItem.name() +
                             " , " + ret + ")");
                     return ret;
@@ -88,36 +87,4 @@ public class DisconfAspectJ {
         return rtnOb;
     }
 
-    /**
-     * 获取配置项数据, 只有开启disconf远程才会进行切面
-     *
-     * @throws Throwable
-     */
-    @Around("anyPublicMethod() && @annotation(disconfItem)")
-    public Object decideAccess(ProceedingJoinPoint pjp, DisconfItem disconfItem) throws Throwable {
-
-        if (DisClientConfig.getInstance().ENABLE_DISCONF) {
-            //
-            // 请求仓库配置数据
-            //
-            DisconfStoreProcessor disconfStoreProcessor = DisconfStoreProcessorFactory.getDisconfStoreItemProcessor();
-            Object ret = disconfStoreProcessor.getConfig(null, disconfItem.key());
-            if (ret != null) {
-                LOGGER.debug("using disconf store value: (" + disconfItem.key() + " , " + ret + ")");
-                return ret;
-            }
-        }
-
-        Object rtnOb;
-
-        try {
-            // 返回原值
-            rtnOb = pjp.proceed();
-        } catch (Throwable t) {
-            LOGGER.info(t.getMessage());
-            throw t;
-        }
-
-        return rtnOb;
-    }
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.config.inner.DisInnerConfigAnnotation;
 import com.baidu.disconf.client.support.DisconfAutowareConfig;
@@ -27,7 +28,6 @@ public final class DisClientConfig {
         return INSTANCE;
     }
 
-    protected static final String filename = "disconf.properties";
 
     private boolean isLoaded = false;
 
@@ -44,27 +44,13 @@ public final class DisClientConfig {
      *
      * @throws Exception
      */
-    public synchronized void loadConfig(String filePath) throws Exception {
+    public synchronized void loadConfig(Resource propertiesLocation) throws Exception {
 
         if (isLoaded) {
             return;
         }
 
-        String filePathInternal = filename;
-
-        if (filePath != null) {
-
-            filePathInternal = filePath;
-        }
-
-        try {
-            DisconfAutowareConfig.autowareConfig(INSTANCE, filePathInternal);
-        } catch (Exception e) {
-            LOGGER.warn("cannot find " + filePathInternal + ", using sys var or user input.");
-        }
-
-        // 使用system env 导入
-        DisconfAutowareConfig.autowareConfigWithSystemEnv(INSTANCE);
+        DisconfAutowareConfig.autowareConfigFromFileSystem(INSTANCE, propertiesLocation);
 
         isLoaded = true;
     }
@@ -73,7 +59,7 @@ public final class DisClientConfig {
      * 配置文件服务器 HOST
      */
     public static final String CONF_SERVER_HOST_NAME = "disconf.conf_server_host";
-    @DisInnerConfigAnnotation(name = DisClientConfig.CONF_SERVER_HOST_NAME)
+    @DisInnerConfigAnnotation(name = DisClientConfig.CONF_SERVER_HOST_NAME, defaultValue="disconf.iapi.ymatou.com")
     public String CONF_SERVER_HOST;
 
     private List<String> hostList;
@@ -95,17 +81,9 @@ public final class DisClientConfig {
      * @since 1.0.0
      */
     public static final String VERSION_NAME = "disconf.version";
-    @DisInnerConfigAnnotation(name = DisClientConfig.VERSION_NAME, defaultValue = Constants.DEFAULT_VERSION)
+    @DisInnerConfigAnnotation(name = DisClientConfig.VERSION_NAME)
     public String VERSION = Constants.DEFAULT_VERSION;
 
-    /**
-     * 主或备
-     *
-     * @author
-     * @since 1.0.0
-     */
-    @DisInnerConfigAnnotation(name = "disconf.maintype")
-    public String MAIN_TYPE;
 
     /**
      * 部署环境
@@ -114,7 +92,7 @@ public final class DisClientConfig {
      * @since 1.0.0
      */
     public static final String ENV_NAME = "disconf.env";
-    @DisInnerConfigAnnotation(name = DisClientConfig.ENV_NAME, defaultValue = Constants.DEFAULT_ENV)
+    @DisInnerConfigAnnotation(name = DisClientConfig.ENV_NAME)
     public String ENV = Constants.DEFAULT_ENV;
 
     /**
@@ -124,8 +102,8 @@ public final class DisClientConfig {
      * @since 1.0.0
      */
     private static final String ENABLE_REMOTE_CONF_NAME = "disconf.enable.remote.conf";
-    @DisInnerConfigAnnotation(name = DisClientConfig.ENABLE_REMOTE_CONF_NAME, defaultValue = "false")
-    public boolean ENABLE_DISCONF = false;
+    @DisInnerConfigAnnotation(name = DisClientConfig.ENABLE_REMOTE_CONF_NAME, defaultValue = "true")
+    public boolean ENABLE_DISCONF = true;
 
     /**
      * 是否开启DEBUG模式: 默认不开启，
@@ -157,32 +135,28 @@ public final class DisClientConfig {
     @DisInnerConfigAnnotation(name = "disconf.conf_server_url_retry_times", defaultValue = "3")
     public int CONF_SERVER_URL_RETRY_TIMES = 3;
 
-    /**
-     * 用户指定的 下载文件夹, 远程文件下载后会放在这里
-     *
-     * @author
-     * @since 1.0.0
-     */
-    @DisInnerConfigAnnotation(name = "disconf.user_define_download_dir", defaultValue = "./disconf/download")
-    public String userDefineDownloadDir = "./disconf/download";
 
     /**
-     * 获取远程配置 重试时休眠时间，默认是5秒
+     * 获取远程配置 重试时休眠时间，默认是2秒
      *
      * @author
      * @since 1.0.0
      */
     @DisInnerConfigAnnotation(name = "disconf.conf_server_url_retry_sleep_seconds", defaultValue = "2")
     public int confServerUrlRetrySleepSeconds = 2;
-
+    
+    
     /**
-     * 让下载文件夹放在 classpath目录 下
+     * 用户指定的 下载文件夹, 远程文件下载后会放在这里
      *
      * @author
      * @since 1.0.0
      */
-    @DisInnerConfigAnnotation(name = "disconf.enable_local_download_dir_in_class_path", defaultValue = "true")
-    public boolean enableLocalDownloadDirInClassPath = true;
+    @DisInnerConfigAnnotation(name = "disconf.user_define_download_dir")
+    public String userDefineDownloadDir;
+
+    
+    public boolean unitTestMode = false;
 
     public List<String> getHostList() {
         return hostList;

@@ -11,12 +11,12 @@ public interface DisconfCoreProcessor {
     /**
      * 处理所有配置
      */
-    void processAllItems();
+    void processAllItems() throws Exception;
 
     /**
      * 处理one配置
      */
-    void processOneItem(String key);
+    void processOneItem(String key) throws Exception;
 
     /**
      * 更新指定的配置并进行回调
@@ -26,5 +26,5 @@ public interface DisconfCoreProcessor {
     /**
      * 特殊的，将数据注入到配置实体中
      */
-    void inject2Conf();
+    void inject2Conf() throws Exception;
 }

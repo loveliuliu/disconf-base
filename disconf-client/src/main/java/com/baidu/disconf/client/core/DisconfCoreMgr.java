@@ -14,7 +14,7 @@ public interface DisconfCoreMgr {
      * 2. 注入到仓库中<br/>
      * 3. Watch 配置
      */
-    void process();
+    void process() throws Exception ;
 
     /**
      * (第一次、或额外 扫描时使用)<br/>
@@ -22,12 +22,12 @@ public interface DisconfCoreMgr {
      * 2. 注入到仓库中<br/>
      * 3. Watch 配置
      */
-    void processFile(String fileName);
+    void processFile(String fileName) throws Exception; 
 
     /**
      * 特殊的，将数据注入到 配置项、配置文件 的实体中(第二次扫描时使用)
      */
-    void inject2DisconfInstance();
+    void inject2DisconfInstance() throws Exception;
 
     /**
      * 释放一些资源

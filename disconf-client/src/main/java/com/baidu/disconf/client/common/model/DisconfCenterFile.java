@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.baidu.disconf.client.common.constants.SupportFileTypeEnum;
+import com.baidu.disconf.client.config.DisClientConfig;
 import com.baidu.disconf.core.common.utils.ClassLoaderUtil;
 import com.baidu.disconf.core.common.utils.OsUtil;
 
@@ -30,7 +31,6 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
     // 文件名
     private String fileName;
 
-    private String copy2TargetDirPath;
 
     // 文件类型
     private SupportFileTypeEnum supportFileTypeEnum = SupportFileTypeEnum.ANY;
@@ -75,18 +75,12 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
         this.supportFileTypeEnum = supportFileTypeEnum;
     }
 
-    public String getCopy2TargetDirPath() {
-        return copy2TargetDirPath;
-    }
 
-    public void setCopy2TargetDirPath(String copy2TargetDirPath) {
-        this.copy2TargetDirPath = copy2TargetDirPath;
-    }
 
     @Override
     public String toString() {
         return "\n\tDisconfCenterFile [\n\tkeyMaps=" + keyMaps + "\n\tcls=" + cls + "\n\tfileName=" + fileName
-                + "\n\tcopy2TargetDirPath=" + copy2TargetDirPath +
+                 +
                 super.toString() + "]";
     }
 
@@ -118,38 +112,36 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
     }
 
     /**
-     * 配置文件的路径
+     * 配置文件的本地完整路径
      */
-    public String getFilePath() {
+    public String getFilePath( ) {
 
-        if (copy2TargetDirPath != null) {
-
-            if (copy2TargetDirPath.startsWith("/")) {
-                return OsUtil.pathJoin(copy2TargetDirPath, fileName);
+        return DisconfCenterFile.getFilePath(fileName);
+    }
+    
+    public static String getFilePath( String fileName ) {
+        if ( DisClientConfig.getInstance().unitTestMode) {
+            try {
+                return ClassLoaderUtil.getLoader().getResource(fileName).getFile();
+            } catch ( Throwable t ) {
+                throw new RuntimeException("Failed to load conf in classpath with unitTest mode:" + fileName, t);
             }
-
-            return OsUtil.pathJoin(ClassLoaderUtil.getClassPath(), copy2TargetDirPath, fileName);
+        } else {
+            return OsUtil.pathJoin(getFileDir( ), fileName);
         }
-
-        return OsUtil.pathJoin(ClassLoaderUtil.getClassPath(), fileName);
     }
 
     /**
-     * 配置文件的路径
+     * 配置文件的本地目录
      */
-    public String getFileDir() {
-
-        // 获取相对于classpath的路径
-        if (copy2TargetDirPath != null) {
-
-            if (copy2TargetDirPath.startsWith("/")) {
-                return OsUtil.pathJoin(copy2TargetDirPath);
-            }
-
-            return OsUtil.pathJoin(ClassLoaderUtil.getClassPath(), copy2TargetDirPath);
-        }
-
-        return ClassLoaderUtil.getClassPath();
+    public static String getFileDir() {
+        return DisClientConfig.getInstance().userDefineDownloadDir;
+    }
+    
+    
+    public static void main(String[] args ) {
+        DisClientConfig.getInstance().unitTestMode = true;
+        System.out.println(DisconfCenterFile.getFilePath("disconf_sys.properties"));
     }
 
     /**

@@ -7,13 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.baidu.disconf.client.config.ConfigMgr;
-import com.baidu.disconf.client.config.DisClientConfig;
-import com.baidu.disconf.client.config.DisClientSysConfig;
-import com.baidu.disconf.client.test.utils.NetUtils;
-import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
-
-import junit.framework.Assert;
 
 /**
  * Spring的测试方法
@@ -32,29 +25,5 @@ public class BaseSpringTestCase {
 
     }
 
-    /**
-     * @return
-     */
-    @Deprecated
-    protected boolean checkNetWork() {
-
-        //
-        // 如果网络不通则认为测试通过
-        //
-        try {
-            ConfigMgr.init();
-        } catch (Exception e) {
-            Assert.assertTrue(false);
-        }
-
-        if (!NetUtils.pingUrl(DisClientConfig.getInstance().getHostList().get(0) + DisconfWebPathMgr
-                .getZooHostsUrl
-                        (DisClientSysConfig
-                                .getInstance().CONF_SERVER_ZOO_ACTION))) {
-            return false;
-        }
-
-        return true;
-    }
 
 }

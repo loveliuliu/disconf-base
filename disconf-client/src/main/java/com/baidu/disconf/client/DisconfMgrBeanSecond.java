@@ -8,8 +8,7 @@ package com.baidu.disconf.client;
  */
 public class DisconfMgrBeanSecond {
 
-    public void init() {
-
+    public void init() throws Exception {
         DisconfMgr.getInstance().secondScan();
     }
 

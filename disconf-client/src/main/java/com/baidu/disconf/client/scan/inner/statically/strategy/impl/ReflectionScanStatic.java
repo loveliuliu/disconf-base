@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 import com.baidu.disconf.client.common.annotations.DisconfActiveBackupService;
 import com.baidu.disconf.client.common.annotations.DisconfFile;
 import com.baidu.disconf.client.common.annotations.DisconfFileItem;
-import com.baidu.disconf.client.common.annotations.DisconfItem;
 import com.baidu.disconf.client.common.annotations.DisconfUpdateService;
 import com.baidu.disconf.client.common.constants.Constants;
 import com.baidu.disconf.client.scan.inner.common.ScanVerify;
@@ -73,6 +72,9 @@ public class ReflectionScanStatic implements ScanStaticStrategy {
         for (String packName : packNameList) {
             filterBuilder = filterBuilder.includePackage(packName);
         }
+        
+        
+
         Predicate<String> filter = filterBuilder;
 
         //
@@ -195,11 +197,6 @@ public class ReflectionScanStatic implements ScanStaticStrategy {
         Set<Method> af1 = reflections.getMethodsAnnotatedWith(DisconfFileItem.class);
         scanModel.setDisconfFileItemMethodSet(af1);
 
-        //
-        // 获取DisconfItem method
-        //
-        af1 = reflections.getMethodsAnnotatedWith(DisconfItem.class);
-        scanModel.setDisconfItemMethodSet(af1);
 
         //
         // 获取DisconfActiveBackupService
