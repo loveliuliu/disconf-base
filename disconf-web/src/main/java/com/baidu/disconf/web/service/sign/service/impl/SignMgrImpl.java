@@ -1,5 +1,6 @@
 package com.baidu.disconf.web.service.sign.service.impl;
 
+import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,14 +65,29 @@ public class SignMgrImpl implements SignMgr {
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     @Override
-    public User signin(String phone) {
+    public User signin(String userName) {
 
         //
         // 获取用户
         //
-        User user = userDao.getUserByName(phone);
+        User user = userDao.getUserByName(userName);
+        if(null == user){
+            user = new User();
 
-        userDao.update(user);
+            user.setName(userName);
+
+            user.setPassword(SignUtils.createPassword("123456"));
+            // token
+            user.setToken(SignUtils.createToken(userName));
+
+            // set appids
+            user.setOwnApps("");
+
+            // role
+            user.setRoleId(RoleEnum.NORMAL.getValue());
+
+            userDao.create(user);
+        }
 
         return user;
     }

@@ -331,37 +331,31 @@
             <scope>test</scope>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>3.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-support-saml</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
     </dependencies>
     
     
     <build>
     	<finalName>${project.artifactId}</finalName>
     </build>
-     
-     <profiles>
-        <profile>
-            <id>prd</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-    		<build>
-    			<plugins>
-      				<plugin>
-	        			<artifactId>maven-war-plugin</artifactId>
-	        			<version>2.6</version>
-	        			<configuration>
-	          				<packagingExcludes>
-	          					WEB-INF/classes/config/**
-	          				</packagingExcludes>
-	        			</configuration>
-      				</plugin>
-    			</plugins>
-    		</build>
-        </profile>
-        <profile>
-            <id>dev</id>
-        </profile>
-    </profiles>
 
 </project>
 

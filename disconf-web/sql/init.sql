@@ -181,7 +181,7 @@ VALUES
 /* admin    admin*/
 INSERT INTO `user` (`user_id`, `name`, `password`, `token`, `ownapps`, `role_id`)
 VALUES
-    (6, 'admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 'f28d164d23291c732f64134e6b7d92be3ff8b1b3', '', 2);
+    (6, 'admin', '16af9ef261a12752a68deade2d4b7ce22706aaa9', 'f28d164d23291c732f64134e6b7d92be3ff8b1b3', '', 2);
 
 
 CREATE TABLE `config_history` (

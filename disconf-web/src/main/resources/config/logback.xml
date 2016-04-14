@@ -2,8 +2,8 @@
 <!-- copy it to /opt/conf/disconf  -->
 <included>
 
-    <property name="log.base" value="/var/log/disconf/disconf-web"/>
-    <property name="log.monitor" value="/var/log/disconf/monitor"/>
+    <property name="log.base" value="/usr/local/log/disconf.iapi.ymatou.com/disconf-web"/>
+    <property name="log.monitor" value="/usr/local/log/disconf.iapi.ymatou.com/monitor"/>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <Encoding>UTF-8</Encoding>

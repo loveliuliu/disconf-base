@@ -29,4 +29,6 @@ public interface SessionLogin {
     void updateSessionVisitor(HttpSession session, Visitor visitor);
 
     void logout(HttpServletRequest request);
+
+    boolean casLogin(HttpServletRequest request);
 }
