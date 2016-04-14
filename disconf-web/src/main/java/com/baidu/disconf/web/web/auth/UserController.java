@@ -119,7 +119,12 @@ public class UserController extends BaseController {
     public JsonObjectBase signout(HttpServletRequest request) {
 
         sessionLogin.logout(request);
+        String logout = "domainUser";
+        String system = request.getParameter("system");
+        if (null != system && "1".equals(system)) {
+            logout = "system";
+        }
 
-        return buildSuccess("ok", "ok");
+        return buildSuccess("logout", logout);
     }
 }

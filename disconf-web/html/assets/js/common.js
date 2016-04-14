@@ -63,3 +63,38 @@ function getSession2Redirect() {
     });
     loginActions();
 }
+
+//重写url
+$.ajaxPrefilter( function( options ) {
+    if(sessionStorage.system && sessionStorage.system == 1 ){
+        options.url  = options.url.lastIndexOf("?")!=-1?(options.url+'&system=1'):(options.url+"?system=1");
+    }
+});
+
+$.ajaxSetup({
+    error: function (XMLHttpRequest, textStatus, errorThrown) {
+        var system = getQueryString("system");
+        if((system == null || system == 'undefined') && (sessionStorage.system == null || sessionStorage.system == 0) ){
+            sessionStorage.system = 0;
+            location.href = "http://sso.ops.ymatou.cn/login?service=http://localhost:8080/api/cas/login";
+        }else{
+            sessionStorage.system = 1;
+        }
+    }
+});
+
+
+function getQueryString(name, url) {
+    var str = url || document.location.search || document.location.hash,
+        result = null;
+
+    if (!name || str === '') {
+        return result;
+    }
+
+    result = str.match(
+        new RegExp('(^|&|[\?#])' + name + '=([^&]*)(&|$)')
+    );
+
+    return result === null ? result : decodeURIComponent(result[2]);
+}
