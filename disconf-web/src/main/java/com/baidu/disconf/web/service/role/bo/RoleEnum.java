@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public enum RoleEnum {
 
-    NORMAL(1), ADMIN(2), READ_ADMIN(3);
+    NORMAL(1,"普通用户"), ADMIN(2,"管理员");
     private static final Map<Integer, RoleEnum> intToEnum = new HashMap<Integer, RoleEnum>();
 
     static {
@@ -20,11 +20,15 @@ public enum RoleEnum {
         }
     }
 
-    private final int value;
 
-    RoleEnum(int value) {
+    private final int value;
+    private final String name;
+    RoleEnum(int value,String name) {
         this.value = value;
+        this.name = name;
     }
+
+
 
     public static RoleEnum fromInt(int symbol) {
         return intToEnum.get(symbol);
@@ -32,5 +36,9 @@ public enum RoleEnum {
 
     public int getValue() {
         return value;
+    }
+
+    public String getName() {
+        return name;
     }
 }

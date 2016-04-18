@@ -1,0 +1,66 @@
+<%= page.basehead %>
+<title>Disconf - 分布式配置管理平台</title>
+<%= page.head %>
+
+<div id="Wrapper" class="clearfix">
+    <div id="Main" style="margin-top:50px;">
+        <div class="container-fluid">
+
+            <div class="row-fluid">
+                <ul class="breadcrumb" style="background-color:#fff;">
+                    <li>
+                        <a href="/admin_users.html">用户管理</a>
+                    </li>
+                    <li class="active">
+                        / 新建用户
+                    </li>
+
+                </ul>
+            </div>
+
+            <div class="row-fluid">
+
+                <div class="span12">
+
+                    <div class="content oz">
+                        <form ng-app="myApp" ng-submit="submitForm(myForm.$valid)" ng-controller="validateCtrl"
+                              name="myForm" novalidate class="private-form clearfix">
+                            <h2 class="autoPush-detail-title">新建用户</h2>
+
+                            <div class="private-item">
+                                <span class="private-item-key">用户名：</span>
+                                <input class="private-item-value" type="text" name="name" ng-model="name" ng-maxlength="25" required>
+                                <span style="color:red" ng-show="myForm.name.$dirty && myForm.name.$invalid">
+                                    <span ng-show="myForm.name.$error.required">用户名是必须的。</span>
+                                    <span ng-show="myForm.name.$error.maxlength">用户名不能超过25字符。</span>
+                                </span>
+                            </div>
+
+                            <div class="private-item">
+                                <span class="private-item-key">角色：</span>
+                                <select name="roleId" ng-model="roleId" required>
+                                    <option value="">--请选择--</option>
+                                    <option ng-repeat="r in roles" value="{{r.id}}">{{r.roleName}}</option>
+                                </select>
+                                <span style="color:red" ng-show="myForm.roleId.$dirty && myForm.roleId.$invalid">
+                                    <span ng-show="myForm.roleId.$error.required">请选择用户角色。</span>
+                                </span>
+                            </div>
+
+                            <div class="private-item" style="text-align:center">
+                                <input type="submit" value="新建" ng-disabled="myForm.$invalid" class="btn btn-primary"/>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%= page.foot %>
+<script src="assets/js/user_add.js"></script>
+
+<%= page.basefoot %>

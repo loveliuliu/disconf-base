@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.baidu.disconf.web.service.app.dao.AppMapper;
+import com.baidu.disconf.web.service.app.dto.AppDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.baidu.disconf.web.service.app.bo.App;
@@ -31,6 +35,9 @@ public class AppMgrImpl implements AppMgr {
 
     @Autowired
     private UserInnerMgr userInnerMgr;
+
+    @Autowired
+    private AppMapper appMapper;
 
     /**
      *
@@ -120,5 +127,10 @@ public class AppMgrImpl implements AppMgr {
     public List<App> getAppList() {
 
         return appDao.findAll();
+    }
+
+    @Override
+    public Page<AppDto> findAppDtoByApp(App app, Pageable pageable) {
+        return appMapper.findAppDtoByApp(app,pageable);
     }
 }

@@ -33,11 +33,12 @@ public class User extends BaseObject<Long> {
     @Column(value = Columns.OWNAPPS)
     private String ownApps;
 
+
     /**
      * 角色ID
      */
     @Column(value = Columns.ROLE_ID)
-    private int roleId;
+    private Integer roleId;
 
     public String getName() {
         return name;
@@ -71,11 +72,11 @@ public class User extends BaseObject<Long> {
         this.ownApps = ownApps;
     }
 
-    public int getRoleId() {
+    public Integer getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(int roleId) {
+    public void setRoleId(Integer roleId) {
         this.roleId = roleId;
     }
 

@@ -3,9 +3,15 @@ package com.baidu.disconf.web.web.auth;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.baidu.disconf.web.service.user.dto.UserDto;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -126,5 +132,56 @@ public class UserController extends BaseController {
         }
 
         return buildSuccess("logout", logout);
+    }
+
+
+    @NoAuth
+    @RequestMapping(value = "/list")
+    @ResponseBody
+    public JsonObjectBase list(User user,Pageable pageable){
+
+        Page<UserDto> userPage = userMgr.findByUser(user,pageable);
+
+        return buildSuccess(userPage);
+    }
+
+    @RequestMapping(value = "/save")
+    @ResponseBody
+    public JsonObjectBase save(User user){
+
+        if(StringUtils.isBlank(user.getName())){
+            return buildGlobalError("用户名不能为空!", ErrorCode.DEFAULT_ERROR);
+        }
+
+        if(null == user.getRoleId()){
+            return buildGlobalError("用户角色不能为空!", ErrorCode.DEFAULT_ERROR);
+        }
+
+        if(userMgr.isExistByName(user.getName())){
+            return buildGlobalError("用户名已存在!", ErrorCode.DEFAULT_ERROR);
+        }
+
+        userMgr.save(user);
+
+        return buildSuccess("新建用户成功!");
+    }
+
+    @RequestMapping(value = "/delete")
+    @ResponseBody
+    public JsonObjectBase delete(Long userId){
+        if(null == userId){
+            return buildGlobalError("用户ID不能为空!", ErrorCode.DEFAULT_ERROR);
+        }
+
+        User user = userMgr.getUser(userId);
+        if(null == user){
+            return buildGlobalError("用户不存在，用户ID:" + userId, ErrorCode.DEFAULT_ERROR);
+        }
+        if(user.getName().equals("admin")){
+            return buildGlobalError("不能删除超级管理员!", ErrorCode.DEFAULT_ERROR);
+        }
+        userMgr.delete(userId);
+
+        return buildSuccess("删除用户成功!");
     }
 }

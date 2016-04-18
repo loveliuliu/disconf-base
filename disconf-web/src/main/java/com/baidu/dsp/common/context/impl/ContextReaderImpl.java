@@ -25,14 +25,28 @@ public class ContextReaderImpl implements ApplicationContextAware, ContextReader
     }
 
     public String getMessage(String resourceMessage) throws NoSuchMessageException {
-        return context.getMessage(resourceMessage, null, Locale.SIMPLIFIED_CHINESE);
+        try {
+            return context.getMessage(resourceMessage, null, Locale.SIMPLIFIED_CHINESE);
+        } catch (NoSuchMessageException e) {
+            return resourceMessage;
+        }
     }
 
     public String getMessage(String resourceMessage, Object[] args) throws NoSuchMessageException {
-        return context.getMessage(resourceMessage, args, Locale.SIMPLIFIED_CHINESE);
+        try {
+            return context.getMessage(resourceMessage, args, Locale.SIMPLIFIED_CHINESE);
+        } catch (NoSuchMessageException e) {
+            return resourceMessage;
+        }
     }
 
     public String getMessage(MessageSourceResolvable resolvable) throws NoSuchMessageException {
-        return context.getMessage(resolvable, Locale.SIMPLIFIED_CHINESE);
+        try {
+            return context.getMessage(resolvable, Locale.SIMPLIFIED_CHINESE);
+        } catch (NoSuchMessageException e) {
+            return resolvable.getDefaultMessage();
+        }
     }
+
+
 }

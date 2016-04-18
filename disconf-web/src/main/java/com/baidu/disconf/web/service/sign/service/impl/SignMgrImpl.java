@@ -72,21 +72,7 @@ public class SignMgrImpl implements SignMgr {
         //
         User user = userDao.getUserByName(userName);
         if(null == user){
-            user = new User();
-
-            user.setName(userName);
-
-            user.setPassword(SignUtils.createPassword("123456"));
-            // token
-            user.setToken(SignUtils.createToken(userName));
-
-            // set appids
-            user.setOwnApps("");
-
-            // role
-            user.setRoleId(RoleEnum.NORMAL.getValue());
-
-            userDao.create(user);
+            user = userDao.createUserByNameAndRoleId(userName,RoleEnum.NORMAL.getValue());
         }
 
         return user;

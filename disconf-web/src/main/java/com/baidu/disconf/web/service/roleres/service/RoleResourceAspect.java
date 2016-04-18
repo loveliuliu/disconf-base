@@ -22,7 +22,7 @@ import com.baidu.ub.common.commons.ThreadContext;
 /**
  * 判断用户是否具有请求方法的访问权
  */
-@Aspect
+//@Aspect
 public class RoleResourceAspect {
 
     protected static final Logger LOG = LoggerFactory.getLogger(RoleResourceAspect.class);

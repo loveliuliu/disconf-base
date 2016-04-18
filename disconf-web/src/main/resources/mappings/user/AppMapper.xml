@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.baidu.disconf.web.service.app.dao.AppMapper">
+
+
+	<sql id="columns">
+		t.app_id as appId,
+		t.name as name,
+		t.description as description,
+		t.create_time as createTime,
+		t.update_time as updateTime,
+		t.emails as emails
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="app.id !=null "> AND t.app_id = #{app.id} </if>
+			<if test="app.name !=null and app.name != '' "> AND t.name like CONCAT('%',#{app.name},'%' )</if>
+		</where>
+	</sql>
+
+
+    <select id="findByApp"  resultType="App">
+        SELECT <include refid="columns"/>
+        FROM app t
+        <include refid="dynamicWhere"/>
+    </select>
+
+
+	<select id="findAppDtoByApp"  resultType="AppDto">
+		SELECT <include refid="columns"/>
+			,u.user_id as belongUserIds,u.name as belongUserNames
+		FROM
+		app t
+		LEFT JOIN (
+			SELECT
+				ua.app_id,
+				GROUP_CONCAT(u.user_id) as user_id,
+				GROUP_CONCAT(u.name) as name
+				FROM
+				user_app ua,USER u
+			WHERE
+			ua.user_id = u.user_id GROUP BY ua.app_id
+		) u  on t.app_id = u.app_id
+		<include refid="dynamicWhere"/>
+	</select>
+
+
+
+</mapper>

@@ -68,6 +68,9 @@
 
 
     <import resource="classpath*:applicationContext-dbconfig.xml"/>
+
+    <import resource="classpath*:applicationContext-mybatis.xml"/>
+
     <bean id="sessionLogin" class="com.baidu.disconf.web.web.auth.login.impl.SessionLoginImpl"/>
     <bean id="roleResourceAspect" class="com.baidu.disconf.web.service.roleres.service.RoleResourceAspect"/>
     <bean id="zookeeperDriver" class="com.baidu.disconf.web.innerapi.zookeeper.impl.ZookeeperDriverImpl"/>

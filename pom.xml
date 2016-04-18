@@ -45,10 +45,14 @@
         <target.version>1.7</target.version>
         <spring.version>4.1.7.RELEASE</spring.version>
         <spring.amqp.version>1.4.5.RELEASE</spring.amqp.version>
+        <spring.data.common.version>1.12.1.RELEASE</spring.data.common.version>
         <junit.version>4.10</junit.version>
         <jsp.version>2.0</jsp.version>
         <servlet.version>2.5</servlet.version>
         <cglib.version>2.2.2</cglib.version>
+        <mybatis.version>3.2.8</mybatis.version>
+        <mybatis-spring.version>1.2.2</mybatis-spring.version>
+        <org.jasig.cas.client.version>3.4.1</org.jasig.cas.client.version>
 
         <!-- resource path -->
         <project.build.online.sourceDir>${project.basedir}/src/main/online-resources</project.build.online.sourceDir>
@@ -401,6 +405,41 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-webmvc</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${spring.data.common.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis</artifactId>
+                <version>${mybatis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>${mybatis-spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jasig.cas.client</groupId>
+                <artifactId>cas-client-core</artifactId>
+                <version>${org.jasig.cas.client.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jasig.cas.client</groupId>
+                <artifactId>cas-client-support-saml</artifactId>
+                <version>${org.jasig.cas.client.version}</version>
             </dependency>
 
             <!-- test dependencies -->

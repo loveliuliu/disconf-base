@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.baidu.disconf.web.service.task.dao.TaskMapper">
+
+
+	<sql id="columns">
+		t.task_id as taskId,
+		t.app_id as appId,
+		t.appName as app_name,
+		t.env_id as envId,
+		t.env_name as envName,
+		t.version as version,
+		t.audit_status as auditStatus,
+		t.create_user_id as createUserId,
+		t.create_time as createTime,
+		t.audit_user_id as auditUserId,
+		t.audit_time as auditTime,
+		t.audit_comment as t.auditComment,
+		t.exec_time as t.execTime,
+		t.exec_status as t.execStatus,
+		t.memo as memo
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="task.id !=null "> AND t.task_id = #{task.id} </if>
+		</where>
+	</sql>
+
+
+    <select id="findByTask"  resultType="Task">
+        SELECT <include refid="columns"/>
+        FROM task t
+        <include refid="dynamicWhere"/>
+    </select>
+
+
+</mapper>

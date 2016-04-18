@@ -5,8 +5,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.baidu.disconf.web.service.app.bo.App;
+import com.baidu.disconf.web.service.app.dto.AppDto;
 import com.baidu.disconf.web.service.app.form.AppNewForm;
 import com.baidu.disconf.web.service.app.vo.AppListVo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * @author liaoqiqi
@@ -77,4 +80,6 @@ public interface AppMgr {
      * @return
      */
     String getEmails(Long id);
+
+    Page<AppDto> findAppDtoByApp(App app, Pageable pageable);
 }

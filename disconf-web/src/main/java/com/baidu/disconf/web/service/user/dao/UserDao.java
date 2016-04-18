@@ -13,4 +13,6 @@ public interface UserDao extends BaseDao<Long, User> {
 
     User getUserByName(String name);
 
+    User createUserByNameAndRoleId(String name,Integer roleId);
+
 }

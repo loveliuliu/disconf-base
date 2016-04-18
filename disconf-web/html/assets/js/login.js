@@ -4,6 +4,12 @@
 
     getSession2Redirect();
 
+    document.onkeydown=function(){
+        if (event.keyCode == 13){
+            $(".form-submit").click();
+        }
+    };
+
     // 发送登录请求
     $(".form-submit").on("click", function () {
 

@@ -23,6 +23,7 @@ public class Columns {
     public static final String ENV_ID = "env_id";
     public static final String CONFIG_ID = "config_id";
     public static final String USER_ID = "user_id";
+    public static final String TASK_ID = "task_id";
 
     public static final String TYPE = "type";
 

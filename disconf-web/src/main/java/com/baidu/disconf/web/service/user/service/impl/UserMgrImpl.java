@@ -2,9 +2,15 @@ package com.baidu.disconf.web.service.user.service.impl;
 
 import java.util.List;
 
+import com.baidu.disconf.web.service.role.bo.RoleEnum;
+import com.baidu.disconf.web.service.user.dao.UserMapper;
+import com.baidu.disconf.web.service.user.dto.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +38,9 @@ public class UserMgrImpl implements UserMgr {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public Visitor getVisitor(Long userId) {
@@ -87,4 +96,36 @@ public class UserMgrImpl implements UserMgr {
         return userDao.get(userId);
     }
 
+    @Override
+    public Page<UserDto> findByUser(User user, Pageable pageable) {
+
+        return userMapper.findByUserDto(user,pageable);
+    }
+
+    @Override
+    public Page<UserDto> findByUserTest(User user, Pageable pageable) {
+        return userMapper.findByUserDto(user,pageable);
+    }
+
+    @Override
+    public Boolean isExistByName(String name) {
+        User user = userDao.getUserByName(name);
+        if(user != null){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public User save(User user) {
+
+        user = userDao.createUserByNameAndRoleId(user.getName(),user.getRoleId());
+
+        return user;
+    }
+
+    @Override
+    public void delete(Long userId) {
+        userDao.delete(userId);
+    }
 }
