@@ -82,7 +82,7 @@ public class DisInnerConfigHelper {
         
         if (StringUtils.isEmpty(DisClientConfig.getInstance().userDefineDownloadDir)) {
             //默认的配置文件下载目录
-            DisClientConfig.getInstance().userDefineDownloadDir = "/opt/config/" 
+            DisClientConfig.getInstance().userDefineDownloadDir = "/usr/local/config/" 
                     + DisClientConfig.getInstance().APP + "/" 
                     + DisClientConfig.getInstance().ENV + "/"
                     + DisClientConfig.getInstance().VERSION;

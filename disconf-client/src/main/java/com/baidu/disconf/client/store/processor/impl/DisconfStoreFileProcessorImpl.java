@@ -4,6 +4,7 @@ import static com.baidu.disconf.client.store.inner.DisconfCenterStore.getInstanc
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -207,9 +208,26 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
         }
 
         // 存储
-        Map<String, FileItemValue> keMap = disconfCenterFile.getKeyMaps();
-        if (keMap.size() > 0) {
-            for (String fileItem : keMap.keySet()) {
+        Map<String, FileItemValue> keyMap = disconfCenterFile.getKeyMaps();
+        if (keyMap.size() > 0) {
+        	
+        	if ( isInStartup) {
+        		
+        		//校验配置文件是否存在漏配配置项
+        		Set<String> misses = new HashSet<String>( );
+        		Set<String> keys = keyMap.keySet();
+        		for ( String key : keys ) {
+        			if ( !disconfValue.getFileData().containsKey(key)) {
+        				misses.add(key);
+        			}
+        		}
+        		
+        		if ( !misses.isEmpty()) {
+        			throw new Exception("Following keys not provided in properties file:" + fileName + "\r\n" + misses);
+        		}
+        	}
+        	
+            for (String fileItem : keyMap.keySet()) {
 
                 Object object = disconfValue.getFileData().get(fileItem);
                 if (object == null) {
@@ -221,13 +239,13 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
                 // 根据类型设置值
                 try {
 
-                    Object value = ClassUtils.getValeByType(keMap.get(fileItem).getField().getType(), object);
-                    keMap.get(fileItem).setValue(value);
+                    Object value = ClassUtils.getValeByType(keyMap.get(fileItem).getField().getType(), object);
+                    keyMap.get(fileItem).setValue(value);
 
                     // 如果Object非null,则顺便也注入
                     if (disconfCenterFile.getObject() != null) {
-                        keMap.get(fileItem).getField()
-                                .set(disconfCenterFile.getObject(), keMap.get(fileItem).getValue());
+                        keyMap.get(fileItem).getField()
+                                .set(disconfCenterFile.getObject(), keyMap.get(fileItem).getValue());
                     }
 
                 } catch (Exception e) {
