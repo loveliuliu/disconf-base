@@ -24,7 +24,7 @@ public class ConfigMgr {
      *
      * @throws Exception
      */
-    public synchronized static void init(Resource propertiesLocation, boolean unitTestMode ) throws Exception {
+    public synchronized static void init(Resource propertiesLocation ) throws Exception {
 
         LOGGER.info("--------------- LOAD CONFIG START ---------------");
 
@@ -39,15 +39,15 @@ public class ConfigMgr {
 
         // 导入用户配置
         DisClientConfig.getInstance().loadConfig(propertiesLocation);
-        
-        if ( unitTestMode ) {
-            LOGGER.info("Disconf is in UnitTestMode, ALL configures are loaded from classpath");
-            DisClientConfig.getInstance().unitTestMode = true;
-            DisClientConfig.getInstance().ENABLE_DISCONF = false;
-        }
 
         // 校验 用户配置
         DisInnerConfigHelper.verifyUserConfig();
+        
+        if ( "local".equalsIgnoreCase(DisClientConfig.getInstance().ENV) ) {
+            LOGGER.info("Disconf is running in LOCAL env, all config files are loaded from classpath");
+            DisClientConfig.getInstance().unitTestMode = true;
+            DisClientConfig.getInstance().ENABLE_DISCONF = false;
+        }
 
         isInit = true;
 

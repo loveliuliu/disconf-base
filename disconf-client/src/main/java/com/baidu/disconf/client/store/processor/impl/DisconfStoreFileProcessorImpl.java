@@ -160,7 +160,7 @@ public class DisconfStoreFileProcessorImpl implements DisconfStoreProcessor {
             } catch (Exception e) {
                 LOGGER.error("inject2Instance fileName " + fileName + " " + e.toString(), e);
                 if ( isInStartup) {
-                    throw new RuntimeException("Inject2Instance failure. file:" + fileName + " fileItem:" + fileItem);
+                    throw new RuntimeException("Inject2Instance failure. file:" + fileName + " fileItem:" + fileItem, e);
                 }
             }
         }
