@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.baidu.dsp.common.dao.Columns;
 import com.baidu.unbiz.common.genericdao.annotation.Column;
 import com.baidu.unbiz.common.genericdao.annotation.Table;
 import com.baidu.unbiz.common.genericdao.annotation.Table.ColumnStyle;
@@ -155,6 +156,9 @@ public class MappingItem {
             String name = f.getName().toLowerCase();
             boolean isKey = name.equals("id");
             if (isKey && isBaiduClass) {
+                continue;
+            }
+            if (isKey && keyColumn.equals(Columns.NO_KEY)) {
                 continue;
             }
 

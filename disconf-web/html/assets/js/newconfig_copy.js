@@ -28,31 +28,31 @@ $("#item_submit").on("click", function (e) {
         $("#error").html("配置源不能和配置目的地一样！");
         return;
     }
-    var needConfirm = false;
-    $.ajax({
-        async:false,
-        type: "POST",
-        url: "/api/web/config/isEnvAndVersionExist",
-        data: {
-            "appId": appId,
-            "newVersion": newVersion,
-            "newEnvId": newEnvId
-        }
-    }).done(function (data) {
-        needConfirm = data.result;
-    });
+    // var needConfirm = false;
+    // $.ajax({
+    //     async:false,
+    //     type: "POST",
+    //     url: "/api/web/config/isEnvAndVersionExist",
+    //     data: {
+    //         "appId": appId,
+    //         "newVersion": newVersion,
+    //         "newEnvId": newEnvId
+    //     }
+    // }).done(function (data) {
+    //     needConfirm = data.result;
+    // });
 
-    if(needConfirm){
-        layer.confirm('目的版本已存在配置，肯定覆盖吗？', {
+    // if(needConfirm){
+        layer.confirm('此操作将会删除您选择目的地的草稿，确定操作吗?', {
                 btn: ['确认','取消'] //按钮
             }, function(index){
                 layer.close(index);
                 configCopy();
             }, function(){}
         );
-    }else{
-        configCopy();
-    }
+    // }else{
+    //     configCopy();
+    // }
 
 });
 

@@ -13,8 +13,8 @@
                     </div>
 
                     <ul id="envChoice" class="nav nav-pills nav-stacked" style="margin-top:20px;">
-                        <li class="active"><a rel="1" href="#">用户管理</a></li>
-                        <li class=""><a rel="2" href="#">APP管理</a></li>
+                        <li class="active"><a href="#">用户管理</a></li>
+                        <li class=""><a href="/admin_apps.html">APP管理</a></li>
                     </ul>
 
                 </div>
@@ -66,6 +66,7 @@
                                         <td>{{user.name}}</td>
                                         <td style="max-width:100px">{{user.roleName}}</td>
                                         <td>
+                                            <a ng-show="user.name!='admin'" ng-click="modifyUser(user.id);" style="cursor: pointer; cursor: hand; "><i title="修改" class="icon-edit"></i></a>
                                             <a ng-show="user.name!='admin'" ng-click="deleteUser(user.id);" style="cursor: pointer; cursor: hand; "><i title="删除" class="icon-remove"></i></a>
                                         </td>
                                     </tr>
@@ -95,6 +96,7 @@
         </div>
     </div>
 </div>
+
 
 <%= page.foot %>
 <script src="assets/js/admin_user.js"></script>

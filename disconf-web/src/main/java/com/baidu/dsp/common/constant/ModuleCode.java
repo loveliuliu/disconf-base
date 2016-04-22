@@ -6,7 +6,7 @@ package com.baidu.dsp.common.constant;
  */
 public enum ModuleCode {
 
-    OTHER(0, "Other"), REMOTE(3, "Remote"), EXCEPTION(5, "EXCEPTION"), FILE(6, "FILEUPLOAD");
+    OTHER(0, "Other"), REMOTE(3, "Remote"), EXCEPTION(5, "EXCEPTION"), FILE(6, "FILEUPLOAD"), VALIDATION(7,"VALIDATION");
     ;
 
     private int code = 0;

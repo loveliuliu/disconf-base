@@ -1,0 +1,109 @@
+<%= page.basehead %>
+<title>Disconf - 分布式配置管理平台</title>
+<%= page.head %>
+
+<div id="Wrapper" class="clearfix">
+    <div id="Main" style="margin-top:50px;">
+        <div class="container-fluid">
+
+            <div class="row-fluid">
+                <ul class="breadcrumb" style="background-color:#fff;">
+                    <li>
+                        <a href="/my_config_draft.html">我的草稿</a> /
+                    </li>
+                    <li>
+                        <span id="currentData"></span>
+                    </li>
+                    <li class="active">
+                        / 草稿修改
+                    </li>
+                </ul>
+            </div>
+
+            <div class="row-fluid">
+
+                <div class="span4">
+                    <div class="well sidebar-nav" style="padding:10px;background-color:#fff">
+                        <ul id="sidebarcur" class="nav nav-list"></ul>
+                    </div>
+                    <!--/.well -->
+                </div>
+
+                <div class="span8">
+
+                    <div class="content">
+
+                        <form id="form" class="private-form clearfix">
+                            <h2 class="autoPush-detail-title">草稿配置项修改</h2>
+
+                            <p class="private-item">
+                                <span class="private-item-key">APP id & 名称：</span>
+                                <span id="app" class="private-item-value"></span>
+                            </p>
+
+                            <p class="private-item">
+                                <span class="private-item-key">版本：</span>
+                                <span id="version" class="private-item-value"></span>
+                            </p>
+
+                            <p class="private-item">
+                                <span class="private-item-key">环境：</span>
+                                <span id="env" class="private-item-value"></span>
+                            </p>
+
+                            <p class="private-item">
+                                <span class="private-item-key">配置KEY：</span>
+                                <span id="key" class="private-item-value"></span>
+                            </p>
+                            <p class="private-item">
+                                <span class="private-item-key">草稿类型：</span>
+                                <span id="type" class="private-item-value"></span>
+                            </p>
+                            <div class="private-item clearfix hide">
+                                <span style="float:left" class="private-item-key">原配置值：</span>
+                                <pre style="float:left" id="configOldValue"
+                                     class="private-item-value-pre"></pre>
+                            </div>
+
+                            <div class="private-item clearfix">
+                                <span style="float:left" class="private-item-key">草稿修改值：</span>
+                                <pre style="float:left" id="draftOldValue"
+                                     class="private-item-value-pre"></pre>
+                            </div>
+
+                            <p class="private-item">
+                                <span class="private-item-key">配置值：</span>
+                                <textarea id="value" type="text" class="private-item-value"
+                                          style="min-width:500px;height:200px;"></textarea>
+                            </p>
+
+                            <div id="error" class="alert alert-warning hide" role="alert">
+                                表单选项不能为空或填写格式错误！
+                            </div>
+                            <div>
+                                <button id="submit" class="private-submit" onclick="return false;">
+                                    保存
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 详细信息单行模板-->
+<div id="tItemTpl" class="hide">
+    <li style="font-size:13px;overflow-wrap: break-word;word-wrap: break-word;" class="{2}">
+        <a href="{1}">{0}</a>
+    </li>
+</div>
+
+
+<%= page.foot %>
+<script src="assets/js/modify_draft_common.js"></script>
+<script src="assets/js/modify_draft_item.js"></script>
+
+<%= page.basefoot %>

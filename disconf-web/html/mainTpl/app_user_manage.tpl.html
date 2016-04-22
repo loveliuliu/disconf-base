@@ -1,0 +1,109 @@
+<%= page.basehead %>
+<title>Disconf - 分布式配置管理平台</title>
+<%= page.head %>
+<link rel="stylesheet" type="text/css" href="dep/multiselect/css/style.css" />
+<div id="Wrapper" class="clearfix">
+    <div id="Main" style="margin-top:50px;">
+        <div class="container-fluid">
+
+            <div class="row-fluid">
+                <ul class="breadcrumb" style="background-color:#fff;">
+                    <li>
+                        <a href="/admin_apps.html">APP管理</a>
+                    </li>
+                    <li class="active">
+                        / APP用户管理
+                    </li>
+
+                </ul>
+            </div>
+
+            <div class="row-fluid">
+
+                <div class="span12">
+
+                    <div class="content oz">
+                        <form ng-app="myApp" ng-submit="submitForm(myForm.$valid)" ng-controller="validateCtrl"
+                              name="myForm" novalidate class="private-form clearfix">
+                            <h2 class="autoPush-detail-title">APP用户管理</h2>
+
+                            <div class="private-item">
+                                APP名称：
+                                {{app.name}}
+                            </div>
+
+                            <div class="private-item">
+                                普通用户：
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <select name="normalFrom" id="undo_redo" class="form-control" size="13" multiple="multiple">
+                                        <option ng-repeat="u in normalUsers" value="{{u.id}}">{{u.name}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <button type="button" id="undo_redo_undo" class="btn btn-primary btn-block" style="margin-top:52px;">undo</button>
+                                    <button type="button" id="undo_redo_rightAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                                    <button type="button" id="undo_redo_rightSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                                    <button type="button" id="undo_redo_leftSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                                    <button type="button" id="undo_redo_leftAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+                                    <button type="button" id="undo_redo_redo" class="btn btn-warning btn-block">redo</button>
+                                </div>
+
+                                <div class="col-xs-5">
+                                    <select name="normalSelected" id="undo_redo_to" class="form-control" size="13" multiple="multiple">
+                                        <option ng-repeat="u in normalSelected" value="{{u.id}}">{{u.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="private-item">
+                                审核员：
+                            </div>
+
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <select name="auditFrom" id="auditFrom" class="form-control" size="13" multiple="multiple">
+                                        <option ng-repeat="u in auditUsers" value="{{u.id}}">{{u.name}}</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-xs-2">
+                                    <button type="button" id="auditFrom_undo" class="btn btn-primary btn-block" style="margin-top:52px;">undo</button>
+                                    <button type="button" id="auditFrom_rightAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-forward"></i></button>
+                                    <button type="button" id="auditFrom_rightSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-right"></i></button>
+                                    <button type="button" id="auditFrom_leftSelected" class="btn btn-default btn-block"><i class="glyphicon glyphicon-chevron-left"></i></button>
+                                    <button type="button" id="auditFrom_leftAll" class="btn btn-default btn-block"><i class="glyphicon glyphicon-backward"></i></button>
+                                    <button type="button" id="auditFrom_redo" class="btn btn-warning btn-block">redo</button>
+                                </div>
+
+                                <div class="col-xs-5">
+                                    <select name="auditSelected" id="auditFrom_to" class="form-control" size="13" multiple="multiple">
+                                        <option ng-repeat="u in auditSelected" value="{{u.id}}">{{u.name}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="private-item" style="text-align:center">
+                                <input type="submit" value="保存" ng-disabled="myForm.$invalid" class="btn btn-primary"/>
+                                <input type="button" onclick="history.go(-1);" value="返回" class="btn btn-warning"/>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<%= page.foot %>
+<script src="dep/multiselect/js/multiselect.min.js"></script>
+<script src="assets/js/app_user_manage.js"></script>
+
+<%= page.basefoot %>

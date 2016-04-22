@@ -4,7 +4,7 @@
 
 
 	<sql id="columns">
-		t.task_id as taskId,
+		t.task_id as id,
 		t.app_id as appId,
 		t.appName as app_name,
 		t.env_id as envId,
@@ -35,4 +35,15 @@
     </select>
 
 
+	<!--TaskDto-->
+	<!-- 我提交的任务列表  -->
+
+
+	<!-- 我的待办任务  -->
+
+
+	<!-- 我的已办任务  -->
+
+
+	<!-- 已完成的任务  -->
 </mapper>

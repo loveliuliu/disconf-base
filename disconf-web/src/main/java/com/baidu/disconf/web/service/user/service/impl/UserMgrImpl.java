@@ -119,7 +119,18 @@ public class UserMgrImpl implements UserMgr {
     @Override
     public User save(User user) {
 
-        user = userDao.createUserByNameAndRoleId(user.getName(),user.getRoleId());
+        if(null != user.getId()){
+
+            User oldUser = userDao.get(user.getId());
+            oldUser.setRoleId(user.getRoleId());
+            oldUser.setEmail(user.getEmail());
+            oldUser.setPhone(user.getPhone());
+            userDao.update(oldUser);
+
+        }else {
+
+            user = userDao.createUser(user.getName(),user.getRoleId(),user.getEmail(),user.getPhone());
+        }
 
         return user;
     }

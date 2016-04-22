@@ -8,7 +8,10 @@ import com.baidu.disconf.web.innerapi.zookeeper.ZooKeeperDriver;
 import com.baidu.disconf.web.service.app.bo.App;
 import com.baidu.disconf.web.service.app.service.AppMgr;
 import com.baidu.disconf.web.service.config.bo.Config;
+import com.baidu.disconf.web.service.config.bo.ConfigDraft;
+import com.baidu.disconf.web.service.config.constant.ConfigDraftTypeEnum;
 import com.baidu.disconf.web.service.config.dao.ConfigDao;
+import com.baidu.disconf.web.service.config.dao.ConfigDraftDao;
 import com.baidu.disconf.web.service.config.form.ConfCopyForm;
 import com.baidu.disconf.web.service.config.form.ConfListForm;
 import com.baidu.disconf.web.service.config.form.ConfNewItemForm;
@@ -18,6 +21,7 @@ import com.baidu.disconf.web.service.config.vo.ConfListVo;
 import com.baidu.disconf.web.service.config.vo.MachineListVo;
 import com.baidu.disconf.web.service.env.bo.Env;
 import com.baidu.disconf.web.service.env.service.EnvMgr;
+import com.baidu.disconf.web.service.user.dto.Visitor;
 import com.baidu.disconf.web.service.zookeeper.dto.ZkDisconfData;
 import com.baidu.disconf.web.service.zookeeper.dto.ZkDisconfData.ZkDisconfDataItem;
 import com.baidu.disconf.web.service.zookeeper.service.ZkDeployMgr;
@@ -29,6 +33,7 @@ import com.baidu.dsp.common.utils.BeanUtils;
 import com.baidu.dsp.common.utils.DataTransfer;
 import com.baidu.dsp.common.utils.ServiceUtil;
 import com.baidu.dsp.common.utils.email.LogMailBean;
+import com.baidu.ub.common.commons.ThreadContext;
 import com.baidu.ub.common.db.DaoPageResult;
 import com.github.knightliao.apollo.utils.data.GsonUtils;
 import com.github.knightliao.apollo.utils.io.OsUtil;
@@ -81,6 +86,9 @@ public class ConfigMgrImpl implements ConfigMgr {
 
     @Autowired
     private ConfigHistoryMgr configHistoryMgr;
+
+    @Autowired
+    private ConfigDraftDao configDraftDao;
 
     /**
      * 根据APPid获取其版本列表
@@ -452,26 +460,26 @@ public class ConfigMgrImpl implements ConfigMgr {
     public String updateItemValue(Long configId,String value){
 
         Config config = getConfigById(configId);
-        String oldValue = config.getValue();
+        config.setValue(value);
 
-        this.updateOneItemValue(config,value);
+        this.newConfigDraft(config,ConfigDraftTypeEnum.modify); //保存草稿
         //
         // 发送邮件通知
         //
-        String toEmails = appMgr.getEmails(config.getAppId());
-
-        if (applicationPropertyConfig.isEmailMonitorOn() == true) {
-            boolean isSendSuccess = logMailBean.sendHtmlEmail(toEmails,
-                    " config update", DiffUtils.getDiff(CodeUtils.unicodeToUtf8(oldValue),
-                            value,
-                            config.toString(),
-                            getConfigUrlHtml(config)));
-            if (isSendSuccess) {
-                return "修改成功，邮件通知成功";
-            } else {
-                return "修改成功，邮件发送失败，请检查邮箱配置";
-            }
-        }
+//        String toEmails = appMgr.getEmails(config.getAppId());
+//
+//        if (applicationPropertyConfig.isEmailMonitorOn() == true) {
+//            boolean isSendSuccess = logMailBean.sendHtmlEmail(toEmails,
+//                    " config update", DiffUtils.getDiff(CodeUtils.unicodeToUtf8(oldValue),
+//                            value,
+//                            config.toString(),
+//                            getConfigUrlHtml(config)));
+//            if (isSendSuccess) {
+//                return "修改成功，邮件通知成功";
+//            } else {
+//                return "修改成功，邮件发送失败，请检查邮箱配置";
+//            }
+//        }
 
         return "修改成功";
     }
@@ -556,17 +564,139 @@ public class ConfigMgrImpl implements ConfigMgr {
         config.setCreateTime(curTime);
         config.setUpdateTime(curTime);
 
+        this.newConfigDraft(config,ConfigDraftTypeEnum.create); //保存草稿
+
+//        // 发送邮件通知
+//        //
+//        String toEmails = appMgr.getEmails(config.getAppId());
+//        if (applicationPropertyConfig.isEmailMonitorOn() == true) {
+//            logMailBean.sendHtmlEmail(toEmails, " config new", getNewValue(confNewForm.getValue(), config.toString(),
+//                    getConfigUrlHtml(config)));
+//        }
+        return config;
+    }
+
+    /**
+     * 草稿生效 转化成config
+     * @param configDraft
+     * @return
+     */
+    public Config execDraftToCofing(ConfigDraft configDraft){
+
+        ConfigDraftTypeEnum draftType = ConfigDraftTypeEnum.getByValue(configDraft.getDraftType());
+
+        Config config = null;
+
+        switch (draftType){
+            case create:
+                    config = createConfigByDraft(configDraft);
+                break;
+            case modify:
+                    config = modifyConfigByDraft(configDraft);
+                break;
+            case delete:
+                    config = deleteConfigByDraft(configDraft);
+                break;
+        }
+
+        //todo 所有的邮件处理暂时没有做
+        //todo 生效后给zookeeper发通知 configMgr.notifyZookeeper(config.getId());
+
+        return config;
+    }
+
+    /**
+     * 生效新增
+     * @param configDraft
+     * @return
+     */
+    private Config createConfigByDraft(ConfigDraft configDraft){
+
+        Config config = new Config();
+
+        config.setAppId(configDraft.getAppId());
+        config.setEnvId(configDraft.getEnvId());
+        config.setName(configDraft.getName());
+        config.setType(configDraft.getType());
+        config.setVersion(configDraft.getVersion());
+        config.setValue(CodeUtils.utf8ToUnicode(configDraft.getValue()));
+        config.setStatus(Constants.STATUS_NORMAL);
+
+        // 时间
+        String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
+        config.setCreateTime(curTime);
+        config.setUpdateTime(curTime);
+
         configDao.create(config);
         configHistoryMgr.createOne(config.getId(), "", config.getValue());
 
-        // 发送邮件通知
-        //
-        String toEmails = appMgr.getEmails(config.getAppId());
-        if (applicationPropertyConfig.isEmailMonitorOn() == true) {
-            logMailBean.sendHtmlEmail(toEmails, " config new", getNewValue(confNewForm.getValue(), config.toString(),
-                    getConfigUrlHtml(config)));
-        }
         return config;
+    }
+
+    /**
+     * 生效修改
+     * @param configDraft
+     * @return
+     */
+    private Config modifyConfigByDraft(ConfigDraft configDraft){
+
+        Config config = configDao.get(configDraft.getConfigId());
+        String value = configDraft.getValue();
+
+        this.updateOneItemValue(config,value);
+        config.setVersion(value);
+
+        return config;
+    }
+
+    /**
+     * 生效删除
+     * @param configDraft
+     * @return
+     */
+    private Config deleteConfigByDraft(ConfigDraft configDraft){
+
+        Long configId = configDraft.getConfigId();
+        Config config = configDao.get(configId);
+
+        configHistoryMgr.createOne(configId, config.getValue(), "");
+
+        configDao.deleteItem(configId);
+
+        return config;
+    }
+
+    @Override
+    public ConfigDraft newConfigDraft(Config config,ConfigDraftTypeEnum configDraftTypeEnum) {
+
+        ConfigDraft configDraft = new ConfigDraft();
+
+        App app = appMgr.getById(config.getAppId());
+        Env env = envMgr.getById(config.getEnvId());
+
+        configDraft.setAppId(config.getAppId());
+        configDraft.setAppName(app.getName());
+        configDraft.setEnvId(config.getEnvId());
+        configDraft.setEnvName(env.getName());
+        configDraft.setName(config.getName());
+        configDraft.setType(config.getType());
+        configDraft.setVersion(config.getVersion());
+        configDraft.setValue(CodeUtils.utf8ToUnicode(config.getValue()));
+        configDraft.setStatus(Constants.STATUS_NORMAL);
+        configDraft.setDraftType(configDraftTypeEnum.getValue()); // 草稿类型
+        Visitor visitor = ThreadContext.getSessionVisitor();
+        configDraft.setUserId(visitor.getId()); //当前用户
+
+        configDraft.setConfigId(config.getId());
+
+        // 时间
+        String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
+        configDraft.setCreateTime(curTime);
+        configDraft.setUpdateTime(curTime);
+
+        configDraftDao.create(configDraft);
+
+        return configDraft;
     }
 
     /**
@@ -578,29 +708,49 @@ public class ConfigMgrImpl implements ConfigMgr {
     public void delete(Long configId) {
 
         Config config = configDao.get(configId);
-        configHistoryMgr.createOne(configId, config.getValue(), "");
 
-        configDao.deleteItem(configId);
+        this.newConfigDraft(config,ConfigDraftTypeEnum.delete); //保存草稿
     }
-
 
     @Override
     @Transactional
     public void copyConfig(ConfCopyForm confCopyForm) {
 
-        List<Config> configList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getEnvId(), confCopyForm.getVersion());
+        Long appId = confCopyForm.getAppId();
+        Long envId = confCopyForm.getEnvId();
+        String version = confCopyForm.getVersion();
 
-        List<Config> existConfigList = configDao.getConfigList(confCopyForm.getAppId(), confCopyForm.getNewEnvId(), confCopyForm.getNewVersion());
+        Long destEnvId = confCopyForm.getNewEnvId();
+        String destVersion = confCopyForm.getNewVersion();
+
+        Visitor visitor = ThreadContext.getSessionVisitor();
+        Long userId = visitor.getId();
+
+        String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
+
+        //找到当前用户 目的地版本下所有正常的草稿
+        List<ConfigDraft> configDraftList = configDraftDao.findSubmitDraft(
+                appId,destEnvId,destVersion,userId,Constants.STATUS_NORMAL);
+
+        if(!CollectionUtils.isEmpty(configDraftList)){
+            for(ConfigDraft configDraft:configDraftList){
+                configDraftDao.updateStatus(configDraft.getId(),Constants.STATUS_DELETE);
+            }
+        }
+
+        List<Config> configList = configDao.getConfigList(appId, envId, version); //源配置
+
+        List<Config> existConfigList = configDao.getConfigList(appId, destEnvId, destVersion); //目的地已存在的配置
 
         if(!CollectionUtils.isEmpty(existConfigList)){//如果存在 则直接删除
             for(Config config : existConfigList){
-                configDao.deleteItem(config.getId());
+                this.newConfigDraft(config,ConfigDraftTypeEnum.delete);
             }
         }
 
         if(!CollectionUtils.isEmpty(configList)){
-            String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
-            List<Config> newList = new ArrayList<Config>();
+
+
             for(Config config:configList){
 
                 Config newConfig = (Config)BeanUtils.getClone(config);
@@ -611,10 +761,10 @@ public class ConfigMgrImpl implements ConfigMgr {
                 newConfig.setCreateTime(curTime);
                 newConfig.setUpdateTime(curTime);
 
-                newList.add(newConfig);
+
+                this.newConfigDraft(newConfig,ConfigDraftTypeEnum.create);
             }
 
-            configDao.insert(newList);
         }
     }
 

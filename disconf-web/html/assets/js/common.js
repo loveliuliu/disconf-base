@@ -74,6 +74,9 @@ $.ajaxPrefilter( function( options ) {
 $.ajaxSetup({
     error: function (XMLHttpRequest, textStatus, errorThrown) {
         var system = getQueryString("system");
+        if(errorThrown!=''){
+            return;
+        }
         if((system == null || system == 'undefined') && (sessionStorage.system == null || sessionStorage.system == 0) ){
             sessionStorage.system = 0;
             location.href = "http://sso.ops.ymatou.cn/login?service=http://localhost:8080/api/cas/login";

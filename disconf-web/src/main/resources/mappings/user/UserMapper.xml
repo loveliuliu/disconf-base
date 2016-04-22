@@ -9,10 +9,12 @@
 		<result property="token" column="token" />
 		<result property="ownApps" column="ownapps" />
 		<result property="roleId" column="role_id" />
+		<result property="email" column="email" />
+		<result property="phone" column="phone" />
 	</resultMap>
 	
 	<sql id="columns">
-		user_id,name,password,token,ownapps,role_id
+		user_id,name,password,token,ownapps,role_id,email,phone
 	</sql>
 	
 	<sql id="dynamicWhere">
@@ -23,6 +25,8 @@
 			<if test="user.token !=null "> AND token = #{user.token} </if>
 			<if test="user.ownApps !=null "> AND ownApps = #{user.ownApps} </if>
 			<if test="user.roleId != null  "> AND role_id = #{user.roleId} </if>
+			<if test="user.email != null  "> AND email = #{user.email} </if>
+			<if test="user.phone != null  "> AND phone = #{user.phone} </if>
 		</where>
 	</sql>
 
@@ -46,4 +50,16 @@
 		</where>
     </select>
 
+
+	<select id="findSelectedUserByApp" resultType="com.baidu.disconf.web.service.user.dto.UserDto">
+		SELECT
+		u.user_id as id,u.name,u.ownapps as ownApps,u.role_id as roleId
+		FROM
+		user u,user_app ua
+		<where>
+			ua.user_id = u.user_id
+			and ua.app_id = #{appId}
+			and ua.type = #{type}
+		</where>
+	</select>
 </mapper>

@@ -1,5 +1,7 @@
 package com.baidu.disconf.web.service.task.bo;
 
+import com.baidu.disconf.web.service.task.constant.TaskAuditStatusEnum;
+import com.baidu.disconf.web.service.task.constant.TaskExecStatusEnum;
 import com.baidu.dsp.common.dao.Columns;
 import com.baidu.dsp.common.dao.DB;
 import com.baidu.unbiz.common.genericdao.annotation.Column;
@@ -18,7 +20,7 @@ public class Task extends BaseObject<Long> {
     private Long appId;
     @Column(value = "app_name")
     private String appName;
-    @Column(value = "envId")
+    @Column(value = "env_id")
     private Long envId;
     @Column(value = "env_name")
     private String envName;
@@ -45,6 +47,19 @@ public class Task extends BaseObject<Long> {
     @Column(value = "memo")
     private String memo;
 
+    public Task() {
+    }
+
+    public Task(Long appId, String appName, Long envId, String envName, String version, Long createUserId) {
+        this.appId = appId;
+        this.appName = appName;
+        this.envId = envId;
+        this.envName = envName;
+        this.version = version;
+        this.createUserId = createUserId;
+        this.auditStatus = TaskAuditStatusEnum.waitAudit.getValue();
+        this.execStatus = TaskExecStatusEnum.init.getValue();
+    }
 
     public Long getAppId() {
         return appId;

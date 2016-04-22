@@ -66,9 +66,9 @@ public class ConfigNewController extends BaseController {
         //
         // 通知ZK
         //
-        configMgr.notifyZookeeper(config.getId());
+//        configMgr.notifyZookeeper(config.getId());
 
-        return buildSuccess("创建成功");
+        return buildSuccess("创建草稿成功!");
     }
 
     /**
@@ -119,9 +119,9 @@ public class ConfigNewController extends BaseController {
 
         // 通知ZK
         //
-        configMgr.notifyZookeeper(config.getId());
+//        configMgr.notifyZookeeper(config.getId());
 
-        return buildSuccess("创建成功");
+        return buildSuccess("创建草稿成功!");
     }
 
     /**
@@ -154,7 +154,7 @@ public class ConfigNewController extends BaseController {
         //
         // 通知ZK
         //
-        configMgr.notifyZookeeper(config.getId());
-        return buildSuccess("创建成功");
+//        configMgr.notifyZookeeper(config.getId());
+        return buildSuccess("创建草稿成功!");
     }
 }

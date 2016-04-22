@@ -4,9 +4,9 @@
 
 
 	<sql id="columns">
-		t.app_id as appId,
+		t.app_id as id,
 		t.name as name,
-		t.description as description,
+		t.description as `desc`,
 		t.create_time as createTime,
 		t.update_time as updateTime,
 		t.emails as emails
@@ -16,6 +16,7 @@
 		<where>
 			<if test="app.id !=null "> AND t.app_id = #{app.id} </if>
 			<if test="app.name !=null and app.name != '' "> AND t.name like CONCAT('%',#{app.name},'%' )</if>
+			<if test="app.desc !=null and app.desc != '' "> AND t.description like CONCAT('%',#{app.desc},'%' )</if>
 		</where>
 	</sql>
 
@@ -35,8 +36,8 @@
 		LEFT JOIN (
 			SELECT
 				ua.app_id,
-				GROUP_CONCAT(u.user_id) as user_id,
-				GROUP_CONCAT(u.name) as name
+				GROUP_CONCAT(DISTINCT u.user_id) as user_id,
+				GROUP_CONCAT(DISTINCT u.name) as name
 				FROM
 				user_app ua,USER u
 			WHERE

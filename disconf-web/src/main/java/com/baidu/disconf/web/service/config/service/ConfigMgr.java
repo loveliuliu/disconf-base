@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.web.service.config.bo.Config;
+import com.baidu.disconf.web.service.config.bo.ConfigDraft;
+import com.baidu.disconf.web.service.config.constant.ConfigDraftTypeEnum;
 import com.baidu.disconf.web.service.config.form.ConfCopyForm;
 import com.baidu.disconf.web.service.config.form.ConfListForm;
 import com.baidu.disconf.web.service.config.form.ConfNewItemForm;
@@ -69,6 +71,12 @@ public interface ConfigMgr {
      * @param disConfigTypeEnum
      */
     Config newConfig(ConfNewItemForm confNewForm, DisConfigTypeEnum disConfigTypeEnum);
+
+    /**
+     * 新增配置 保存草稿
+     * @return
+     */
+    ConfigDraft newConfigDraft(Config config,ConfigDraftTypeEnum configDraftTypeEnum);
 
     void delete(Long configId);
 

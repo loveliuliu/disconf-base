@@ -45,6 +45,10 @@
            location.href = "/user_add.html";
         };
 
+        $scope.modifyUser = function (userId) {
+            location.href = "/user_add.html?userId="+userId;
+        };
+
         $scope.deleteUser = function (userId) {
 
             layer.confirm('确定删除此用户吗？', {

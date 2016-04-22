@@ -9,6 +9,8 @@ import java.util.Set;
 
 import com.baidu.disconf.web.service.app.dao.AppMapper;
 import com.baidu.disconf.web.service.app.dto.AppDto;
+import com.baidu.disconf.web.service.user.dao.UserAppDao;
+import com.baidu.disconf.web.service.user.service.UserAppMgr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import com.baidu.disconf.web.service.app.vo.AppListVo;
 import com.baidu.disconf.web.service.user.service.UserInnerMgr;
 import com.baidu.dsp.common.constant.DataFormatConstants;
 import com.github.knightliao.apollo.utils.time.DateUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author liaoqiqi
@@ -38,6 +41,9 @@ public class AppMgrImpl implements AppMgr {
 
     @Autowired
     private AppMapper appMapper;
+
+    @Autowired
+    private UserAppDao userAppDao;
 
     /**
      *
@@ -107,8 +113,12 @@ public class AppMgrImpl implements AppMgr {
     }
 
     @Override
+    @Transactional
     public void delete(Long appId) {
         appDao.delete(appId);
+
+        //级联删除user_app
+        userAppDao.deleteAllByAppId(appId);
     }
 
     @Override

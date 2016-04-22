@@ -11,7 +11,7 @@
             <div class="row-fluid">
                 <ul class="breadcrumb" style="background-color:#fff;">
                     <li>
-                        <a href="/main.html">配置</a>
+                        <a href="/admin_apps.html">APP管理</a>
                     </li>
                     <li class="active">
                         / 新建APP
@@ -39,7 +39,7 @@
                                           style="width:400px;height:200px;"></textarea>
                             </div>
 
-                            <div class="private-item">
+                            <div class="private-item hide">
                                 <span class="private-item-key">Emails(;号分隔)：</span>
                                 <textarea id="emails" type="text" class="private-item-value"
                                           style="width:400px;height:50px;"></textarea>
@@ -50,6 +50,7 @@
                             </div>
                             <div class="private-item" style="text-align:center">
                                 <a id="item_submit" class="btn btn-primary"> 新建 </a>
+                                <input type="button" onclick="history.go(-1);" value="返回" class="btn btn-warning"/>
                             </div>
                         </form>
                     </div>

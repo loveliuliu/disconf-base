@@ -41,4 +41,7 @@ public class Columns {
     public static final class RoleColumns {
         public final static String ROLE_NAME = "role_name";
     }
+
+
+    public static final String NO_KEY = "noKey";
 }

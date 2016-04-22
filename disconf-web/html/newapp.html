@@ -53,13 +53,14 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                                 <li style="display:inline;" class="dropdown">
                                     <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-                                        <span class="zu-top-nav-link">新建<b class="caret"></b></span>
+                                        <span class="zu-top-nav-link">新建/管理<b class="caret"></b></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="/newapp.html">新建APP</a></li>
                                         <li><a href="/newconfig_item.html">新建配置项</a></li>
                                         <li><a href="/newconfig_file.html">新建配置文件</a></li>
                                         <li><a href="/newconfig_copy.html">复制配置</a></li>
+                                        <li><a href="/admin_users.html">管理中心</a></li>
+                                        <li><a href="/my_config_draft.html">任务中心</a></li>
                                     </ul>
                                 </li>
                                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -92,7 +93,7 @@
             <div class="row-fluid">
                 <ul class="breadcrumb" style="background-color:#fff;">
                     <li>
-                        <a href="/main.html">配置</a>
+                        <a href="/admin_apps.html">APP管理</a>
                     </li>
                     <li class="active">
                         / 新建APP
@@ -120,7 +121,7 @@
                                           style="width:400px;height:200px;"></textarea>
                             </div>
 
-                            <div class="private-item">
+                            <div class="private-item hide">
                                 <span class="private-item-key">Emails(;号分隔)：</span>
                                 <textarea id="emails" type="text" class="private-item-value"
                                           style="width:400px;height:50px;"></textarea>
@@ -131,6 +132,7 @@
                             </div>
                             <div class="private-item" style="text-align:center">
                                 <a id="item_submit" class="btn btn-primary"> 新建 </a>
+                                <input type="button" onclick="history.go(-1);" value="返回" class="btn btn-warning"/>
                             </div>
                         </form>
                     </div>

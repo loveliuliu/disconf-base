@@ -157,13 +157,13 @@ public class UserController extends BaseController {
             return buildGlobalError("用户角色不能为空!", ErrorCode.DEFAULT_ERROR);
         }
 
-        if(userMgr.isExistByName(user.getName())){
+        if(null == user.getId() && userMgr.isExistByName(user.getName())){
             return buildGlobalError("用户名已存在!", ErrorCode.DEFAULT_ERROR);
         }
 
         userMgr.save(user);
 
-        return buildSuccess("新建用户成功!");
+        return buildSuccess("保存成功!");
     }
 
     @RequestMapping(value = "/delete")
@@ -183,5 +183,12 @@ public class UserController extends BaseController {
         userMgr.delete(userId);
 
         return buildSuccess("删除用户成功!");
+    }
+
+    @RequestMapping(value = "/findById")
+    @ResponseBody
+    public JsonObjectBase findById(Long userId){
+
+        return buildSuccess(userMgr.getUser(userId));
     }
 }

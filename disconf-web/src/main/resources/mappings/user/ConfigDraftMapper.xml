@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd"> 
+<mapper namespace="com.baidu.disconf.web.service.config.dao.ConfigDraftMapper">
+
+
+	<sql id="columns">
+		t.config_draft_id as id,
+		t.config_id as configId,
+		t.type as type,
+		t.status as status,
+		t.name as name,
+		t.value as value,
+		t.app_id as appId,
+		t.app_name as appName,
+		t.version as version,
+		t.env_id as envId,
+		t.env_name as envName,
+		t.user_id as userId,
+		t.create_time as createTime,
+		t.update_time as updateTime,
+		t.task_id as taskId,
+		t.draft_type as draftType
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="configDraft.id !=null "> AND t.config_draft_id = #{configDraft.id} </if>
+			<if test="configDraft.configId !=null "> AND t.config_id = #{configDraft.configId} </if>
+			<if test="configDraft.type !=null "> AND t.type = #{configDraft.type} </if>
+			<if test="configDraft.status !=null "> AND t.status = #{configDraft.status} </if>
+			<if test="configDraft.name !=null "> AND t.name = #{configDraft.name} </if>
+			<if test="configDraft.value !=null "> AND t.value = #{configDraft.value} </if>
+			<if test="configDraft.appId !=null "> AND t.app_id = #{configDraft.appId} </if>
+			<if test="configDraft.appName !=null and configDraft.appName !='' "> AND t.app_name like CONCAT('%',#{configDraft.appName},'%' )  </if>
+			<if test="configDraft.version !=null "> AND t.version like CONCAT('%',#{configDraft.version},'%' ) </if>
+			<if test="configDraft.envId !=null "> AND t.env_id = #{configDraft.envId} </if>
+			<if test="configDraft.envName !=null "> AND t.env_name like CONCAT('%',#{configDraft.envName},'%' ) </if>
+			<if test="configDraft.userId !=null "> AND t.user_id = #{configDraft.userId} </if>
+			<if test="configDraft.createTime !=null "> AND t.create_time = #{configDraft.createTime} </if>
+			<if test="configDraft.updateTime !=null "> AND t.update_time = #{configDraft.updateTime} </if>
+			<if test="configDraft.taskId !=null "> AND t.task_id = #{configDraft.taskId} </if>
+			<if test="configDraft.draftType !=null "> AND t.draft_type = #{configDraft.draftType} </if>
+			<if test="configDraft.draftTypeList !=null and configDraft.draftTypeList.size()>0">
+				AND t.draft_type in
+				<foreach collection="configDraft.draftTypeList" item="str" index="index"
+						 open="(" close=")" separator=",">
+					#{str}
+				</foreach>
+			</if>
+
+		</where>
+	</sql>
+
+
+    <select id="findByConfigDraft"  resultType="ConfigDraft">
+        SELECT <include refid="columns"/>
+        FROM config_draft t
+        <include refid="dynamicWhere"/>
+    </select>
+
+
+</mapper>

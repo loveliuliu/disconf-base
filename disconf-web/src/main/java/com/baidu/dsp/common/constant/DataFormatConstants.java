@@ -4,9 +4,10 @@ public class DataFormatConstants {
 
     // 后端通用的时间格式
     public static String COMMON_TIME_FORMAT = "yyyyMMddHHmmss";
-
     // 后端通用的时间格式
     public static String COMMON_DATE_FORMAT = "yyyyMMdd";
+
+    public static String DATE_TIME_PICKER_FORMAT = "yyyy-MM-dd HH:mm";
 
     /**
      * 日期开始时间后缀

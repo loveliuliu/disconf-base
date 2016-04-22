@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.baidu.dsp.common.dao.Columns;
 import org.apache.commons.lang.StringUtils;
 
 import com.baidu.unbiz.common.genericdao.annotation.Table;
@@ -58,7 +59,12 @@ public class ORMapping<ENTITY extends BaseObject<K>, K extends Serializable> {
 
         List<MappingItem> mappingItems = MappingItem.getMappingItems(entityClass);
         List<MappingItem> keyMappings = MappingItem.getMappingItems(keyClass);
-        mappingItems.addAll(keyMappings);
+
+        if(!sKeyColumn.equals(Columns.NO_KEY)){
+            mappingItems.addAll(keyMappings);
+        }else{
+            keyColumn.clear();
+        }
 
         for (MappingItem item : mappingItems) {
 

@@ -1,16 +1,5 @@
 package com.baidu.disconf.web.service.config.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import com.google.common.collect.Lists;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
-
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.web.common.Constants;
 import com.baidu.disconf.web.service.config.bo.Config;
@@ -26,12 +15,22 @@ import com.baidu.unbiz.common.genericdao.operator.Match;
 import com.baidu.unbiz.common.genericdao.operator.Modify;
 import com.baidu.unbiz.common.genericdao.operator.Order;
 import com.github.knightliao.apollo.utils.time.DateUtils;
+import com.google.common.collect.Lists;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author liaoqiqi
  * @version 2014-6-16
  */
-@Service
+@Repository
 public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDao {
     
     private String SQL_SELECT_METAS = "select name, type, update_time from disconf.config where app_id=? and env_id=? and version=? and status=1";

@@ -1,6 +1,9 @@
 package com.baidu.disconf.web.web.config.validator;
 
+import com.baidu.disconf.web.service.config.bo.ConfigDraft;
 import com.baidu.disconf.web.service.config.form.ConfCopyForm;
+import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
+import com.baidu.dsp.common.exception.ValidationException;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,9 @@ public class ConfigValidator {
 
     @Autowired
     private AuthMgr authMgr;
+
+    @Autowired
+    private ConfigDraftMgr configDraftMgr;
 
     /**
      * 校验
@@ -92,6 +98,20 @@ public class ConfigValidator {
             throw new FieldException("value", "conf.item.value.null", e);
         }
 
+        Config config = configMgr.getConfigById(configId);
+
+        this.validateConfigDraftExist(config.getAppId(),config.getEnvId(),config.getVersion(),
+                config.getName(),DisConfigTypeEnum.ITEM);
+
+    }
+
+    private void validateConfigDraftExist(Long appId,Long envId,String version,String name,DisConfigTypeEnum disConfigTypeEnum){
+
+        ConfigDraft configDraft = configDraftMgr.getConfByParameter(appId,envId,version,name,disConfigTypeEnum);
+
+        if(null != configDraft){
+            throw new ValidationException("此配置项已存在草稿中，请到草稿列表处理!");
+        }
     }
 
     /**
@@ -112,7 +132,7 @@ public class ConfigValidator {
         //
         try {
 
-            if (!config.getName().equals(fileName)) {
+            if (StringUtils.isNotBlank(fileName) && !config.getName().equals(fileName)) {
                 throw new Exception();
             }
 
@@ -120,6 +140,9 @@ public class ConfigValidator {
 
             throw new FieldException("value", "conf.file.name.not.equal", e);
         }
+
+        this.validateConfigDraftExist(config.getAppId(),config.getEnvId(),config.getVersion(),
+                config.getName(),DisConfigTypeEnum.FILE);
 
     }
 
@@ -188,6 +211,9 @@ public class ConfigValidator {
         if (config != null) {
             throw new FieldException(ConfNewItemForm.KEY, "key.exist", null);
         }
+
+        this.validateConfigDraftExist(app.getId(),env.getId(),confNewForm.getVersion(),
+                confNewForm.getKey(),disConfigTypeEnum);
 
     }
 

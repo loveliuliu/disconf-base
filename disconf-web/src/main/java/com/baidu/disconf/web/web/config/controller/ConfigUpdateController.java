@@ -21,6 +21,9 @@ import com.baidu.dsp.common.controller.BaseController;
 import com.baidu.dsp.common.exception.FileUploadException;
 import com.baidu.dsp.common.vo.JsonObjectBase;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 /**
  * 专用于配置更新、删除
  *
@@ -68,7 +71,7 @@ public class  ConfigUpdateController extends BaseController {
         //
         // 通知ZK
         //
-        configMgr.notifyZookeeper(configId);
+//        configMgr.notifyZookeeper(configId);
 
         return buildSuccess(emailNotification);
     }
@@ -98,17 +101,10 @@ public class  ConfigUpdateController extends BaseController {
         //
         // 更新
         //
-        String emailNotification = "";
+        String emailNotification = null;
         try {
-
-            String str = new String(file.getBytes(), "UTF-8");
-            LOG.info("receive file: " + str);
-
-            emailNotification = configMgr.updateItemValue(configId, str);
-            LOG.info("update " + configId + " ok");
-
-        } catch (Exception e) {
-
+            emailNotification = updateFileText(configId,file.getBytes());
+        } catch (IOException e) {
             LOG.error(e.toString());
             throw new FileUploadException("upload file error", e);
         }
@@ -116,7 +112,7 @@ public class  ConfigUpdateController extends BaseController {
         //
         // 通知ZK
         //
-        configMgr.notifyZookeeper(configId);
+//        configMgr.notifyZookeeper(configId);
 
         return buildSuccess(emailNotification);
     }
@@ -133,13 +129,28 @@ public class  ConfigUpdateController extends BaseController {
     @RequestMapping(value = "/filetext/{configId}", method = RequestMethod.PUT)
     public JsonObjectBase updateFileWithText(@PathVariable long configId, @NotNull String fileContent) {
 
+
+        // 业务校验
+        configValidator.validateUpdateFile(configId, null);
+
         //
         // 更新
         //
+        String emailNotification = updateFileText(configId,fileContent.getBytes());
+
+        //
+        // 通知ZK
+        //
+//        configMgr.notifyZookeeper(configId);
+
+        return buildSuccess(emailNotification);
+    }
+
+    private String updateFileText(long configId,byte fileContentByte[]){
         String emailNotification = "";
         try {
 
-            String str = new String(fileContent.getBytes(), "UTF-8");
+            String str = new String(fileContentByte, "UTF-8");
             LOG.info("receive file: " + str);
 
             emailNotification = configMgr.updateItemValue(configId, str);
@@ -150,13 +161,7 @@ public class  ConfigUpdateController extends BaseController {
             LOG.error(e.toString());
             throw new FileUploadException("upload file error", e);
         }
-
-        //
-        // 通知ZK
-        //
-        configMgr.notifyZookeeper(configId);
-
-        return buildSuccess(emailNotification);
+        return emailNotification;
     }
 
     /**

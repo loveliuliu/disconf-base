@@ -40,6 +40,11 @@ public class User extends BaseObject<Long> {
     @Column(value = Columns.ROLE_ID)
     private Integer roleId;
 
+    @Column(value = "email")
+    private String email;
+    @Column(value = "phone")
+    private String phone;
+
     public String getName() {
         return name;
     }
@@ -89,5 +94,21 @@ public class User extends BaseObject<Long> {
                    ", ownApps='" + ownApps + '\'' +
                    ", roleId=" + roleId +
                    '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

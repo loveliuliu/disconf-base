@@ -51,13 +51,14 @@
                                 &nbsp;&nbsp;&nbsp;&nbsp;
                                 <li style="display:inline;" class="dropdown">
                                     <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
-                                        <span class="zu-top-nav-link">新建<b class="caret"></b></span>
+                                        <span class="zu-top-nav-link">新建/管理<b class="caret"></b></span>
                                     </a>
                                     <ul class="dropdown-menu">
-                                        <li><a href="/newapp.html">新建APP</a></li>
                                         <li><a href="/newconfig_item.html">新建配置项</a></li>
                                         <li><a href="/newconfig_file.html">新建配置文件</a></li>
                                         <li><a href="/newconfig_copy.html">复制配置</a></li>
+                                        <li><a href="/admin_users.html">管理中心</a></li>
+                                        <li><a href="/my_config_draft.html">任务中心</a></li>
                                     </ul>
                                 </li>
                                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -85,7 +86,7 @@
 
 <div id="Wrapper" class="clearfix">
     <div id="Main" style="margin-top:50px;">
-        <div class="container-fluid">
+        <div class="container-fluid" ng-app="myApp" ng-controller="validateCtrl">
 
             <div class="row-fluid">
                 <ul class="breadcrumb" style="background-color:#fff;">
@@ -93,7 +94,7 @@
                         <a href="/admin_users.html">用户管理</a>
                     </li>
                     <li class="active">
-                        / 新建用户
+                        / {{title}}
                     </li>
 
                 </ul>
@@ -104,13 +105,14 @@
                 <div class="span12">
 
                     <div class="content oz">
-                        <form ng-app="myApp" ng-submit="submitForm(myForm.$valid)" ng-controller="validateCtrl"
-                              name="myForm" novalidate class="private-form clearfix">
-                            <h2 class="autoPush-detail-title">新建用户</h2>
+                        <form  ng-submit="submitForm(myForm.$valid)"
+                               name="myForm" novalidate class="private-form clearfix">
+                            <h2 class="autoPush-detail-title">{{title}}</h2>
 
                             <div class="private-item">
                                 <span class="private-item-key">用户名：</span>
-                                <input class="private-item-value" type="text" name="name" ng-model="name" ng-maxlength="25" required>
+                                <input type="hidden" name="id" ng-model="user.id" value="{{user.id}}">
+                                <input class="private-item-value" type="text" name="name" ng-model="user.name" ng-maxlength="25" required>
                                 <span style="color:red" ng-show="myForm.name.$dirty && myForm.name.$invalid">
                                     <span ng-show="myForm.name.$error.required">用户名是必须的。</span>
                                     <span ng-show="myForm.name.$error.maxlength">用户名不能超过25字符。</span>
@@ -128,8 +130,25 @@
                                 </span>
                             </div>
 
+                            <div class="private-item">
+                                <span class="private-item-key">Email：</span>
+                                <input class="private-item-value" type="email" name="email" ng-model="user.email">
+                                <span style="color:red" ng-show="myForm.email.$dirty && myForm.email.$invalid">
+                                     <span ng-show="myForm.email.$error.email">非法的邮箱。</span>
+                                </span>
+                            </div>
+
+                            <div class="private-item">
+                                <span class="private-item-key">手机号：</span>
+                                <input class="private-item-value" type="text" name="phone" ng-model="user.phone" ng-pattern="/^1[3|4|5|7|8]\d{9}$/">
+                                <span style="color:red" ng-show="myForm.phone.$dirty && myForm.phone.$invalid" >
+                                     <span ng-show="myForm.phone.$error.pattern">非法的手机号。</span>
+                                </span>
+                            </div>
+
                             <div class="private-item" style="text-align:center">
-                                <input type="submit" value="新建" ng-disabled="myForm.$invalid" class="btn btn-primary"/>
+                                <input type="submit" value="保存" ng-disabled="myForm.$invalid" class="btn btn-primary"/>
+                                <input type="button" onclick="history.go(-1);" value="返回" class="btn btn-warning"/>
                             </div>
 
                         </form>

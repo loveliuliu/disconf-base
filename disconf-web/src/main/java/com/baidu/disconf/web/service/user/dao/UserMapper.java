@@ -20,4 +20,12 @@ public interface UserMapper {
     Page<UserDto> findByUserDto(@Param("user") User user, @Param("pageable")Pageable pageable);
 
 
+    /**
+     * 查询某个app下 某个类的用户
+     * @param appId
+     * @param type
+     * @return
+     */
+    List<UserDto> findSelectedUserByApp(@Param("appId") Long appId,@Param("type") String type);
+
 }

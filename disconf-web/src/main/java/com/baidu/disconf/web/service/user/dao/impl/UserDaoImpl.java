@@ -32,8 +32,7 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         return findOne(match(Columns.NAME, name));
     }
 
-    @Override
-    public User createUserByNameAndRoleId(String name, Integer roleId) {
+    public User createUser(String name, Integer roleId,String email,String phone){
 
         User user = new User();
 
@@ -49,8 +48,16 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
         // role
         user.setRoleId(roleId);
 
+        user.setEmail(email);
+        user.setPhone(phone);
+
         user = this.create(user);
 
         return user;
+    }
+    @Override
+    public User createUserByNameAndRoleId(String name, Integer roleId) {
+
+        return createUser(name,roleId,null,null);
     }
 }
