@@ -6,7 +6,7 @@
 	<sql id="columns">
 		t.task_id as id,
 		t.app_id as appId,
-		t.appName as app_name,
+		t.app_name as appName,
 		t.env_id as envId,
 		t.env_name as envName,
 		t.version as version,
@@ -15,35 +15,125 @@
 		t.create_time as createTime,
 		t.audit_user_id as auditUserId,
 		t.audit_time as auditTime,
-		t.audit_comment as t.auditComment,
-		t.exec_time as t.execTime,
-		t.exec_status as t.execStatus,
+		t.audit_comment as auditComment,
+		t.exec_time as execTime,
+		t.exec_status as execStatus,
 		t.memo as memo
 	</sql>
-	
+
 	<sql id="dynamicWhere">
 		<where>
 			<if test="task.id !=null "> AND t.task_id = #{task.id} </if>
+			<if test="task.appId !=null "> AND t.app_id = #{task.appId} </if>
+			<if test="task.appName !=null and task.appName !='' "> AND t.app_name like CONCAT('%',#{task.appName},'%' )  </if>
+			<if test="task.version !=null "> AND t.version like CONCAT('%',#{task.version},'%' ) </if>
+			<if test="task.envId !=null "> AND t.env_id = #{task.envId} </if>
+			<if test="task.envName !=null "> AND t.env_name like CONCAT('%',#{task.envName},'%' ) </if>
+			<if test="task.auditStatus !=null "> AND t.audit_status = #{task.auditStatus} </if>
+			<if test="task.createUserId !=null "> AND t.create_user_id = #{task.createUserId} </if>
+			<if test="task.createTime !=null "> AND t.create_time = #{task.createTime} </if>
+			<if test="task.auditUserId !=null "> AND t.audit_user_id = #{task.auditUserId} </if>
+			<if test="task.auditTime !=null "> AND t.audit_time = #{task.auditTime} </if>
+			<if test="task.auditComment !=null "> AND t.audit_comment = #{task.auditComment} </if>
+			<if test="task.execTime !=null "> AND t.exec_time = #{task.execTime} </if>
+			<if test="task.execStatus !=null "> AND t.exec_status = #{task.execStatus} </if>
+			<if test="task.memo !=null "> AND t.memo = #{task.memo} </if>
 		</where>
 	</sql>
 
+	<select id="findByTask"  resultType="Task">
+		SELECT <include refid="columns"/>
+		FROM task t
+		<include refid="dynamicWhere"/>
+	</select>
 
-    <select id="findByTask"  resultType="Task">
-        SELECT <include refid="columns"/>
-        FROM task t
-        <include refid="dynamicWhere"/>
-    </select>
 
-
-	<!--TaskDto-->
 	<!-- 我提交的任务列表  -->
+	<select id="findMySubmitTask"  resultType="TaskDto">
+		SELECT <include refid="columns"/>, audit.curAuditUserIds,
+		audit.curAuditUserNames
+		FROM task t
+		LEFT JOIN (
+		SELECT
+		ua.app_id,
+		GROUP_CONCAT(DISTINCT u.user_id) AS curAuditUserIds,
+		GROUP_CONCAT(DISTINCT u. NAME) AS curAuditUserNames
+		FROM
+		user_app ua,USER u
+		WHERE ua.user_id = u.user_id GROUP BY ua.app_id
+		) audit
+		ON audit.app_id = t.app_id
+		<where>
+			t.create_user_id = #{task.curUserId}
+			AND t.audit_status = 'wait_audit'
+			<include refid="taskWhere"/>
+		</where>
 
+	</select>
 
 	<!-- 我的待办任务  -->
-
+	<select id="findMyToDoTask"  resultType="TaskDto">
+		SELECT <include refid="columns"/>, u. NAME AS createUserName
+		FROM task t,(
+				SELECT
+				app_id
+				FROM
+				user_app
+				WHERE
+				user_id = #{task.curUserId}
+				AND type = 'auditor'
+			) ua, USER u
+		<where>
+			t.app_id = ua.app_id
+			AND u.user_id = t.create_user_id
+			AND t.audit_status = 'wait_audit'
+			<include refid="taskWhere"/>
+		</where>
+	</select>
 
 	<!-- 我的已办任务  -->
-
+	<select id="findMyDoneTask"  resultType="TaskDto">
+		SELECT <include refid="columns"/>, u. NAME AS createUserName
+		FROM task t,USER u
+		<where>
+			t.create_user_id = u.user_id
+			AND t.audit_status IN ('pass', 'fail')
+			AND t.audit_user_id = #{task.curUserId}
+			<include refid="taskWhere"/>
+		</where>
+	</select>
 
 	<!-- 已完成的任务  -->
+	<select id="findMyFinishedTask"  resultType="TaskDto">
+		SELECT <include refid="columns"/>, u. NAME AS auditUserName
+		FROM task t,USER u
+		<where>
+			t.audit_user_id = u.user_id
+			AND t.audit_status != 'wait_audit'
+			AND t.create_user_id = #{task.curUserId}
+			<include refid="taskWhere"/>
+		</where>
+	</select>
+
+
+	<sql id="taskWhere">
+		<if test="task.id !=null "> AND t.task_id = #{task.id} </if>
+		<if test="task.appId !=null "> AND t.app_id = #{task.appId} </if>
+		<if test="task.appName !=null and task.appName !='' "> AND t.app_name like CONCAT('%',#{task.appName},'%' )  </if>
+		<if test="task.version !=null "> AND t.version like CONCAT('%',#{task.version},'%' ) </if>
+		<if test="task.envId !=null "> AND t.env_id = #{task.envId} </if>
+		<if test="task.envName !=null "> AND t.env_name like CONCAT('%',#{task.envName},'%' ) </if>
+	</sql>
+
+	<select id="findAuditingOrNotExecTask"  resultType="Task">
+		SELECT <include refid="columns"/>
+		FROM task t
+		where t.audit_status = 'wait_audit' or (t.audit_status = 'pass' and t.exec_status='wait')
+		<if test="task.appId !=null "> AND t.app_id = #{task.appId} </if>
+		<if test="task.envId !=null "> AND t.env_id = #{task.envId} </if>
+		<if test="task.version !=null "> AND t.version = #{task.version}</if>
+	</select>
+
+
+
 </mapper>

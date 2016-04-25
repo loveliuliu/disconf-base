@@ -7,6 +7,11 @@ import java.util.List;
 
 public class ConfigDraftCondition extends ConfigDraft {
 
+    public ConfigDraftCondition() {
+    }
+
+
+
     private List<String> draftTypeList = new ArrayList<String>();
 
     public List<String> getDraftTypeList() {

@@ -23,6 +23,7 @@ import com.baidu.ub.common.commons.ThreadContext;
 import com.github.knightliao.apollo.utils.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,5 +128,16 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
             configDraft.setUpdateTime(curTime);
         }
         configDraftDao.update(configDraftList);
+    }
+
+    @Override
+    public List<ConfigDraft> findByTaskId(Long taskId) {
+
+        ConfigDraftCondition configDraft = new ConfigDraftCondition();
+        configDraft.setTaskId(taskId);
+        Page<ConfigDraft> draftPage = this.findByConfigDraft(configDraft,new PageRequest(0,Integer.MAX_VALUE));
+
+        return draftPage.getContent();
+
     }
 }

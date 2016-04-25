@@ -1,5 +1,7 @@
 getSession();
 var app = angular.module('myApp', []);
+
+addInterceptor(app);
 app.controller('validateCtrl',['$scope','$http', function($scope,$http) {
 
     var id = getQueryString("id");

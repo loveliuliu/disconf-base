@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.baidu.dsp.common.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -95,6 +96,11 @@ public class MyExceptionHandler extends SimpleMappingExceptionResolver implement
         } else if (e instanceof MissingServletRequestParameterException) {
 
             return buildError("syserror.param.miss", ErrorCode.MissingServletRequestParameterException);
+
+        } else if (e instanceof ValidationException){
+
+            ValidationException g = (ValidationException)e;
+            return buildError(g.getErrorMessage(), g.getErrorCode());
 
         } else if (e instanceof GlobalExceptionAware) {
 

@@ -5,4 +5,10 @@ import com.baidu.unbiz.common.genericdao.dao.BaseDao;
 
 public interface TaskDao extends BaseDao<Long, Task> {
 
+
+    void cancel(Long taskId);
+
+    void cancelExec(Long taskId);
+
+
 }

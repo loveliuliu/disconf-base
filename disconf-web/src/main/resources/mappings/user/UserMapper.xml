@@ -62,4 +62,8 @@
 			and ua.type = #{type}
 		</where>
 	</select>
+
+	<select id="findUserAppAuthByUserId" resultType="String">
+		select GROUP_CONCAT( DISTINCT ua.app_id) from user_app ua where ua.user_id = #{userId} group by ua.user_id
+	</select>
 </mapper>

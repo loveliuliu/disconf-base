@@ -101,3 +101,41 @@ function getQueryString(name, url) {
 
     return result === null ? result : decodeURIComponent(result[2]);
 }
+
+
+function addInterceptor(app) {
+    // 定义一个 Service ，稍等将会把它作为 Interceptors 的处理函数
+    app.factory('HttpInterceptor', ['$q', HttpInterceptor]);
+
+    function HttpInterceptor($q) {
+        return {
+            request: function(config){
+                if(sessionStorage.system && sessionStorage.system == 1 ){
+                    config.url  = config.url.lastIndexOf("?")!=-1?(config.url+'&system=1'):(config.url+"?system=1");
+                }
+                return config;
+            },
+            requestError: function(err){
+                return $q.reject(err);
+            },
+            response: function(res){
+                return res;
+            },
+            responseError: function(err){
+                if(-1 === err.status) {
+                    // 远程服务器无响应
+                } else if(500 === err.status) {
+                    // 处理各类自定义错误
+                } else if(501 === err.status) {
+                    // ...
+                }
+                return $q.reject(err);
+            }
+        };
+    }
+
+// 添加对应的 Interceptors
+    app.config(['$httpProvider', function($httpProvider){
+        $httpProvider.interceptors.push(HttpInterceptor);
+    }]);
+}

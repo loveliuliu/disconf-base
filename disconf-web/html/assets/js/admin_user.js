@@ -2,9 +2,10 @@
 
     getSession();
 
-    angular.module('listPageApp', ["bw.paging"]); //引入分页组件
+    var app = angular.module('listPageApp', ["bw.paging"]); //引入分页组件
 
-
+    addInterceptor(app);
+    
     angular.module('listPageApp').controller('listPageControl', ['$scope', '$log','$http', function($scope, $log,$http) {
 
         $scope.page = 1; //设置当前页数

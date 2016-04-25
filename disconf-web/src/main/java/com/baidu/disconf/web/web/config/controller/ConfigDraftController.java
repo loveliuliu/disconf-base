@@ -7,6 +7,8 @@ import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
 import com.baidu.disconf.web.service.config.service.ConfigMgr;
+import com.baidu.disconf.web.service.task.bo.Task;
+import com.baidu.disconf.web.service.task.service.TaskMgr;
 import com.baidu.disconf.web.service.user.dto.Visitor;
 import com.baidu.disconf.web.web.config.validator.FileUploadValidator;
 import com.baidu.dsp.common.constant.DataFormatConstants;
@@ -17,7 +19,6 @@ import com.baidu.dsp.common.exception.FileUploadException;
 import com.baidu.dsp.common.exception.ValidationException;
 import com.baidu.dsp.common.vo.JsonObjectBase;
 import com.baidu.ub.common.commons.ThreadContext;
-import com.github.knightliao.apollo.utils.common.StringUtil;
 import com.github.knightliao.apollo.utils.time.DateUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +36,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -51,7 +54,8 @@ public class ConfigDraftController extends BaseController {
     @Autowired
     private FileUploadValidator fileUploadValidator;
 
-
+    @Autowired
+    private TaskMgr taskMgr;
 
     @RequestMapping(value = "/list")
     @ResponseBody
@@ -103,7 +107,9 @@ public class ConfigDraftController extends BaseController {
             return buildGlobalError("生效时间格式错误 正确格式为yyyy-MM-dd HH:mm", ErrorCode.DEFAULT_ERROR);
         }
 
-        //todo 验证一个app 环境 版本 只能有一个正在 审核或审核通过未执行的任务
+        //验证一个app 环境 版本 只能有一个正在审核或审核通过未执行的任务
+        this.validateDraftSubmit(confDraftSubmitForm);
+
         configDraftMgr.submit(confDraftSubmitForm);
 
         return buildSuccess("提交成功!");
@@ -186,6 +192,20 @@ public class ConfigDraftController extends BaseController {
         ConfigDraft configDraft = configDraftMgr.findById(id);
         if(null == configDraft){
             throw new ValidationException("不存在此草稿 id:"+id);
+        }
+    }
+
+    private void validateDraftSubmit(ConfDraftSubmitForm confDraftSubmitForm){
+
+        Task task = new Task();
+        task.setAppId(confDraftSubmitForm.getAppId());
+        task.setEnvId(confDraftSubmitForm.getEnvId());
+        task.setVersion(confDraftSubmitForm.getVersion());
+
+        List<Task> taskList = taskMgr.findAuditingOrNotExecTask(task);
+
+        if(!CollectionUtils.isEmpty(taskList)){
+            throw new ValidationException("此版本已存在正在审核中的任务或审核通过还未执行的任务，不能提交!");
         }
     }
 

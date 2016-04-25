@@ -1128,6 +1128,13 @@ q:before, q:after {
     text-align: center;
 }
 
+.detail-private-line{
+    margin-bottom: 5px;
+    text-align: center;
+}
+.detail-private-line span{
+    margin-right: 10px;
+}
 .private-item {
     margin-bottom: 20px;
 }

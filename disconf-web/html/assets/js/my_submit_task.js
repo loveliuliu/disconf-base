@@ -6,20 +6,21 @@
 
     addInterceptor(app);
 
+
     angular.module('listPage').controller('listPageControl', ['$scope', '$log','$http', function($scope, $log,$http) {
 
         $scope.page = 1; //设置当前页数
         $scope.pageSize = 20;//设置一页多少条
-        $scope.draft = {};
+        $scope.task = {};
         $scope.pagingAction = function(page,pageSize) {
             var param = {};
             param.page = page;
             param.size = pageSize;
-            param.appName = $scope.draft.appName;
-            param.envName = $scope.draft.envName;
-            param.version = $scope.draft.version;
+            param.appName = $scope.task.appName;
+            param.envName = $scope.task.envName;
+            param.version = $scope.task.version;
 
-            doPaging($http,"/api/web/configDraft/list",param,function (data) {
+            doPaging($http,"/api/web/task/findMySubmitTask",param,function (data) {
                 if(data.success){
                     $scope.total = data.result.totalElements;
                     $scope.dataList = data.result.content;
@@ -34,46 +35,13 @@
             $scope.pagingAction($scope.page,$scope.pageSize);
         };
 
-        $scope.modify = function (id,type) {
-            var url = type == 0 ? '/modify_draft_file.html' : '/modify_draft_item.html';
-            location.href = url + "?id="+id;
-        };
-
-        $scope.submitDraft = function () {
-
-            var title = "提交草稿";
-
-            layer.open({
-                type: 2,
-                title: title,
-                shadeClose: false,
-                // shade: false,
-                maxmin: true, //开启最大化最小化按钮
-                area: ['800px', '650px'],
-                content: '/config_draft_submit.html'
-            });
-
-        };
-
-        $scope.detail = function (id,name,draftType) {
-
-            var title = "对比配置：" + name + " --> " + (draftType=='create'?'新建':draftType=='modify'?'修改':'删除');
-
-            layer.open({
-                type: 2,
-                title: title,
-                shadeClose: false,
-                // shade: false,
-                maxmin: true, //开启最大化最小化按钮
-                area: ['960px', '600px'],
-                content: '/config_campare.html?id='+id
-            });
-
+        $scope.view = function (id) {
+            location.href = "/task_config_detail.html?id="+id;
         };
 
         $scope.delete = function (id) {
 
-            layer.confirm('确定删除此条草稿吗？', {
+            layer.confirm('确定撤销此任务吗？', {
                     btn: ['确认','取消'] //按钮
                 }, function(index){
                     layer.close(index);
@@ -85,7 +53,7 @@
         function doDelete(id){
 
             $.ajax({
-                url:"/api/web/configDraft/delete",
+                url:"/api/web/task/cancel",
                 method:'POST',
                 data:{id:id}
             }).done(

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.baidu.disconf.web.service.sign.service.SignMgr;
+import com.baidu.disconf.web.service.user.service.UserMgr;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AbstractCasFilter;
 import org.jasig.cas.client.validation.Assertion;
@@ -31,6 +32,9 @@ public class SessionLoginImpl implements SessionLogin {
 
     @Autowired
     private SignMgr signMgr;
+    @Autowired
+    private UserMgr userMgr;
+
     /**
      * 登录
      */
@@ -46,7 +50,7 @@ public class SessionLoginImpl implements SessionLogin {
         visitor.setLoginUserId(user.getId());
         visitor.setLoginUserName(user.getName());
         visitor.setRoleId(user.getRoleId());
-        visitor.setAppIds(user.getOwnApps());
+        visitor.setAppIds(userMgr.findUserAppAuthByUserId(user.getId()));
 
         //
         // 更新session

@@ -50,4 +50,6 @@ public interface UserMgr {
     User save(User user);
 
     void delete(Long userId);
+
+    String findUserAppAuthByUserId(Long userId);
 }

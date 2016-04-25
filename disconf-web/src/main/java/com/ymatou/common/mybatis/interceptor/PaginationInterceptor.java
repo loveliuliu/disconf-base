@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class PaginationInterceptor extends BaseInterceptor {
                 //分页查询 本地化对象 修改数据库注意修改实现
                 String pageSql = SQLHelper.generatePageSql(originalSql, pageable, DIALECT);
                 if (log.isDebugEnabled()) {
-                    log.debug("PAGE SQL:" + StringUtils.replace(pageSql, "\n", ""));
+                    log.debug("PAGE SQL: " + StringUtils.replace(pageSql, "\n", ""));
                 }
                 invocation.getArgs()[2] = new RowBounds(RowBounds.NO_ROW_OFFSET, RowBounds.NO_ROW_LIMIT);
                 BoundSql newBoundSql = new BoundSql(mappedStatement.getConfiguration(), pageSql, boundSql.getParameterMappings(), boundSql.getParameterObject());
@@ -79,7 +80,7 @@ public class PaginationInterceptor extends BaseInterceptor {
                 MappedStatement newMs = copyFromMappedStatement(mappedStatement, new BoundSqlSqlSource(newBoundSql));
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Generate SQL : " + newBoundSql.getSql());
+                    log.debug("Generate SQL : \n\r " + newBoundSql.getSql());
                 }
 
                 invocation.getArgs()[0] = newMs;

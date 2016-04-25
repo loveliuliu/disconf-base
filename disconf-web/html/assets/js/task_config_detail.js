@@ -1,38 +1,38 @@
 getSession();
 var app = angular.module('myApp', []);
-var userId = getQueryString("userId");
+var id = getQueryString("id");
 
 addInterceptor(app);
 app.controller('validateCtrl',['$scope','$http', function($scope,$http) {
 
-    //获取role select
+    $scope.title = "修改用户";
+    $scope.task = {};
     $http({
-        url:"/api/role/findAll",
-        method:'GET'
+        url:"/api/web/task/taskConfigDetail",
+        method:'GET',
+        params:{id:id}
     }).success(function(data,header,config,status){
         if(data.success){
-            $scope.roles = data.result;
-
+           $scope.task = data.result;
         }
     });
+    $("[name=name]").attr("readonly","readonly");
 
-    if(undefined!=userId && userId!=''){
-        $scope.title = "修改用户";
-        $http({
-            url:"/api/account/findById",
-            method:'GET',
-            params:{userId:userId}
-        }).success(function(data,header,config,status){
-            if(data.success){
-                var user = data.result;
-                $scope.user = user;
-                $scope.roleId = user.roleId.toString();
-            }
+    $scope.compare = function (id,name,draftType) {
+
+        var title = "对比配置：" + name + " --> " + (draftType=='create'?'新建':draftType=='modify'?'修改':'删除');
+
+        layer.open({
+            type: 2,
+            title: title,
+            shadeClose: true,
+            // shade: false,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['960px', '600px'],
+            content: '/config_campare.html?id='+id
         });
-        $("[name=name]").attr("readonly","readonly");
-    }else {
-        $scope.title = "新建用户";
-    }
+
+    };
 
     $scope.submitForm = function(isValid) {
         if (isValid) {

@@ -139,4 +139,9 @@ public class UserMgrImpl implements UserMgr {
     public void delete(Long userId) {
         userDao.delete(userId);
     }
+
+    @Override
+    public String findUserAppAuthByUserId(Long userId) {
+        return userMapper.findUserAppAuthByUserId(userId);
+    }
 }

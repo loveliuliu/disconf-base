@@ -8,6 +8,8 @@ import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 /**
  * Created by luoshiqian on 2016/4/20.
  */
@@ -29,4 +31,7 @@ public interface ConfigDraftMgr {
 
     //提交草稿
     void submit(ConfDraftSubmitForm confDraftSubmitForm);
+
+    List<ConfigDraft> findByTaskId(Long taskId);
+
 }

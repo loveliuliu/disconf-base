@@ -2,8 +2,9 @@
 
     getSession();
 
-    angular.module('listPage', ["bw.paging"]); //引入分页组件
+    var app = angular.module('listPage', ["bw.paging"]); //引入分页组件
 
+    addInterceptor(app);
 
     angular.module('listPage').controller('listPageControl', ['$scope', '$log','$http', function($scope, $log,$http) {
 

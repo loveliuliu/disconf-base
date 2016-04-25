@@ -99,7 +99,7 @@
                         <li class="active"><a href="my_submit_task.html">我提交的任务</a></li>
                         <li ><a href="my_todo_task.html">我的待办任务</a></li>
                         <li ><a href="my_done_task.html">我的已办任务</a></li>
-                        <li ><a href="my_end_task.html">已完成的任务</a></li>
+                        <li ><a href="my_finished_task.html">已完成的任务</a></li>
                     </ul>
 
                 </div>
@@ -115,9 +115,9 @@
                         <div id="zk_deploy_info" style="padding-bottom:20px;">
                             <form novalidate>
                             <pre id="zk_deploy_info_pre" style="padding-top: 10px;white-space: nowrap">
-                                APP名称<input name="appName" type="text" ng-model="draft.appName" >
-                                环境<input name="envName" type="text" ng-model="draft.envName" >
-                                版本<input name="version" type="text" ng-model="draft.version" >
+                                APP名称<input name="appName" type="text" ng-model="task.appName" >
+                                环境<input name="envName" type="text" ng-model="task.envName" >
+                                版本<input name="version" type="text" ng-model="task.version" >
                                 <button class="btn-primary btn-large" ng-click="search()" >查询</button>
                             </pre>
                             </form>
@@ -136,11 +136,9 @@
                                         <td>APP名称</td>
                                         <td>环境名称</td>
                                         <td>版本</td>
-                                        <td>KEY</td>
-                                        <td>配置</td>
-                                        <td>草稿类型</td>
-                                        <td>创建时间</td>
-                                        <td>修改时间</td>
+                                        <td>当前审核人员</td>
+                                        <td>任务提交时间</td>
+                                        <td>任务说明</td>
                                         <td>操作</td>
                                     </tr>
                                     </thead>
@@ -151,15 +149,12 @@
                                         <td>{{data.appName}}</td>
                                         <td>{{data.envName}}</td>
                                         <td>{{data.version}}</td>
-                                        <td>{{data.name}}</td>
-                                        <td>{{data.type==0?'文件':'配置项'}}</td>
-                                        <td>{{data.draftType=='create'?'新建':data.draftType=='modify'?'修改':'删除'}}</td>
+                                        <td title="{{data.curAuditUserNames}}" style="max-width: 150px;">{{data.curAuditUserNames}}</td>
                                         <td>{{data.createTime}}</td>
-                                        <td>{{data.updateTime}}</td>
+                                        <td>{{data.memo}}</td>
                                         <td>
-                                            <a ng-show="data.draftType!='delete'" ng-click="modify(data.id,data.type)" style="cursor: pointer; cursor: hand; "><i title="修改" class="icon-edit"></i></a> |
-                                            <a ng-click="detail(data.id,data.name,data.draftType)" style="cursor: pointer; cursor: hand; "><i title="查看对比" class="icon-check"></i></a> |
-                                            <a ng-click="delete(data.id)" style="cursor: pointer; cursor: hand; "><i title="删除" class="icon-remove"></i></a>
+                                            <a ng-click="view(data.id)" style="cursor: pointer; cursor: hand; "><i title="查看任务详情" class="icon-search"></i></a>
+                                            <a ng-click="delete(data.id)" style="cursor: pointer; cursor: hand; "><i title="撤销" class="icon-remove"></i></a>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -227,7 +222,7 @@
         </script>
 
 
-<script src="assets/js/my_config_draft.js"></script>
+<script src="assets/js/my_submit_task.js"></script>
 
         <script src="assets/js/footer.js"></script>
     

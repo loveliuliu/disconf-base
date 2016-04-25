@@ -28,4 +28,7 @@ public interface UserMapper {
      */
     List<UserDto> findSelectedUserByApp(@Param("appId") Long appId,@Param("type") String type);
 
+
+    String findUserAppAuthByUserId(@Param("userId") Long userId);
+
 }
