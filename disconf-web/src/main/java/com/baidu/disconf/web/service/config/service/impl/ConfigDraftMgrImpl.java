@@ -15,6 +15,7 @@ import com.baidu.disconf.web.service.config.service.ConfigMgr;
 import com.baidu.disconf.web.service.env.bo.Env;
 import com.baidu.disconf.web.service.env.dao.EnvDao;
 import com.baidu.disconf.web.service.task.bo.Task;
+import com.baidu.disconf.web.service.task.constant.TaskExecStatusEnum;
 import com.baidu.disconf.web.service.task.dao.TaskDao;
 import com.baidu.disconf.web.service.task.dao.TaskMapper;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
@@ -174,7 +175,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
         //更新task的执行状态
         Task condition = new Task();
         condition.setId(task.getId());
-        condition.setExecStatus(com.baidu.disconf.web.common.Constants.TASK_EXEC_STATUS_DONE);
+        condition.setExecStatus(TaskExecStatusEnum.done.getValue());
         taskMgr.updateTaskExecStatus(condition);
 
         //同步zk

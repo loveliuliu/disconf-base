@@ -128,8 +128,8 @@ public class TaskMgrImpl implements TaskMgr {
     @Override
     public List<Task> findToBeActiveTask() {
         Task query = new Task();
-        query.setAuditStatus(Constants.TASK_AUDIT_STATUS_PASS);
-        query.setExecStatus(Constants.TASK_EXEC_STATUS_WAIT);
+        query.setAuditStatus(TaskAuditStatusEnum.pass.getValue());
+        query.setExecStatus(TaskExecStatusEnum.wait.getValue());
         String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
         query.setExecTime(curTime);
 

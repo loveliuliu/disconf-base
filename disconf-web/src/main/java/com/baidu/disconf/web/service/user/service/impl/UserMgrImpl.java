@@ -1,6 +1,8 @@
 package com.baidu.disconf.web.service.user.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import com.baidu.disconf.web.service.user.dao.UserMapper;
@@ -156,14 +158,18 @@ public class UserMgrImpl implements UserMgr {
         List<UserDto> userDtoList = userAppMgr.findSelectedUserByApp(appId, type);
 
         StringBuilder mailListSb = new StringBuilder();
+        Set<String> mailSet = new HashSet<>();
         for(UserDto userDto :  userDtoList){
             String email = userDto.getEmail();
-            if(!StringUtils.isBlank(email) &&
-                    email.endsWith(com.baidu.disconf.web.common.Constants.YMT_MAIL_DOMAIN)) {
-                mailListSb.append(userDto.getEmail()).append(";");
+            if(!StringUtils.isBlank(email) && mailSet.add(email)){
+                    mailListSb.append(email).append(";");
             }
         }
 
-        return mailListSb.toString().substring(0, mailListSb.length() - 1);
+        if(mailListSb.length() > 0) {
+            return mailListSb.toString().substring(0, mailListSb.length() - 1);
+        }else{
+            return "";
+        }
     }
 }
