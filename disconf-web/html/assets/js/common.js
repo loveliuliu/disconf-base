@@ -102,6 +102,9 @@ $.ajaxSetup({
         }
         if((system == null || system == 'undefined') && (sessionStorage.system == null || sessionStorage.system == 0) ){
             sessionStorage.system = 0;
+            if(getQueryString("jump")){
+                Util.cookie.set("jumpUrl",location.href);
+            }
             location.href = "http://sso.ops.ymatou.cn/login?service=http://localhost:8080/api/cas/login";
         }else{
             sessionStorage.system = 1;
