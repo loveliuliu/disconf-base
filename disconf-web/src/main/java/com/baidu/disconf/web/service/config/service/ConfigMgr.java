@@ -101,4 +101,12 @@ public interface ConfigMgr {
      * @return
      */
     boolean isEnvAndVersionExist(ConfCopyForm confCopyForm);
+
+
+    /**
+     *
+     * @param configDraft
+     * @return
+     */
+    Config execDraftToCofing(ConfigDraft configDraft);
 }

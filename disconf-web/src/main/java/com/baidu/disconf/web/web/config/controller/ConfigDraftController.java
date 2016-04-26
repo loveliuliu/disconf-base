@@ -1,15 +1,19 @@
 package com.baidu.disconf.web.web.config.controller;
 
 import com.baidu.disconf.web.common.Constants;
+import com.baidu.disconf.web.config.ApplicationPropertyConfig;
 import com.baidu.disconf.web.service.config.bo.Config;
 import com.baidu.disconf.web.service.config.bo.ConfigDraft;
 import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
 import com.baidu.disconf.web.service.config.service.ConfigMgr;
+import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
+import com.baidu.disconf.web.service.user.constant.UserAppTypeEnum;
 import com.baidu.disconf.web.service.user.dto.Visitor;
+import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.disconf.web.web.config.validator.FileUploadValidator;
 import com.baidu.dsp.common.constant.DataFormatConstants;
 import com.baidu.dsp.common.constant.ErrorCode;
@@ -17,6 +21,7 @@ import com.baidu.dsp.common.constant.WebConstants;
 import com.baidu.dsp.common.controller.BaseController;
 import com.baidu.dsp.common.exception.FileUploadException;
 import com.baidu.dsp.common.exception.ValidationException;
+import com.baidu.dsp.common.utils.email.LogMailBean;
 import com.baidu.dsp.common.vo.JsonObjectBase;
 import com.baidu.ub.common.commons.ThreadContext;
 import com.github.knightliao.apollo.utils.time.DateUtils;
@@ -56,6 +61,15 @@ public class ConfigDraftController extends BaseController {
 
     @Autowired
     private TaskMgr taskMgr;
+
+    @Autowired
+    private UserMgr userMgr;
+
+    @Autowired
+    private ApplicationPropertyConfig applicationPropertyConfig;
+
+    @Autowired
+    private LogMailBean logMailBean;
 
     @RequestMapping(value = "/list")
     @ResponseBody
@@ -111,6 +125,13 @@ public class ConfigDraftController extends BaseController {
         this.validateDraftSubmit(confDraftSubmitForm);
 
         configDraftMgr.submit(confDraftSubmitForm);
+
+        //发送审核mail
+        String emailToList = userMgr.getMailToList(confDraftSubmitForm.getAppId(), UserAppTypeEnum.auditor.name());
+        if(applicationPropertyConfig.isEmailMonitorOn()){
+            logMailBean.sendHtmlEmail(emailToList, "任务待审核",
+                    "<br/><br/><br/><br/><br/>disconf中您有待审核任务，请审核!<br/>");
+        }
 
         return buildSuccess("提交成功!");
     }

@@ -37,8 +37,11 @@ public class Constants {
     public final static String ZOO_HOSTS_URL_PREFIX_KEY = "prefix";
     public final static String LOCK_PATH = "locks";
     public final static String CONFIG_CONSISTENCY_LOCK_PATH = LOCK_PATH + SEP_STRING + "configConsistencyLock";
+    public final static String DRAFT_TO_CONFIG_LOCK_PATH = LOCK_PATH + SEP_STRING + "draftToConfigLock";
     public final static long CONFIG_CONSISTENCY_SCHEDULE_TIME = 30L * 60 * 1000; //定时任务时间间隔
+    public final static long DRAFT_TO_CONFIG_SCHEDULE_TIME = 1L * 60 * 1000; //task生效的定时任务时间间隔
     public final static long CONFIG_CONSISTENCY_LOCK_TIME = 5L * 60 * 1000; //锁住时间
+    public final static long DRAFT_TO_CONFIG_LOCK_TIME =  1L * 30 * 1000; //task生效的锁住时间
 
 
 

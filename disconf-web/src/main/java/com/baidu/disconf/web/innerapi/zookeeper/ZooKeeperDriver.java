@@ -63,4 +63,15 @@ public interface ZooKeeperDriver {
      * 删除一致性锁
      */
     void releaseConfigConsistencyLock();
+
+    /**
+     * 尝试获取执行darft to config权限
+     * @return
+     */
+    boolean tryLockDraftToConfig();
+
+    /**
+     * 删除锁
+     */
+    void releaseDraftToConfigLock();
 }

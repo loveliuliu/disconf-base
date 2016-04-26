@@ -2,6 +2,7 @@ package com.baidu.disconf.web.service.config.dao;
 
 import com.baidu.disconf.web.service.config.bo.ConfigDraft;
 import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
+import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.user.bo.User;
 import com.baidu.disconf.web.service.user.dto.UserDto;
 import com.ymatou.common.mybatis.annotation.MyBatisDao;
@@ -19,4 +20,5 @@ public interface ConfigDraftMapper {
 
     Page<ConfigDraft> findByConfigDraft(@Param("configDraft") ConfigDraftCondition configDraft, @Param("pageable") Pageable pageable);
 
+    List<ConfigDraft> findTobeActiveConfigDraft(@Param("task")Task task);
 }

@@ -53,13 +53,13 @@
 
 	<select id="findSelectedUserByApp" resultType="com.baidu.disconf.web.service.user.dto.UserDto">
 		SELECT
-		u.user_id as id,u.name,u.ownapps as ownApps,u.role_id as roleId
+		u.user_id as id,u.name,u.ownapps as ownApps,u.role_id as roleId, u.email as email
 		FROM
 		user u,user_app ua
 		<where>
 			ua.user_id = u.user_id
 			and ua.app_id = #{appId}
-			and ua.type = #{type}
+			<if test="type != null "> and ua.type = #{type}</if>
 		</where>
 	</select>
 

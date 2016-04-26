@@ -1,5 +1,6 @@
 package com.baidu.disconf.web.service.task.service.impl;
 
+import com.baidu.disconf.web.common.Constants;
 import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
 import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.constant.TaskAuditStatusEnum;
@@ -121,5 +122,23 @@ public class TaskMgrImpl implements TaskMgr {
     @Override
     public List<Task> findAuditingOrNotExecTask(Task task) {
         return taskMapper.findAuditingOrNotExecTask(task);
+    }
+
+
+    @Override
+    public List<Task> findToBeActiveTask() {
+        Task query = new Task();
+        query.setAuditStatus(Constants.TASK_AUDIT_STATUS_PASS);
+        query.setExecStatus(Constants.TASK_EXEC_STATUS_WAIT);
+        String curTime = DateUtils.format(new Date(), DataFormatConstants.COMMON_TIME_FORMAT);
+        query.setExecTime(curTime);
+
+        List<Task> result = taskMapper.findToBeActiveTask(query);
+        return  result;
+    }
+
+    @Override
+    public int updateTaskExecStatus(Task task) {
+        return taskMapper.updateTaskExecStatusById(task);
     }
 }
