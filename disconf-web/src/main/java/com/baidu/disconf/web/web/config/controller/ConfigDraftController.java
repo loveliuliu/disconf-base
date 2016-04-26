@@ -123,13 +123,14 @@ public class ConfigDraftController extends BaseController {
         //验证一个app 环境 版本 只能有一个正在审核或审核通过未执行的任务
         this.validateDraftSubmit(confDraftSubmitForm);
 
-        configDraftMgr.submit(confDraftSubmitForm);
+        Long taskId = configDraftMgr.submit(confDraftSubmitForm);
 
         //发送审核mail
         String emailToList = userMgr.getMailToList(confDraftSubmitForm.getAppId(), UserAppTypeEnum.auditor.name());
+        String url = applicationPropertyConfig.getDomain() + "/task_config_audit.html?id=" + taskId;
         if(applicationPropertyConfig.isEmailMonitorOn()){
             logMailBean.sendHtmlEmail(emailToList, "任务待审核",
-                    "<br/><br/><br/><br/><br/>disconf中您有待审核任务，请审核!<br/>");
+                    "<br/><br/><a href='" + url + "'>disconf中您有待审核任务，请审核!</a>");
         }
 
         return buildSuccess("提交成功!");

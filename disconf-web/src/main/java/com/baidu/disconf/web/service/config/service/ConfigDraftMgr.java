@@ -31,7 +31,7 @@ public interface ConfigDraftMgr {
     void delete(Long id);
 
     //提交草稿
-    void submit(ConfDraftSubmitForm confDraftSubmitForm);
+    Long submit(ConfDraftSubmitForm confDraftSubmitForm);
 
     List<ConfigDraft> findByTaskId(Long taskId);
 
