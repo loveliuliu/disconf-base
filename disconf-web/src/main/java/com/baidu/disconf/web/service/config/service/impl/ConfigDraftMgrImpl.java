@@ -97,7 +97,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
     @Override
     @Transactional
-    public void submit(ConfDraftSubmitForm form) {
+    public Long submit(ConfDraftSubmitForm form) {
 
         Visitor visitor = ThreadContext.getSessionVisitor();
 
@@ -141,6 +141,8 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
             configDraft.setUpdateTime(curTime);
         }
         configDraftDao.update(configDraftList);
+
+        return task.getId();
     }
 
     @Override
