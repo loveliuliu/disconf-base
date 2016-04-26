@@ -24,11 +24,13 @@ import com.baidu.dsp.common.utils.email.LogMailBean;
 import com.baidu.dsp.common.vo.JsonObjectBase;
 import com.baidu.ub.common.commons.ThreadContext;
 import com.github.knightliao.apollo.utils.time.DateUtils;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -38,10 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping(WebConstants.API_PREFIX + "/web/configDraft")
@@ -245,6 +244,31 @@ public class ConfigDraftController extends BaseController {
             throw new FileUploadException("upload file error", e);
         }
 
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/versionlist")
+    public JsonObjectBase versionlist(ConfigDraftCondition configDraft){
+
+        Visitor visitor = ThreadContext.getSessionVisitor();
+        configDraft.setUserId(visitor.getId());
+        configDraft.setStatus(Constants.STATUS_NORMAL);
+
+        Page<ConfigDraft> page = configDraftMgr.findByConfigDraft(configDraft,new PageRequest(0,Integer.MAX_VALUE));
+
+        Set<String> versionSet = Sets.newHashSet();
+
+        List<ConfigDraft> draftList = page.getContent();
+
+        if(!CollectionUtils.isEmpty(draftList)){
+
+            for(ConfigDraft draft : draftList){
+                versionSet.add(draft.getVersion());
+            }
+        }
+
+        return buildSuccess(versionSet);
     }
 
 }

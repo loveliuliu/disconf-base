@@ -144,7 +144,7 @@
 	<select id="findAuditingOrNotExecTask"  resultType="Task">
 		SELECT <include refid="columns"/>
 		FROM task t
-		where t.audit_status = 'wait_audit' or (t.audit_status = 'pass' and t.exec_status='wait')
+		where (t.audit_status = 'wait_audit' or (t.audit_status = 'pass' and t.exec_status='wait'))
 		<if test="task.appId !=null "> AND t.app_id = #{task.appId} </if>
 		<if test="task.envId !=null "> AND t.env_id = #{task.envId} </if>
 		<if test="task.version !=null "> AND t.version = #{task.version}</if>

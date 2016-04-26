@@ -67,11 +67,11 @@ function fetchVersion() {
     $("#versionChoice").html("");
     $.ajax({
         type: "GET",
-        url: "/api/web/config/versionlist?appId=" + appId + "&envId="+envId
+        url: "/api/web/configDraft/versionlist?appId=" + appId + "&envId="+envId
     }).done(function (data) {
         if (data.success === "true") {
             var html = "";
-            var result = data.page.result;
+            var result = data.result;
             $.each(result, function (index, item) {
                 html += '<li><a href="#">' + item + '</a></li>';
             });
