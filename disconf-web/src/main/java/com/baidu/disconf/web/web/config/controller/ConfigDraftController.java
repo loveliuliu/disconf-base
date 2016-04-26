@@ -8,7 +8,6 @@ import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
 import com.baidu.disconf.web.service.config.service.ConfigMgr;
-import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
 import com.baidu.disconf.web.service.user.constant.UserAppTypeEnum;
