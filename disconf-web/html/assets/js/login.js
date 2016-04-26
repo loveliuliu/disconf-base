@@ -37,7 +37,11 @@
                 window.VISITOR = data.result.visitor;
                 $("#loginError").hide();
                 headShowInit();
-                window.location.href = "/main.html";
+                if(VISITOR.role == 1) {
+                    window.location.href = "/main.html";
+                }else{
+                    window.location.href = "/admin_users.html";
+                }
             } else {
                 Util.input.whiteError($("#loginError"), data);
                 $("#loginError").show();

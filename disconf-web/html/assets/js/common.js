@@ -12,6 +12,14 @@ function headShowInit() {
         $(".login-yes").show();
         $("#username").show();
         $("#username").html(VISITOR.name);
+        if(VISITOR.role == 2){
+            $(".dropdown-menu:not('#applist')").find("li").get(4).remove();
+            $(".dropdown-menu:not('#applist')").find("li").get(2).remove();
+            $(".dropdown-menu:not('#applist')").find("li").get(1).remove();
+            $(".dropdown-menu:not('#applist')").find("li").get(0).remove();
+        }else{
+            $(".dropdown-menu:not('#applist')").find("li").get(3).remove();
+        }
     } else {
         $(".login-no").show();
         $(".login-yes").hide();
@@ -24,7 +32,11 @@ function headShowInit() {
 //
 function loginActions() {
     if (VISITOR.id) {
-        $("#brand_url").attr("href", "/main.html");
+        if(VISITOR.role == 2){
+            $("#brand_url").attr("href", "/admin_users.html");
+        }else {
+            $("#brand_url").attr("href", "/main.html");
+        }
     } else {
         $("#brand_url").attr("href", "/");
     }
@@ -57,7 +69,11 @@ function getSession2Redirect() {
         url: "/api/account/session"
     }).done(function (data) {
         if (data.success === "true") {
-            window.location.href = "/main.html";
+            if(data.result.visitor.role == 1) {
+                window.location.href = "/main.html";
+            }else{
+                window.location.href = "/admin_users.html";
+            }
         } else {
         }
     });

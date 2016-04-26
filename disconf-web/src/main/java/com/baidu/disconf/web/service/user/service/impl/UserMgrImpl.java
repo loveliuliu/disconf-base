@@ -64,6 +64,7 @@ public class UserMgrImpl implements UserMgr {
         VisitorVo visitorVo = new VisitorVo();
         visitorVo.setId(visitor.getId());
         visitorVo.setName(visitor.getLoginUserName());
+        visitorVo.setRole(String.valueOf(visitor.getRoleId()));
 
         return visitorVo;
     }
