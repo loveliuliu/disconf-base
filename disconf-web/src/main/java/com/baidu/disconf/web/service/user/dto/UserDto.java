@@ -22,7 +22,10 @@ public class UserDto {
      * 角色ID
      */
     private int roleId;
+
     private String roleName;
+
+    private String email;
 
     public String getName() {
         return name;
@@ -72,6 +75,14 @@ public class UserDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

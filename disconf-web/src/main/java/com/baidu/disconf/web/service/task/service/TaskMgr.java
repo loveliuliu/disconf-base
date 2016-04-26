@@ -40,4 +40,17 @@ public interface TaskMgr {
 
 
     List<Task> findAuditingOrNotExecTask(Task task);
+
+    /**
+     *
+     * @return
+     */
+    List<Task> findToBeActiveTask();
+
+    /**
+     *
+     * @param task
+     * @return
+     */
+    int updateTaskExecStatus(Task task);
 }

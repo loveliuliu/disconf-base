@@ -48,4 +48,14 @@ public class ZookeeperDriverMock implements ZooKeeperDriver {
     public void releaseConfigConsistencyLock() {
 
     }
+
+    @Override
+    public boolean tryLockDraftToConfig() {
+        return false;
+    }
+
+    @Override
+    public void releaseDraftToConfigLock() {
+
+    }
 }

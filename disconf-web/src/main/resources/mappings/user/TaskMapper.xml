@@ -41,11 +41,12 @@
 		</where>
 	</sql>
 
-	<select id="findByTask"  resultType="Task">
-		SELECT <include refid="columns"/>
-		FROM task t
-		<include refid="dynamicWhere"/>
-	</select>
+
+    <select id="findByTask"  resultType="Task">
+        SELECT <include refid="columns"/>
+        FROM task t
+        <include refid="dynamicWhere"/>
+    </select>
 
 
 	<!-- 我提交的任务列表  -->
@@ -104,6 +105,21 @@
 	</select>
 
 	<!-- 已完成的任务  -->
+	<select id="findToBeActiveTask"  resultType="Task">
+		SELECT <include refid="columns"/>
+		FROM task t WHERE
+		<![CDATA[
+			t.audit_status = #{task.auditStatus}
+			and t.exec_status = #{task.execStatus}
+			and (t.exec_time <= #{task.execTime} OR t.exec_time = 'now')
+		]]>
+	</select>
+
+	<update id="updateTaskExecStatusById">
+		UPDATE task t set t.exec_status = #{task.execStatus}
+		WHERE t.task_id = #{task.id}
+	</update>
+
 	<select id="findMyFinishedTask"  resultType="TaskDto">
 		SELECT <include refid="columns"/>, u. NAME AS auditUserName
 		FROM task t,USER u

@@ -11,10 +11,13 @@ import com.baidu.disconf.web.service.config.dao.ConfigDraftDao;
 import com.baidu.disconf.web.service.config.dao.ConfigDraftMapper;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
+import com.baidu.disconf.web.service.config.service.ConfigMgr;
 import com.baidu.disconf.web.service.env.bo.Env;
 import com.baidu.disconf.web.service.env.dao.EnvDao;
 import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.dao.TaskDao;
+import com.baidu.disconf.web.service.task.dao.TaskMapper;
+import com.baidu.disconf.web.service.task.service.TaskMgr;
 import com.baidu.disconf.web.service.user.dto.Visitor;
 import com.baidu.disconf.web.utils.CodeUtils;
 import com.baidu.dsp.common.constant.DataFormatConstants;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,6 +57,14 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
     @Autowired
     private TaskDao taskDao;
 
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private TaskMgr taskMgr;
+
+    @Autowired
+    private ConfigMgr configMgr;
 
     @Override
     public ConfigDraft getConfByParameter(Long appId, Long envId, String version, String key, DisConfigTypeEnum disConfigTypeEnum) {
@@ -139,5 +151,35 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
         return draftPage.getContent();
 
+    }
+
+    @Override
+    public List<ConfigDraft> getTobeActiveConfigDraft(Task task) {
+        return  configDraftMapper.findTobeActiveConfigDraft(task);
+    }
+
+    @Transactional
+    @Override
+    public void draftToConfig(Task task){
+
+        //生效task相关联的configDraft
+        List<Config> configList = new ArrayList<>();
+        List<ConfigDraft> configDraftList = getTobeActiveConfigDraft(task);
+        if (configDraftList != null && configDraftList.size() > 0) {
+            for (ConfigDraft configDraft : configDraftList) {
+                configList.add(configMgr.execDraftToCofing(configDraft));
+            }
+        }
+
+        //更新task的执行状态
+        Task condition = new Task();
+        condition.setId(task.getId());
+        condition.setExecStatus(com.baidu.disconf.web.common.Constants.TASK_EXEC_STATUS_DONE);
+        taskMgr.updateTaskExecStatus(condition);
+
+        //同步zk
+        for(Config config : configList){
+            configMgr.notifyZookeeper(config.getId());
+        }
     }
 }

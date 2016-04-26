@@ -333,10 +333,33 @@ public class ZookeeperDriverImpl implements ZooKeeperDriver, InitializingBean, D
     @Override
     public boolean tryLockConfigConsistency() {
 
+        return  tryLock(Constants.CONFIG_CONSISTENCY_LOCK_PATH, Constants.CONFIG_CONSISTENCY_SCHEDULE_TIME,
+                Constants.CONFIG_CONSISTENCY_LOCK_TIME);
+    }
+
+    @Override
+    public void releaseConfigConsistencyLock() {
+        realseLock(Constants.CONFIG_CONSISTENCY_LOCK_PATH);
+    }
+
+    @Override
+    public boolean tryLockDraftToConfig() {
+
+        return  tryLock(Constants.DRAFT_TO_CONFIG_LOCK_PATH, Constants.DRAFT_TO_CONFIG_SCHEDULE_TIME,
+                Constants.DRAFT_TO_CONFIG_LOCK_TIME);
+    }
+
+    @Override
+    public void releaseDraftToConfigLock() {
+        realseLock(Constants.DRAFT_TO_CONFIG_LOCK_PATH);
+    }
+
+    private boolean tryLock(String lockPath, long scheduleTime, long lockTime){
+
         LOG.info("-------尝试开始获取锁");
         //增加zookeeper 临时节点  不存在则可以执行校验
         String baseLockPath = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), Constants.LOCK_PATH);
-        String path = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), Constants.CONFIG_CONSISTENCY_LOCK_PATH);
+        String path = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), lockPath);
         String curTime = String.valueOf(new Date().getTime());
 
         //创建父节点 locks
@@ -348,7 +371,6 @@ public class ZookeeperDriverImpl implements ZooKeeperDriver, InitializingBean, D
 
             boolean isExist = ZookeeperMgr.getInstance().exists(path);
             if (!isExist) {
-
                 zookeeperMgr.createEphemeralNode(path, curTime, CreateMode.EPHEMERAL);
                 locked = true;
 
@@ -358,7 +380,8 @@ public class ZookeeperDriverImpl implements ZooKeeperDriver, InitializingBean, D
                 if (data != null) {
                     Long lastUpdateTime = Long.valueOf(new String(data, CHARSET)); //节点上次更新时间
                     Long duration = Long.valueOf(curTime) - lastUpdateTime; //当前时间距离上次更新时间
-                    Long constantsDuration = Constants.CONFIG_CONSISTENCY_SCHEDULE_TIME - Constants.CONFIG_CONSISTENCY_LOCK_TIME;
+                    Long constantsDuration = scheduleTime - lockTime;
+                    LOG.info(lastUpdateTime + " " + duration  + " " + constantsDuration);
                     if (duration >= constantsDuration) {//锁没有释放 更新节点
                         zookeeperMgr.createEphemeralNode(path, curTime, CreateMode.EPHEMERAL);
                         locked = true;
@@ -377,10 +400,8 @@ public class ZookeeperDriverImpl implements ZooKeeperDriver, InitializingBean, D
         return locked;
     }
 
-    @Override
-    public void releaseConfigConsistencyLock() {
-
-        String path = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), Constants.CONFIG_CONSISTENCY_LOCK_PATH);
+    private void realseLock(String lockPath){
+        String path = ZooPathMgr.joinPath(zooConfig.getZookeeperUrlPrefix(), lockPath);
 
         ZookeeperMgr.getInstance().deleteNode(path);
     }

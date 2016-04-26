@@ -3,6 +3,7 @@ package com.baidu.disconf.web.service.config.service;
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.web.service.config.bo.Config;
 import com.baidu.disconf.web.service.config.bo.ConfigDraft;
+import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import org.springframework.data.domain.Page;
@@ -34,4 +35,8 @@ public interface ConfigDraftMgr {
 
     List<ConfigDraft> findByTaskId(Long taskId);
 
+
+    List<ConfigDraft> getTobeActiveConfigDraft(Task task);
+
+    void draftToConfig(Task task);
 }

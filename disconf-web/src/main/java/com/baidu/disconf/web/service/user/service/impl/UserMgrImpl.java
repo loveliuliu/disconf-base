@@ -5,6 +5,8 @@ import java.util.List;
 import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import com.baidu.disconf.web.service.user.dao.UserMapper;
 import com.baidu.disconf.web.service.user.dto.UserDto;
+import com.baidu.disconf.web.service.user.service.UserAppMgr;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +44,9 @@ public class UserMgrImpl implements UserMgr {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private UserAppMgr userAppMgr;
+
     @Override
     public Visitor getVisitor(Long userId) {
 
@@ -59,6 +64,7 @@ public class UserMgrImpl implements UserMgr {
         VisitorVo visitorVo = new VisitorVo();
         visitorVo.setId(visitor.getId());
         visitorVo.setName(visitor.getLoginUserName());
+        visitorVo.setRole(String.valueOf(visitor.getRoleId()));
 
         return visitorVo;
     }
@@ -143,5 +149,21 @@ public class UserMgrImpl implements UserMgr {
     @Override
     public String findUserAppAuthByUserId(Long userId) {
         return userMapper.findUserAppAuthByUserId(userId);
+    }
+
+    @Override
+    public String getMailToList(Long appId, String type) {
+        List<UserDto> userDtoList = userAppMgr.findSelectedUserByApp(appId, type);
+
+        StringBuilder mailListSb = new StringBuilder();
+        for(UserDto userDto :  userDtoList){
+            String email = userDto.getEmail();
+            if(!StringUtils.isBlank(email) &&
+                    email.endsWith(com.baidu.disconf.web.common.Constants.YMT_MAIL_DOMAIN)) {
+                mailListSb.append(userDto.getEmail()).append(";");
+            }
+        }
+
+        return mailListSb.toString().substring(0, mailListSb.length() - 1);
     }
 }

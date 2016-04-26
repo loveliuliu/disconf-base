@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.web.innerapi.zookeeper.ZooKeeperDriver;
+import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.disconf.web.tasks.runnable.ReleaseConfigConsistencyLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,9 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
 
     @Autowired
     private ConfigMgr configMgr;
+
+    @Autowired
+    private UserMgr userMgr;
 
     @Autowired
     private LogMailBean logMailBean;
@@ -149,7 +153,7 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
         DaoPageResult<ConfListVo> daoPageResult = configMgr.getConfigList(confiConfListForm, true, true);
 
         // 准备发送邮件通知
-        String toEmails = appMgr.getEmails(app.getId());
+        String toEmails = userMgr.getMailToList(app.getId(), null);
 
         List<ConfListVo> confListVos = daoPageResult.getResult();
 

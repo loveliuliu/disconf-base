@@ -37,4 +37,7 @@ public interface TaskMapper {
 
     List<Task> findAuditingOrNotExecTask(@Param("task") Task task);
 
+    List<Task> findToBeActiveTask(@Param("task") Task task);
+
+    int updateTaskExecStatusById(@Param("task") Task task);
 }

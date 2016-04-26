@@ -58,5 +58,11 @@
         <include refid="dynamicWhere"/>
     </select>
 
+	<select id="findTobeActiveConfigDraft" resultType="ConfigDraft">
+		SELECT <include refid="columns"/>
+		FROM config_draft t
+		WHERE t.task_id = #{task.id}
+	</select>
+
 
 </mapper>

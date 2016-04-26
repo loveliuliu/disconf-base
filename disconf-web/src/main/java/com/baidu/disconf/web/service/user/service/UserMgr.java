@@ -52,4 +52,12 @@ public interface UserMgr {
     void delete(Long userId);
 
     String findUserAppAuthByUserId(Long userId);
+
+    /**
+     * 获取app用户的email
+     * @param appId
+     * @param type type为null时获取所有角色的用户
+     * @return
+     */
+    String getMailToList(Long appId, String type);
 }
