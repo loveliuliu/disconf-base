@@ -102,8 +102,11 @@ public class DraftToConfigServiceImpl implements DraftToConfigService{
 
     private void sendEmail(Task task){
         String mailToList = userMgr.getMailToList(task.getAppId(), null);
+        String url = applicationPropertyConfig.getDomain() + "/task_config_detail.html?id="
+                + task.getId() + "&jump=1";
         if(applicationPropertyConfig.isEmailMonitorOn()){
-            logMailBean.sendHtmlEmail(mailToList, "任务审核通过", "<br/><br/><br/>disconf任务审核通过<br/><br/>");
+            logMailBean.sendHtmlEmail(mailToList, "任务审核通过", "<br/><br/><br/>disconf任务审核通过<br/>"
+              + "<a href='" + url + "'>查看详情</a>");
         }
 
     }
