@@ -79,7 +79,7 @@ public class ConfigReadController extends BaseController {
      */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public JsonObjectBase getConfigList(@Valid ConfListForm confListForm) {
+    public JsonObjectBase getConfigList(@Valid ConfListForm confListForm,Boolean needValue) {
 
         LOG.info(confListForm.toString());
 
@@ -87,7 +87,7 @@ public class ConfigReadController extends BaseController {
         confListForm.getPage().setOrderBy(Columns.NAME);
         confListForm.getPage().setOrder(PageOrderValidator.ASC);
 
-        DaoPageResult<ConfListVo> configs = configMgr.getConfigList(confListForm, true, false);
+        DaoPageResult<ConfListVo> configs = configMgr.getConfigList(confListForm, true, needValue==null?false:true);
 
         return buildListSuccess(configs);
     }
