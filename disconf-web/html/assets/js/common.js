@@ -1,6 +1,13 @@
 // 初始入口
 (function () {
     window.VISITOR = {};
+
+    var system = getQueryString("system");
+    if(system == null || system == 'undefined' || system == 0){
+        sessionStorage.system = 0;
+    }else{
+        sessionStorage.system = 1;
+    }
 })();
 
 //
@@ -138,13 +145,6 @@ function addInterceptor(app) {
                 return res;
             },
             responseError: function(err){
-                if(-1 === err.status) {
-                    // 远程服务器无响应
-                } else if(500 === err.status) {
-                    // 处理各类自定义错误
-                } else if(501 === err.status) {
-                    // ...
-                }
                 return $q.reject(err);
             }
         };

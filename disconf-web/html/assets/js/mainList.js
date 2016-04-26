@@ -81,6 +81,7 @@
                 if (html != "") {
                     $("#versionChoice li:first").addClass("active");
                     version = $("#versionChoice li:first a").text();
+                    sessionStorage.selectedVersion = version;
                 }
 
                 if(selectedVersion && boolSelOld){
@@ -442,6 +443,22 @@
     $("#zk_deploy_button").on('click', function () {
         $("#zk_deploy_info").toggle();
         fetchZkDeploy();
+    });
+
+
+    $("#view").on('click', function () {
+
+        var title = $("#env_info").text() + $("#app_info").text()  +" | 版本：" + version;
+        layer.open({
+            type: 2,
+            title: title,
+            shadeClose: false,
+            // shade: false,
+            maxmin: true, //开启最大化最小化按钮
+            area: ['960px', '600px'],
+            content: "/app_version_detail.html?appId="+appId+"&envId="+envId+"&version="+version
+        });
+
     });
 
 })(jQuery);
