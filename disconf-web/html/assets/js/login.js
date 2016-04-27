@@ -2,7 +2,7 @@
 
     $("#indexMain").attr("href", "/");
 
-    getSession2Redirect();
+    getSession2Redirect(1);
 
     document.onkeydown=function(){
         if (event.keyCode == 13){
