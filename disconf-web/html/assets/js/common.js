@@ -161,3 +161,7 @@ function addInterceptor(app) {
         $httpProvider.interceptors.push(HttpInterceptor);
     }]);
 }
+
+function removeJumpUrlFromCookie() {
+    Util.cookie.remove("jumpUrl");
+}

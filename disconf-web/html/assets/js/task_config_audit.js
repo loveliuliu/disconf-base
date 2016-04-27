@@ -1,4 +1,5 @@
 getSession();
+removeJumpUrlFromCookie();
 var app = angular.module('myApp', []);
 var id = getQueryString("id");
 
