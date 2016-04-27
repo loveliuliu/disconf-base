@@ -55,11 +55,11 @@
         </init-param>
         <init-param>
             <param-name>ignoreUrlPatternType</param-name>
-            <param-value>CONTAINS</param-value>
+            <param-value>com.baidu.dsp.common.handler.MultiContainsPatternUrlPatternMatcherStrategy</param-value>
         </init-param>
         <init-param>
             <param-name>ignorePattern</param-name>
-            <param-value>system=1</param-value>
+            <param-value>system=1;/api/config/item;/api/config/file;/api/config/metas;/api/config/item/values;/api/zoo/hosts/prefix</param-value>
         </init-param>
 
     </filter>
