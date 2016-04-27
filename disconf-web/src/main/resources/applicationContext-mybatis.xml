@@ -12,7 +12,7 @@
     <!-- MyBatis begin -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="onedbMultiDataSource"/>
-        <property name="typeAliasesPackage" value="com.baidu"/>
+        <property name="typeAliasesPackage" value="com.baidu.disconf.web"/>
         <property name="typeAliasesSuperType" value="com.github.knightliao.apollo.db.bo.BaseObject"/>
         <property name="mapperLocations" value="classpath:/mappings/**/*.xml"/>
 

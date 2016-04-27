@@ -20,6 +20,7 @@
             param.appName = $scope.task.appName;
             param.envName = $scope.task.envName;
             param.version = $scope.task.version;
+            param.sort = "create_time,desc";
 
             doPaging($http,"/api/web/task/findMyToDoTask",param,function (data) {
                 if(data.success){

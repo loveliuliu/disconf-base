@@ -7,7 +7,6 @@ import com.ymatou.common.mybatis.util.Reflections;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.executor.ErrorContext;
 import org.apache.ibatis.executor.ExecutorException;
-import org.apache.ibatis.executor.parameter.ParameterHandler;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -20,12 +19,14 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.support.JdbcUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -140,6 +141,7 @@ public class SQLHelper {
      * @return 分页SQL
      */
     public static String generatePageSql(String sql, Pageable pageable, Dialect dialect) {
+        sql = addOrder(sql,pageable);
         if (dialect.supportsLimit()) {
             return dialect.getLimitString(sql, pageable.getPageNumber() * pageable.getPageSize(), pageable.getPageSize());
         } else {
@@ -149,7 +151,6 @@ public class SQLHelper {
 
     /**
      * 去除qlString的select子句。
-     * @param hql
      * @return
      */
     @SuppressWarnings("unused")
@@ -160,7 +161,6 @@ public class SQLHelper {
 
     /**
      * 去除hql的orderBy子句。
-     * @param hql
      * @return
      */
     @SuppressWarnings("unused")
@@ -174,5 +174,28 @@ public class SQLHelper {
         m.appendTail(sb);
         return sb.toString();
     }
-    
+
+    /**
+     * 增加order by
+     * @param qlString
+     * @param pageable
+     * @return
+     */
+    public static String addOrder(String qlString,Pageable pageable){
+
+        Sort sort = pageable.getSort();
+        if(null != sort){
+            qlString += " order by ";
+            Iterator<Sort.Order> iterator = sort.iterator();
+            int i = 0;
+            while (iterator.hasNext()){
+                Sort.Order order = iterator.next();
+                if(i !=0 ){
+                    qlString += ",";
+                }
+                qlString += order.getProperty() + " "+ order.getDirection().name();
+            }
+        }
+        return qlString;
+    }
 }
