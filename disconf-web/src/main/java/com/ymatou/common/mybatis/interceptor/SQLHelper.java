@@ -190,10 +190,11 @@ public class SQLHelper {
             int i = 0;
             while (iterator.hasNext()){
                 Sort.Order order = iterator.next();
-                if(i !=0 ){
+                if (i != 0) {
                     qlString += ",";
                 }
                 qlString += order.getProperty() + " "+ order.getDirection().name();
+                i++;
             }
         }
         return qlString;
