@@ -4,7 +4,7 @@
 
     getSession2Redirect(1);
 
-    document.onkeydown=function(){
+    document.onkeydown=function(event){
         if (event.keyCode == 13){
             $(".form-submit").click();
         }
