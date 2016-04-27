@@ -51,9 +51,9 @@ public class CasController extends BaseController {
         String domain = emailProperties.getDomain();
         String url = domain.contains("http")?domain:("http://"+domain);
 
-        String redirectPath = url+"/main.html";
+        String redirectPath = url;
         try {
-            redirectPath = StringUtils.isEmpty(jumpUrl)?url+"/main.html": URLDecoder.decode(jumpUrl,"utf-8");
+            redirectPath = StringUtils.isEmpty(jumpUrl)?url: URLDecoder.decode(jumpUrl,"utf-8");
         } catch (UnsupportedEncodingException e) {
 
         }

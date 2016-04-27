@@ -1,7 +1,8 @@
 (function ($) {
 
     getSession();
-
+    removeJumpUrlFromCookie();
+    
     var app = angular.module('listPage', ["bw.paging"]); //引入分页组件
 
     addInterceptor(app);
