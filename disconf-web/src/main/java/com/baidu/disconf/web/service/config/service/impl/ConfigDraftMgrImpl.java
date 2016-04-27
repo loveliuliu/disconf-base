@@ -170,7 +170,10 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
         List<ConfigDraft> configDraftList = getTobeActiveConfigDraft(task);
         if (configDraftList != null && configDraftList.size() > 0) {
             for (ConfigDraft configDraft : configDraftList) {
-                configList.add(configMgr.execDraftToCofing(configDraft));
+                Config config = configMgr.execDraftToCofing(configDraft);
+                if(config != null && config.getStatus().equals(Constants.STATUS_DELETE)) { //多次删除
+                    configList.add(config);
+                }
             }
         }
 

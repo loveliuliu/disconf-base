@@ -658,10 +658,11 @@ public class ConfigMgrImpl implements ConfigMgr {
 
         Long configId = configDraft.getConfigId();
         Config config = configDao.get(configId);
+        if(config != null && config.getStatus().equals(Constants.STATUS_DELETE)) {
+            configHistoryMgr.createOne(configId, config.getValue(), "");
 
-        configHistoryMgr.createOne(configId, config.getValue(), "");
-
-        configDao.deleteItem(configId);
+            configDao.deleteItem(configId);
+        }
 
         return config;
     }
