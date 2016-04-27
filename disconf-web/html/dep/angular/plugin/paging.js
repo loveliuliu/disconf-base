@@ -15,6 +15,7 @@ window.doPaging = function($http,url,param,callback) {
 
     param.page = param.page || 1;
     param.size = param.size || 10;
+    param.sort = param.sort || null;
 
     param.page = param.page -1 ; // 第一页 传值为0
 

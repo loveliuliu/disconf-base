@@ -18,6 +18,7 @@
             param.appName = $scope.draft.appName;
             param.envName = $scope.draft.envName;
             param.version = $scope.draft.version;
+            param.sort = "create_time,desc";
 
             doPaging($http,"/api/web/configDraft/list",param,function (data) {
                 if(data.success){

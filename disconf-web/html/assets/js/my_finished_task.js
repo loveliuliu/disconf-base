@@ -11,6 +11,7 @@
 
         $scope.page = 1; //设置当前页数
         $scope.pageSize = 20;//设置一页多少条
+
         $scope.task = {};
         $scope.pagingAction = function(page,pageSize) {
             var param = {};
@@ -19,6 +20,7 @@
             param.appName = $scope.task.appName;
             param.envName = $scope.task.envName;
             param.version = $scope.task.version;
+            param.sort = "audit_time,desc";
 
             doPaging($http,"/api/web/task/findMyFinishedTask",param,function (data) {
                 if(data.success){

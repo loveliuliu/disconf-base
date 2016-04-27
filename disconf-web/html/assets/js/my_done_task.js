@@ -19,6 +19,7 @@
             param.appName = $scope.task.appName;
             param.envName = $scope.task.envName;
             param.version = $scope.task.version;
+            param.sort = "audit_time,desc";
 
             doPaging($http,"/api/web/task/findMyDoneTask",param,function (data) {
                 if(data.success){
