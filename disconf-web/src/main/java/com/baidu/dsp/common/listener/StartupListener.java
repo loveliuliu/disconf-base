@@ -1,6 +1,7 @@
 package com.baidu.dsp.common.listener;
 
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -23,6 +24,15 @@ public class StartupListener implements ServletContextListener {
         logger.info("Load StartupListener start...");
 
         try {
+            try {
+                final String props = "/config/application.properties";
+                final Properties propsFromFile = new Properties();
+                propsFromFile.load(getClass().getResourceAsStream(props));
+                String domain = propsFromFile.getProperty("domain");
+                arg0.getServletContext().setAttribute("domain",domain);
+            }catch (Exception e){
+                logger.error(e.toString(), e);
+            }
 
             Locale.setDefault(Locale.SIMPLIFIED_CHINESE);
 

@@ -19,13 +19,8 @@ public class DisconfCas20ProxyReceivingTicketValidationFilter extends Cas20Proxy
     protected void initInternal(FilterConfig filterConfig) throws ServletException {
         super.initInternal(filterConfig);
 
-        try {
-            final String props = "/config/application.properties";
-            final Properties propsFromFile = new Properties();
-            propsFromFile.load(getClass().getResourceAsStream(props));
-            super.setServerName(propsFromFile.getProperty("domain"));
-        }catch (Exception e){
-            logger.error(e.toString(), e);
-        }
+        String domain = (String)filterConfig.getServletContext().getAttribute("domain");
+        super.setServerName(domain);
+
     }
 }

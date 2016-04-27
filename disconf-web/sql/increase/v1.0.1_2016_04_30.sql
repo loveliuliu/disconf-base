@@ -7,6 +7,9 @@ ALTER TABLE `user`
 ADD COLUMN `email`  varchar(255) NULL COMMENT '邮件' AFTER `role_id`,
 ADD COLUMN `phone`  varchar(255) NULL COMMENT '手机号' AFTER `email`;
 
+-- 修改环境名称字段 区分大小写
+ALTER TABLE `env`
+MODIFY COLUMN `name`  varchar(255) BINARY CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'DEFAULT_ENV' COMMENT '环境名字' AFTER `env_id`;
 
 -- 新增表
 
