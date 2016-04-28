@@ -38,7 +38,7 @@ public class UserDaoImpl extends AbstractDao<Long, User> implements UserDao {
 
         user.setName(name);
 
-        user.setPassword(SignUtils.createPassword("123456"));
+        user.setPassword(SignUtils.createPassword("disconf123@ymatou.com"));
         // token
         user.setToken(SignUtils.createToken(name));
 

@@ -25,6 +25,7 @@ import com.baidu.disconf.web.service.user.service.UserInnerMgr;
 import com.baidu.dsp.common.constant.DataFormatConstants;
 import com.github.knightliao.apollo.utils.time.DateUtils;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author liaoqiqi
@@ -63,11 +64,13 @@ public class AppMgrImpl implements AppMgr {
         List<App> apps = appDao.getByIds(userInnerMgr.getVisitorAppIds());
 
         List<AppListVo> appListVos = new ArrayList<AppListVo>();
-        for (App app : apps) {
-            AppListVo appListVo = new AppListVo();
-            appListVo.setId(app.getId());
-            appListVo.setName(app.getName());
-            appListVos.add(appListVo);
+        if(!CollectionUtils.isEmpty(apps)){
+            for (App app : apps) {
+                AppListVo appListVo = new AppListVo();
+                appListVo.setId(app.getId());
+                appListVo.setName(app.getName());
+                appListVos.add(appListVo);
+            }
         }
 
         return appListVos;
