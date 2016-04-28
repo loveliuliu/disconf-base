@@ -59,7 +59,7 @@
         </init-param>
         <init-param>
             <param-name>ignorePattern</param-name>
-            <param-value>system=1;/api/config/item;/api/config/file;/api/config/metas;/api/config/item/values;/api/zoo/hosts/prefix</param-value>
+            <param-value>system=1;/api/config/item;/api/config/file;/api/config/metas;/api/config/item/values;/api/zoo/hosts;/api/zoo/prefix</param-value>
         </init-param>
 
     </filter>
