@@ -53,7 +53,7 @@ public class ZkDisconfData {
 
         @Override
         public String toString() {
-            return "ZkDisconfDataItem [machine=" + machine + ", value=" + value + ", errorList=" + errorList + "]";
+            return "zookeeper 节点 [machine=" + machine + ", value=" + value + ", errorList=" + errorList + "]";
         }
 
     }

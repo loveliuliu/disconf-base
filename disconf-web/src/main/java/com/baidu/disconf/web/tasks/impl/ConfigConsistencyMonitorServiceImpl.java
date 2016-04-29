@@ -136,7 +136,7 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
      */
     private void checkAppEnvVersionConfigConsistency(App app, Env env, String version) {
 
-        String monitorInfo = "monitor " + app.getName() + "\t" + env.getName() + "\t" + version;
+        String monitorInfo = "APP:"+app.getName() + "\r ENV:"+ env.getName() + "\r VERSION:"+ version + " \r 出现一致性问题 <br/>";
         LOG.info(monitorInfo);
 
         //
@@ -157,32 +157,35 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
 
         List<ConfListVo> confListVos = daoPageResult.getResult();
 
-        List<String> errorList = new ArrayList<String>();
+        String error = "";
+        String space = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         for (ConfListVo confListVo : confListVos) {
 
             if (confListVo.getErrorNum() != 0) {
 
+                error += "配置名称：" + confListVo.getKey() + " 配置类型：" + confListVo.getType() + "<br/>";
                 List<ZkDisconfDataItem> zkDisconfDataItems = confListVo.getMachineList();
                 for (ZkDisconfDataItem zkDisconfDataItem : zkDisconfDataItems) {
 
                     if (zkDisconfDataItem.getErrorList().size() != 0) {
 
-                        String data = zkDisconfDataItem.toString() + "<br/><br/><br/><br/><br/><br/>original:" +
-                                confListVo.getValue();
+                        String data = space + zkDisconfDataItem.toString() + "<br/><br/>";
+
+                        data+= space + "mysql 原始值:" + confListVo.getValue() +"<br/><br/>";
 
                         LOG.warn(data);
 
-                        errorList.add(data + "<br/><br/><br/>");
-
+                        error += data;
                     }
                 }
+                error += "<br/><br/><br/>";
             }
         }
 
-        if (errorList.size() != 0) {
+        if (!error.equals("")) {
 
-            logMailBean.sendHtmlEmail(toEmails, " monitor ConfigConsistency ",
-                    monitorInfo + "<br/><br/><br/>" + errorList.toString());
+            logMailBean.sendHtmlEmail(toEmails, "配置中心["+app.getName()+"]["+env.getName()+"]["+version+"] 出现一致性问题",
+                    "<br/>" + error);
         }
     }
 }
