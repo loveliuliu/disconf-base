@@ -10,7 +10,8 @@ import com.baidu.disconf.client.common.model.DisconfCenterFile;
  *
  */
 public class DisConf {
-    
+
+	
     /**
      * 如果需要，应用可以直接获取Disconf保存到本地的配置文件
      * @param fileName
@@ -19,5 +20,4 @@ public class DisConf {
     public static File getLocalConfig( String fileName ) {
         return new File(DisconfCenterFile.getFilePath(fileName));
     }
-
 }

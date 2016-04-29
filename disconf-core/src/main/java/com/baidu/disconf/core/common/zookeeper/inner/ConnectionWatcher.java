@@ -59,7 +59,6 @@ public class ConnectionWatcher implements Watcher {
 
         // 连接有超时哦
         connectedSignal.await(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS);
-
         LOGGER.info("zookeeper: " + hosts + " , connected.");
     }
 
@@ -121,7 +120,7 @@ public class ConnectionWatcher implements Watcher {
 
             } catch (Exception e) {
 
-                LOGGER.error(retries + "\t" + e.toString());
+                LOGGER.error(retries + "\t" + e.toString(), e);
 
                 // sleep then retry
                 try {

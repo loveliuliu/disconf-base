@@ -220,9 +220,9 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
         try {
             children = zk.getChildren("/", false);
         } catch (KeeperException e) {
-            LOGGER.error(e.toString());
+            LOGGER.error(e.toString(), e);
         } catch (InterruptedException e) {
-            LOGGER.error(e.toString());
+            LOGGER.error(e.toString(), e);
         }
 
         return children;

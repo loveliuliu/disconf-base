@@ -39,7 +39,7 @@ public class RemoteUrl {
                 urls.add(new URL(server + url));
 
             } catch (MalformedURLException e) {
-                LOGGER.error(e.toString());
+                LOGGER.error(e.toString(), e);
             }
         }
     }

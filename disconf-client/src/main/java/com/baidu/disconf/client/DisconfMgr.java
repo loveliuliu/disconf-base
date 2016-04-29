@@ -58,7 +58,7 @@ public class DisconfMgr implements ApplicationContextAware {
      */
     public synchronized void start(List<String> scanPackageList, Resource propertiesLocation ) throws Exception {
 
-        firstScan(scanPackageList, propertiesLocation, false );
+        firstScan(scanPackageList, propertiesLocation );
 
         secondScan();
     }
@@ -67,7 +67,7 @@ public class DisconfMgr implements ApplicationContextAware {
      * 第一次扫描，静态扫描 for annotation config
      * @throws Exception 
      */
-    protected synchronized void firstScan(List<String> scanPackageList, Resource propertiesLocation, boolean unitTestMode ) throws Exception {
+    protected synchronized void firstScan(List<String> scanPackageList, Resource propertiesLocation ) throws Exception {
 
         // 该函数不能调用两次
         if (isFirstInit) {
@@ -81,7 +81,7 @@ public class DisconfMgr implements ApplicationContextAware {
 
 
         // 导入配置
-        ConfigMgr.init( propertiesLocation, unitTestMode );
+        ConfigMgr.init( propertiesLocation );
 
         LOGGER.info("******************************* DISCONF START FIRST SCAN *******************************");
 
