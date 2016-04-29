@@ -29,7 +29,7 @@ public class AppDaoImpl extends AbstractDao<Long, App> implements AppDao {
     public List<App> getByIds(Set<Long> ids) {
 
         if (CollectionUtils.isEmpty(ids)) {
-            return findAll();
+            return null;
         }
 
         return find(match(Columns.APP_ID, ids));

@@ -166,3 +166,7 @@ function addInterceptor(app) {
 function removeJumpUrlFromCookie() {
     Util.cookie.remove("jumpUrl");
 }
+
+function goBack() {
+    location.href=document.referrer;
+}
