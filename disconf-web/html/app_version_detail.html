@@ -15,7 +15,7 @@
     <div style="margin-top:10px;margin-left:20px;" ng-app="myApp" ng-controller="validateCtrl">
 
         <div class="row" ng-repeat="data in configList" style="width:97%;margin: 10px;padding: 5px;border: 2px solid #B93077;">
-            <th>配置项: {{data.key}}  类型:{{data.type}}  <a data-toggle="collapse" href="#{{data.configId}}" >打开/收起</a></th>
+            <th>配置项: {{data.key}} <a data-toggle="collapse" href="#{{data.configId}}" >打开/收起</a></th>
             <div id="{{data.configId}}" class="col-xs-12 panel-collapse collapse in" id="{{data.configId}}" style="width: 99%;padding-right: 5px">
                 <pre class="prettyprint linenums">
 {{data.value}}

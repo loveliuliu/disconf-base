@@ -118,24 +118,7 @@ public class LogMailBean {
             return false;
         }
 
-        String localName = "";
-        Visitor visitor = ThreadContext.getSessionVisitor();
-        if (visitor != null) {
-            LOG.info(visitor.toString());
-            localName += visitor.getLoginUserName() + " ";
-        }
-
-        try {
-
-            InetAddress addr = InetAddress.getLocalHost();
-            localName += addr.getHostName().toString();
-
-        } catch (UnknownHostException e) {
-
-            LOG.warn("When send alarm mail,we can't get hostname", e);
-        }
-
-        String mailTitle = localName + "/" + getSystemDate();
+        String mailTitle = "";
 
         int len = 0;
         int lenLimit = ALARM_MAIL_TITLE_LENGTH;

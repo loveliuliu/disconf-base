@@ -463,23 +463,6 @@ public class ConfigMgrImpl implements ConfigMgr {
         config.setValue(value);
 
         this.newConfigDraft(config,ConfigDraftTypeEnum.modify); //保存草稿
-        //
-        // 发送邮件通知
-        //
-//        String toEmails = appMgr.getEmails(config.getAppId());
-//
-//        if (applicationPropertyConfig.isEmailMonitorOn() == true) {
-//            boolean isSendSuccess = logMailBean.sendHtmlEmail(toEmails,
-//                    " config update", DiffUtils.getDiff(CodeUtils.unicodeToUtf8(oldValue),
-//                            value,
-//                            config.toString(),
-//                            getConfigUrlHtml(config)));
-//            if (isSendSuccess) {
-//                return "修改成功，邮件通知成功";
-//            } else {
-//                return "修改成功，邮件发送失败，请检查邮箱配置";
-//            }
-//        }
 
         return "修改成功";
     }
@@ -566,13 +549,6 @@ public class ConfigMgrImpl implements ConfigMgr {
 
         this.newConfigDraft(config,ConfigDraftTypeEnum.create); //保存草稿
 
-//        // 发送邮件通知
-//        //
-//        String toEmails = appMgr.getEmails(config.getAppId());
-//        if (applicationPropertyConfig.isEmailMonitorOn() == true) {
-//            logMailBean.sendHtmlEmail(toEmails, " config new", getNewValue(confNewForm.getValue(), config.toString(),
-//                    getConfigUrlHtml(config)));
-//        }
         return config;
     }
 
@@ -598,9 +574,6 @@ public class ConfigMgrImpl implements ConfigMgr {
                     config = deleteConfigByDraft(configDraft);
                 break;
         }
-
-        //todo 所有的邮件处理暂时没有做
-        //todo 生效后给zookeeper发通知 configMgr.notifyZookeeper(config.getId());
 
         return config;
     }
@@ -658,7 +631,7 @@ public class ConfigMgrImpl implements ConfigMgr {
 
         Long configId = configDraft.getConfigId();
         Config config = configDao.get(configId);
-        if(config != null && config.getStatus().equals(Constants.STATUS_DELETE)) {
+        if(config != null && !config.getStatus().equals(Constants.STATUS_DELETE)) {
             configHistoryMgr.createOne(configId, config.getValue(), "");
 
             configDao.deleteItem(configId);

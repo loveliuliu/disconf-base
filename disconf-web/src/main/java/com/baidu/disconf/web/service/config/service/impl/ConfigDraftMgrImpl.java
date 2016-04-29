@@ -97,7 +97,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
     @Override
     @Transactional
-    public Long submit(ConfDraftSubmitForm form) {
+    public Task submit(ConfDraftSubmitForm form) {
 
         Visitor visitor = ThreadContext.getSessionVisitor();
 
@@ -142,7 +142,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
         }
         configDraftDao.update(configDraftList);
 
-        return task.getId();
+        return task;
     }
 
     @Override
@@ -171,7 +171,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
         if (configDraftList != null && configDraftList.size() > 0) {
             for (ConfigDraft configDraft : configDraftList) {
                 Config config = configMgr.execDraftToCofing(configDraft);
-                if(config != null && config.getStatus().equals(Constants.STATUS_DELETE)) { //多次删除
+                if(config != null && !config.getStatus().equals(Constants.STATUS_DELETE)) { //多次删除
                     configList.add(config);
                 }
             }

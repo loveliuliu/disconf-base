@@ -10,6 +10,7 @@ import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
 import com.baidu.disconf.web.service.config.service.ConfigMgr;
 import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
+import com.baidu.disconf.web.service.user.bo.User;
 import com.baidu.disconf.web.service.user.constant.UserAppTypeEnum;
 import com.baidu.disconf.web.service.user.dto.Visitor;
 import com.baidu.disconf.web.service.user.service.UserMgr;
@@ -122,15 +123,22 @@ public class ConfigDraftController extends BaseController {
         //验证一个app 环境 版本 只能有一个正在审核或审核通过未执行的任务
         this.validateDraftSubmit(confDraftSubmitForm);
 
-        Long taskId = configDraftMgr.submit(confDraftSubmitForm);
+        Task task = configDraftMgr.submit(confDraftSubmitForm);
 
         //发送审核mail
         String emailToList = userMgr.getMailToList(confDraftSubmitForm.getAppId(), UserAppTypeEnum.auditor.name());
         String url = applicationPropertyConfig.getDomain() + "/task_config_audit.html?id="
-                + taskId + "&jump=1";
+                + task.getId() + "&jump=1";
         if(applicationPropertyConfig.isEmailMonitorOn()){
-            logMailBean.sendHtmlEmail(emailToList, "任务待审核",
-                    "<br/><br/><a href='" + url + "'>disconf中您有待审核任务，请审核!</a>");
+            StringBuilder titile = new StringBuilder();
+            titile.append("请审核配置变更: [").append(task.getAppName()).append("][").append(task.getEnvName())
+                .append("][").append(task.getVersion()).append("]");
+            StringBuilder text = new StringBuilder();
+            User user = userMgr.getUser(task.getCreateUserId());
+            text.append("请审核").append(user.getName()).append("提交的配置变更!");
+
+            logMailBean.sendHtmlEmail(emailToList, titile.toString(),
+                    "<br/><br/><a href='" + url + "'>" + text + "</a>");
         }
 
         return buildSuccess("提交成功!");

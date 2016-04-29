@@ -8,6 +8,7 @@ import com.baidu.disconf.web.service.config.service.ConfigDraftMgr;
 import com.baidu.disconf.web.service.config.service.ConfigMgr;
 import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
+import com.baidu.disconf.web.service.user.bo.User;
 import com.baidu.disconf.web.service.user.service.UserAppMgr;
 import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.disconf.web.tasks.DraftToConfigService;
@@ -104,9 +105,17 @@ public class DraftToConfigServiceImpl implements DraftToConfigService{
         String mailToList = userMgr.getMailToList(task.getAppId(), null);
         String url = applicationPropertyConfig.getDomain() + "/task_config_detail.html?id="
                 + task.getId() + "&jump=1";
+
         if(applicationPropertyConfig.isEmailMonitorOn()){
-            logMailBean.sendHtmlEmail(mailToList, "任务审核通过", "<br/><br/><br/>disconf任务审核通过<br/>"
-              + "<a href='" + url + "'>查看详情</a>");
+            StringBuilder titile = new StringBuilder();
+            titile.append("配置变更已生效: [").append(task.getAppName()).append("][").append(task.getEnvName())
+                    .append("][").append(task.getVersion()).append("]");
+            StringBuilder text = new StringBuilder();
+            User user = userMgr.getUser(task.getCreateUserId());
+            text.append(user.getName()).append("提交的配置变更已生效，点击查看详情!");
+
+            logMailBean.sendHtmlEmail(mailToList, titile.toString(),
+                    "<br/><br/><a href='" + url + "'>" + text + "</a>");
         }
 
     }
