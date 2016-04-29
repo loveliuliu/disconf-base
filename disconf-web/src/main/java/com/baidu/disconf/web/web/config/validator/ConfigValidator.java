@@ -264,6 +264,12 @@ public class ConfigValidator {
 
         //
         validateAppAuth(config.getAppId());
+
+        this.validateConfigDraftExist(config.getAppId(),config.getEnvId(),config.getVersion(),
+                config.getName(),DisConfigTypeEnum.ITEM);
+
+        this.validateConfigDraftExist(config.getAppId(),config.getEnvId(),config.getVersion(),
+                config.getName(),DisConfigTypeEnum.FILE);
     }
 
 }

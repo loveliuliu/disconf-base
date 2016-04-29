@@ -384,7 +384,11 @@
             url: "/api/web/config/" + id
         }).done(function (data) {
             if (data.success === "true") {
-                fetchMainList();
+                layer.alert(data.result,{closeBtn: 0},function (index) {
+                    layer.close(index)
+                });
+            }else{
+                layer.alert(data.message.global);
             }
         });
     }
