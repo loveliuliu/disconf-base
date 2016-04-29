@@ -177,6 +177,6 @@ public class  ConfigUpdateController extends BaseController {
 
         configMgr.delete(configId);
 
-        return buildSuccess("删除成功");
+        return buildSuccess("删除草稿生成成功! 请到我的草稿提交任务");
     }
 }
