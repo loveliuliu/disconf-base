@@ -49,6 +49,7 @@
 		<jsp.version>2.0</jsp.version>
 		<servlet.version>2.5</servlet.version>
 		<cglib.version>2.2.2</cglib.version>
+		<spring.data.common.version>1.12.1.RELEASE</spring.data.common.version>
 		<mybatis.version>3.2.8</mybatis.version>
 		<mybatis-spring.version>1.2.2</mybatis-spring.version>
 		<org.jasig.cas.client.version>3.4.1</org.jasig.cas.client.version>
