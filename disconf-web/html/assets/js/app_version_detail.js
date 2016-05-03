@@ -28,14 +28,15 @@ app.controller('validateCtrl',['$scope','$http', function($scope,$http) {
                             tempArr[length++] = data.page.result[index];
                         }
                     }
+                    temp.configId = 0;
                     temp.appId = firstResult.appId;
                     temp.appName = firstResult.appName;
                     temp.envId = firstResult.envId;
                     temp.version = firstResult.version;
                     temp.value = tempValue;
-                    temp.key = "单个配置项合集";
+                    temp.key = "";
                     temp.typeId = "1";
-                    temp.type = "配置项";
+                    temp.type = "所有配置项";
                     tempArr[0] = temp;
                     tempArr.length = length;
                     data.page.result = tempArr;

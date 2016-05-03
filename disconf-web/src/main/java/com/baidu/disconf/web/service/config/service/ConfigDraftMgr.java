@@ -38,5 +38,5 @@ public interface ConfigDraftMgr {
 
     List<ConfigDraft> getTobeActiveConfigDraft(Task task);
 
-    void draftToConfig(Task task);
+    List<Config> draftToConfig(Task task);
 }
