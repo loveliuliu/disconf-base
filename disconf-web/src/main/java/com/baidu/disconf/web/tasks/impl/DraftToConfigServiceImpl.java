@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +90,8 @@ public class DraftToConfigServiceImpl implements DraftToConfigService{
         List<Config> configList = new ArrayList<Config>();
         for(Task task : toBeActiveTask) {
             try {
-                //task关联的ConfigDraft转换为Config， task状态变更为done， 同步zk
-                configDraftMgr.draftToConfig(task);
+                //task关联的ConfigDraft转换为Config， task状态变更为done
+                configList.addAll(configDraftMgr.draftToConfig(task));
 
                 //发送mail
                 sendEmail(task);
@@ -99,6 +100,14 @@ public class DraftToConfigServiceImpl implements DraftToConfigService{
                 LOG.error(e.toString(), e);
             }
         }
+
+        //同步zk
+        if(!CollectionUtils.isEmpty(configList)){
+            for(Config config : configList){
+                configMgr.notifyZookeeper(config.getId());
+            }
+        }
+
     }
 
     private void sendEmail(Task task){
