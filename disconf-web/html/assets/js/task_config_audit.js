@@ -13,7 +13,12 @@ app.controller('validateCtrl',['$scope','$http', function($scope,$http) {
         params:{id:id}
     }).success(function(data,header,config,status){
         if(data.success){
-           $scope.task = data.result;
+            var task = data.result;
+            if(task.auditStatus == "pass"){
+                location.href = "/task_config_detail.html?id=" + task.id;
+            }else{
+                $scope.task = data.result;
+            }
         }
     });
     $("[name=name]").attr("readonly","readonly");

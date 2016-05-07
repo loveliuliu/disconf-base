@@ -130,6 +130,9 @@
                                 <div class="detail-private-line">
                                     <span>任务说明：</span><span style="margin-left: 10px;">{{task.memo}}</span>
                                 </div>
+                                <div class="detail-private-line">
+                                    <span>生效时间：</span><span style="margin-left: 10px;">{{task.execTime=='now'?'立刻':task.execTime}}</span>
+                                </div>
                             </div>
                             </div>
                             <table id="mainlist"

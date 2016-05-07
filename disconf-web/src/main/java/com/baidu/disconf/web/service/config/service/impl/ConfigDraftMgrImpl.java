@@ -163,7 +163,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
     @Transactional
     @Override
-    public void draftToConfig(Task task){
+    public List<Config> draftToConfig(Task task){
 
         //生效task相关联的configDraft
         List<Config> configList = new ArrayList<>();
@@ -183,9 +183,6 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
         condition.setExecStatus(TaskExecStatusEnum.done.getValue());
         taskMgr.updateTaskExecStatus(condition);
 
-        //同步zk
-        for(Config config : configList){
-            configMgr.notifyZookeeper(config.getId());
-        }
+        return configList;
     }
 }

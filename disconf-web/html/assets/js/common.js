@@ -20,17 +20,23 @@ function headShowInit() {
         $("#username").show();
         $("#username").html(VISITOR.name);
         if(VISITOR.role == 2){
-            $(".dropdown-menu:not('#applist')").find("li").get(4).remove();
-            $(".dropdown-menu:not('#applist')").find("li").get(2).remove();
-            $(".dropdown-menu:not('#applist')").find("li").get(1).remove();
-            $(".dropdown-menu:not('#applist')").find("li").get(0).remove();
+            removeMenu($(".dropdown-menu:not('#applist')").find("li").get(4));
+            removeMenu($(".dropdown-menu:not('#applist')").find("li").get(2));
+            removeMenu($(".dropdown-menu:not('#applist')").find("li").get(1));
+            removeMenu($(".dropdown-menu:not('#applist')").find("li").get(0));
         }else{
-            $(".dropdown-menu:not('#applist')").find("li").get(3).remove();
+            removeMenu($(".dropdown-menu:not('#applist')").find("li").get(3));
         }
     } else {
         $(".login-no").show();
         $(".login-yes").hide();
         $("#username").hide();
+    }
+}
+
+function removeMenu($element) {
+    if($element){
+        $element.remove();
     }
 }
 
