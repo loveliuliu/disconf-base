@@ -30,8 +30,8 @@
 		<maven.test.skip>true</maven.test.skip>
 
 		<!-- 模块版本号 -->
-		<disconf-core.version>2.6.32</disconf-core.version>
-		<disconf-client.version>2.6.33</disconf-client.version>
+		<disconf-core.version>2.6.34</disconf-core.version>
+		<disconf-client.version>2.6.34</disconf-client.version>
 
 		<!-- Spring項目配置 -->
 		<encoding>UTF-8</encoding>

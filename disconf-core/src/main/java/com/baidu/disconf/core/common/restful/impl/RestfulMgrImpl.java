@@ -75,9 +75,9 @@ public class RestfulMgrImpl implements RestfulMgr {
     }
 
     /**
-     * @param remoteUrl          远程地址
-     * @param fileName           文件名
-     * @param localFileDir       本地文件地址
+     * @param remoteUrl 远程地址
+     * @param fileName 文件名
+     * @param localFileDir 本地文件地址
      * @param retryTimes
      * @param retrySleepSeconds
      *
@@ -87,11 +87,11 @@ public class RestfulMgrImpl implements RestfulMgr {
      */
     @Override
     public String downloadFromServer(RemoteUrl remoteUrl, String fileName, String localFileDir,
-                                     int retryTimes, int retrySleepSeconds)
+            int retryTimes, int retrySleepSeconds)
             throws Exception {
 
         // 目标地址文件
-        File localFile = null;
+        File localFile = new File(OsUtil.pathJoin(localFileDir, fileName));
 
         //
         // 进行下载、mv、copy
@@ -99,8 +99,9 @@ public class RestfulMgrImpl implements RestfulMgr {
         try {
 
             // 可重试的下载
-            File tmpFilePathUniqueFile = retryDownload(OsUtil.pathJoin(localFileDir, "temp_download"), fileName, remoteUrl, retryTimes,
-                    retrySleepSeconds);
+            File tmpFilePathUniqueFile =
+                    retryDownload(OsUtil.pathJoin(localFileDir, "temp_download"), fileName, remoteUrl, retryTimes,
+                            retrySleepSeconds);
 
             // 将 tmp file copy localFileDir
             localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, localFileDir, fileName, true);
@@ -134,11 +135,11 @@ public class RestfulMgrImpl implements RestfulMgr {
      *
      * @throws Exception
      */
-    private File retryDownload(String tempDir, String fileName, RemoteUrl remoteUrl, int retryTimes, int
-            retrySleepSeconds)
+    private File retryDownload(String tempDir, String fileName, RemoteUrl remoteUrl, int retryTimes,
+            int retrySleepSeconds)
             throws Exception {
         OsUtil.makeDirs(tempDir);
-            
+
         String tmpFilePath = OsUtil.pathJoin(tempDir, fileName);
         String tmpFilePathUnique = MyStringUtils.getRandomName(tmpFilePath);
         File tmpFilePathUniqueFile = new File(tmpFilePathUnique);
@@ -159,13 +160,13 @@ public class RestfulMgrImpl implements RestfulMgr {
      * @throws Exception
      */
     private File transfer2SpecifyDir(File srcFile, String copy2TargetDirPath, String fileName,
-                                     boolean isMove) throws Exception {
+            boolean isMove) throws Exception {
 
         // make dir
         OsUtil.makeDirs(copy2TargetDirPath);
 
         File targetPath = new File(OsUtil.pathJoin(copy2TargetDirPath, fileName));
-            
+
         // 从下载文件 复制/mv 到targetPath 原子性的做转移
         OsUtil.transferFileAtom(srcFile, targetPath, isMove);
         return targetPath;
