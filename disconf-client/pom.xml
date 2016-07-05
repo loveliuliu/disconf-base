@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>disconf-client</artifactId>
     <packaging>jar</packaging>
-    <version>${disconf-client.version}</version>
+    <version>${disconf.version}</version>
 
     <parent>
         <groupId>com.ymatou.disconf</groupId>
         <artifactId>disconf-base</artifactId>
-        <version>2.6.32</version>
+        <version>2.6.35</version>
     </parent>
 
     <licenses>
@@ -27,7 +27,7 @@
         <dependency>
             <groupId>com.ymatou.disconf</groupId>
             <artifactId>disconf-core</artifactId>
-            <version>${disconf-core.version}</version>
+            <version>${disconf.version}</version>
         </dependency>
 
         <dependency>
