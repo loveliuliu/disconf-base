@@ -7,6 +7,7 @@ import com.baidu.disconf.web.service.sign.form.SigninForm;
 import com.baidu.disconf.web.service.sign.service.SignMgr;
 import com.baidu.disconf.web.service.user.bo.User;
 import com.baidu.disconf.web.service.user.service.UserMgr;
+import com.baidu.disconf.web.utils.LdapHelper;
 import com.baidu.dsp.common.exception.FieldException;
 
 /**
@@ -28,17 +29,20 @@ public class AuthValidator {
      * 验证登录
      */
     public void validateLogin(SigninForm signinForm) {
-
-        //
-        // 校验用户是否存在
-        //
-        User user = signMgr.getUserByName(signinForm.getName());
-        if (user == null) {
-            throw new FieldException(SigninForm.Name, "user.not.exist", null);
-        }
-
-        // 校验密码
-        if (!signMgr.validate(user.getPassword(), signinForm.getPassword())) {
+        if(LdapHelper.authenticate(signinForm.getName(), signinForm.getPassword())){
+            
+        }else if(signinForm.getName().toLowerCase().startsWith("admin")){
+            //
+            User user = signMgr.getUserByName(signinForm.getName());
+            if (user == null) {
+                throw new FieldException(SigninForm.Name, "user.not.exist", null);
+            }
+    
+            // 校验密码
+            if (!signMgr.validate(user.getPassword(), signinForm.getPassword())) {
+                throw new FieldException(SigninForm.PASSWORD, "password.not.right", null);
+            }
+        }else{
             throw new FieldException(SigninForm.PASSWORD, "password.not.right", null);
         }
     }
