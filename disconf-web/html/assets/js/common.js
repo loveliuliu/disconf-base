@@ -19,13 +19,11 @@ function headShowInit() {
         $(".login-yes").show();
         $("#username").show();
         $("#username").html(VISITOR.name);
-        if(VISITOR.role == 2){
-            //removeMenu($(".dropdown-menu:not('#applist')").find("li").get(4));
-            //removeMenu($(".dropdown-menu:not('#applist')").find("li").get(2));
-            //removeMenu($(".dropdown-menu:not('#applist')").find("li").get(1));
-            //removeMenu($(".dropdown-menu:not('#applist')").find("li").get(0));
-        }else{
+        if(VISITOR.role == 1){
             removeMenu($(".dropdown-menu:not('#applist')").find("li").get(3));
+        }
+        if(VISITOR.role == 3){
+        	removeMenu($("#createApp"));
         }
     } else {
         $(".login-no").show();
@@ -45,10 +43,10 @@ function removeMenu($element) {
 //
 function loginActions() {
     if (VISITOR.id) {
-        if(VISITOR.role == 2){
-            $("#brand_url").attr("href", "/admin_users.html");
+        if(VISITOR.role == 1){
+        	$("#brand_url").attr("href", "/main.html");
         }else {
-            $("#brand_url").attr("href", "/main.html");
+        	$("#brand_url").attr("href", "/admin_users.html");
         }
     } else {
         $("#brand_url").attr("href", "/");

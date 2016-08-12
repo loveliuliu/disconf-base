@@ -28,12 +28,12 @@
     </select>
 
 
-	<select id="findAppDtoByApp"  resultType="AppDto">
+	<select id="findAppDtoByAppDto"  resultType="AppDto">
 		SELECT <include refid="columns"/>
 			,u.user_id as belongUserIds,u.name as belongUserNames
 		FROM
 		app t
-		LEFT JOIN (
+		JOIN (
 			SELECT
 				ua.app_id,
 				GROUP_CONCAT(DISTINCT u.user_id) as user_id,
@@ -41,7 +41,28 @@
 				FROM
 				user_app ua,USER u
 			WHERE
-			ua.user_id = u.user_id GROUP BY ua.app_id
+			ua.user_id = u.user_id 
+			<if test="app.userId !=null "> AND u.user_id = #{app.userId} </if>
+			GROUP BY ua.app_id
+		) u  on t.app_id = u.app_id
+		<include refid="dynamicWhere"/>
+	</select>
+	
+	<select id="findAppDtoByAppDtoForManager"  resultType="AppDto">
+		SELECT <include refid="columns"/>
+			,u.user_id as belongUserIds,u.name as belongUserNames
+		FROM
+		app t
+		LEFT JOIN ( <!-- 管理员LEFT JOIN -->
+			SELECT
+				ua.app_id,
+				GROUP_CONCAT(DISTINCT u.user_id) as user_id,
+				GROUP_CONCAT(DISTINCT u.name) as name
+				FROM
+				user_app ua,USER u
+			WHERE
+			ua.user_id = u.user_id 
+			GROUP BY ua.app_id
 		) u  on t.app_id = u.app_id
 		<include refid="dynamicWhere"/>
 	</select>

@@ -4,11 +4,10 @@ var userId = getQueryString("userId");
 
 addInterceptor(app);
 app.controller('validateCtrl',['$scope','$http', function($scope,$http) {
-
     //获取role select
     $http({
         url:"/api/role/findAll",
-        method:'GET'
+        method:'GET',
     }).success(function(data,header,config,status){
         if(data.success){
             $scope.roles = data.result;

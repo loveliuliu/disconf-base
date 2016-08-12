@@ -8,10 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.baidu.disconf.web.service.sign.service.SignMgr;
-import com.baidu.disconf.web.service.user.bo.User;
-import org.jasig.cas.client.authentication.AttributePrincipal;
-import org.jasig.cas.client.util.AbstractCasFilter;
-import org.jasig.cas.client.validation.Assertion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,9 +108,6 @@ public class LoginInterceptor extends WebCommonInterceptor {
         //
         if (visitor == null) {
 
-            if(sessionLogin.casLogin(request)){
-                return true;
-            }
             // 还是没有登录
             returnJsonSystemError(request, response, "login.error", ErrorCode.LOGIN_ERROR);
             return false;

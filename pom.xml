@@ -50,7 +50,6 @@
 		<spring.data.common.version>1.12.1.RELEASE</spring.data.common.version>
 		<mybatis.version>3.2.8</mybatis.version>
 		<mybatis-spring.version>1.2.2</mybatis-spring.version>
-		<org.jasig.cas.client.version>3.4.1</org.jasig.cas.client.version>
 
 		<!-- resource path -->
 		<project.build.online.sourceDir>${project.basedir}/src/main/online-resources</project.build.online.sourceDir>
@@ -424,24 +423,6 @@
 				<groupId>org.mybatis</groupId>
 				<artifactId>mybatis-spring</artifactId>
 				<version>${mybatis-spring.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jasig.cas.client</groupId>
-				<artifactId>cas-client-core</artifactId>
-				<version>${org.jasig.cas.client.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>javax.servlet</groupId>
-						<artifactId>servlet-api</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-
-			<dependency>
-				<groupId>org.jasig.cas.client</groupId>
-				<artifactId>cas-client-support-saml</artifactId>
-				<version>${org.jasig.cas.client.version}</version>
 			</dependency>
 
 			<!-- test dependencies -->

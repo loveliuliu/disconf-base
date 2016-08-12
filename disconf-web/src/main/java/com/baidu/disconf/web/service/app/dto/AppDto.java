@@ -10,7 +10,8 @@ public class AppDto extends App{
 
     private String belongUserIds;
     private String belongUserNames;
-
+    private Long userId;
+    private String roleId;
 
     public String getBelongUserIds() {
         return belongUserIds;
@@ -26,5 +27,21 @@ public class AppDto extends App{
 
     public void setBelongUserNames(String belongUserNames) {
         this.belongUserNames = belongUserNames;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 }

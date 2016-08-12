@@ -31,6 +31,9 @@
         <property name="maxIdleTime">
             <value>${jdbc.maxIdleTime}</value>
         </property>
+        <property name="preferredTestQuery">
+        	<value>${jdbc.testQuerySql}</value>
+        </property>
     </bean>
 
     <bean id="onedb_0" parent="onedbDataSource">

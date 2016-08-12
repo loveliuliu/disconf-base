@@ -30,7 +30,7 @@
         //获取role select
         $http({
             url:"/api/role/findAll",
-            method:'GET'
+            method:'GET',
         }).success(function(data,header,config,status){
             if(data.success){
                 $scope.roles = data.result;

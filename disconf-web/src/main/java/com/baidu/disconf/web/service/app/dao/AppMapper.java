@@ -19,6 +19,8 @@ public interface AppMapper {
     Page<App> findByApp(@Param("app") App app, @Param("pageable") Pageable pageable);
 
     List<App> findByApp(@Param("app") App app);
-
-    Page<AppDto> findAppDtoByApp(@Param("app") App app,@Param("pageable") Pageable pageable);
+    
+    Page<AppDto> findAppDtoByAppDto(@Param("app") AppDto app,@Param("pageable") Pageable pageable);
+    
+    Page<AppDto> findAppDtoByAppDtoForManager(@Param("app") AppDto app,@Param("pageable") Pageable pageable);
 }

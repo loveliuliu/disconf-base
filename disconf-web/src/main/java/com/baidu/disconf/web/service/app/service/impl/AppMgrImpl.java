@@ -10,7 +10,6 @@ import java.util.Set;
 import com.baidu.disconf.web.service.app.dao.AppMapper;
 import com.baidu.disconf.web.service.app.dto.AppDto;
 import com.baidu.disconf.web.service.user.dao.UserAppDao;
-import com.baidu.disconf.web.service.user.service.UserAppMgr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -143,7 +142,12 @@ public class AppMgrImpl implements AppMgr {
     }
 
     @Override
-    public Page<AppDto> findAppDtoByApp(App app, Pageable pageable) {
-        return appMapper.findAppDtoByApp(app,pageable);
+    public Page<AppDto> findAppDtoByAppDto(AppDto appDto, Pageable pageable) {
+        return appMapper.findAppDtoByAppDto(appDto,pageable);
+    }
+    
+    @Override
+    public Page<AppDto> findAppDtoByAppDtoForManager(AppDto appDto, Pageable pageable) {
+        return appMapper.findAppDtoByAppDtoForManager(appDto,pageable);
     }
 }

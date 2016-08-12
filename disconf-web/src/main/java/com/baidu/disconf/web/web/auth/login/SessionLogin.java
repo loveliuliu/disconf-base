@@ -30,5 +30,4 @@ public interface SessionLogin {
 
     void logout(HttpServletRequest request);
 
-    boolean casLogin(HttpServletRequest request);
 }

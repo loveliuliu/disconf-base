@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public enum RoleEnum {
 
-    NORMAL(1,"普通用户"), ADMIN(2,"管理员");
+    NORMAL(1,"普通用户"), ADMIN(2,"管理员"), APP_ADMIN(3, "应用管理员");
     private static final Map<Integer, RoleEnum> intToEnum = new HashMap<Integer, RoleEnum>();
 
     static {

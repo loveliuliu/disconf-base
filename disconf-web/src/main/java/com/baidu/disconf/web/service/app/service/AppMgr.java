@@ -81,5 +81,7 @@ public interface AppMgr {
      */
     String getEmails(Long id);
 
-    Page<AppDto> findAppDtoByApp(App app, Pageable pageable);
+    Page<AppDto> findAppDtoByAppDto(AppDto app, Pageable pageable);
+    
+    Page<AppDto> findAppDtoByAppDtoForManager(AppDto appDto, Pageable pageable);
 }

@@ -1,10 +1,14 @@
 package com.baidu.disconf.web.web.role.controller;
 
 import com.baidu.disconf.web.service.role.bo.Role;
+import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import com.baidu.disconf.web.service.role.service.RoleMgr;
+import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.dsp.common.constant.WebConstants;
 import com.baidu.dsp.common.controller.BaseController;
 import com.baidu.dsp.common.vo.JsonObjectBase;
+import com.baidu.ub.common.commons.ThreadContext;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,9 @@ public class RoleController extends BaseController {
 
     @Autowired
     private RoleMgr roleMgr;
+    
+    @Autowired
+    private UserMgr userMgr;
 
 
     /**
@@ -36,10 +43,12 @@ public class RoleController extends BaseController {
      */
     @RequestMapping(value = "/findAll", method = RequestMethod.GET)
     @ResponseBody
-    public JsonObjectBase findAll() {
+    public JsonObjectBase findAll(Long roleId) {
 
         List<Role> roles = roleMgr.findAll();
-
+        if(RoleEnum.APP_ADMIN.getValue() == Integer.valueOf(userMgr.getCurVisitor().getRole())){
+            roles.removeIf(r -> r.getId() == RoleEnum.ADMIN.getValue());//应用管理员不允许看到管理员
+        }
         return buildSuccess(roles);
     }
 

@@ -13,6 +13,7 @@ import com.baidu.disconf.web.service.user.constant.UserAppTypeEnum;
 import com.baidu.disconf.web.service.user.dto.UserDto;
 import com.baidu.disconf.web.service.user.service.UserAppMgr;
 import com.baidu.disconf.web.service.user.service.UserMgr;
+import com.baidu.disconf.web.service.user.vo.VisitorVo;
 import com.baidu.dsp.common.constant.ErrorCode;
 import com.baidu.dsp.common.form.RequestListBase;
 import com.google.common.collect.Lists;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.baidu.disconf.web.service.app.form.AppNewForm;
 import com.baidu.disconf.web.service.app.service.AppMgr;
 import com.baidu.disconf.web.service.app.vo.AppListVo;
+import com.baidu.disconf.web.service.role.bo.RoleEnum;
 import com.baidu.disconf.web.web.app.validator.AppValidator;
 import com.baidu.dsp.common.constant.WebConstants;
 import com.baidu.dsp.common.controller.BaseController;
@@ -93,9 +95,16 @@ public class AppController extends BaseController {
 
     @RequestMapping(value = "/listApp")
     @ResponseBody
-    public JsonObjectBase listApp(App app , Pageable pageable){
-
-        Page<AppDto> appDtoPage = appMgr.findAppDtoByApp(app,pageable);
+    public JsonObjectBase listApp(AppDto app , Pageable pageable){
+        Page<AppDto> appDtoPage;
+        
+        VisitorVo visitorVo = userMgr.getCurVisitor();
+        if(RoleEnum.ADMIN.getValue() == Integer.valueOf(visitorVo.getRole())){
+            appDtoPage = appMgr.findAppDtoByAppDtoForManager(app, pageable);
+        }else{
+            app.setUserId(userMgr.getCurVisitor().getId());
+            appDtoPage = appMgr.findAppDtoByAppDto(app, pageable);
+        }
 
         return buildSuccess(appDtoPage);
     }
