@@ -1,13 +1,6 @@
 // 初始入口
 (function () {
     window.VISITOR = {};
-
-    var system = getQueryString("system");
-    if(system != null && system != 'undefined' && system == 1){
-        sessionStorage.system = 1;
-    }else if(system != null && system != 'undefined' && system == 0){
-        sessionStorage.system = 0;
-    }
 })();
 
 //
@@ -42,12 +35,8 @@ function removeMenu($element) {
 // 登录其它的控制
 //
 function loginActions() {
-    if (VISITOR.id) {
-        if(VISITOR.role == 1){
-        	$("#brand_url").attr("href", "/main.html");
-        }else {
-        	$("#brand_url").attr("href", "/admin_users.html");
-        }
+    if (VISITOR.id != '') {
+        $("#brand_url").attr("href", "/main.html");
     } else {
         $("#brand_url").attr("href", "/");
     }
@@ -71,55 +60,26 @@ function getSession() {
     }).fail(function (xmlHttpRequest, textStatus) {
         window.location.href = "/login.html";
     });
+
+    loginActions();
 }
 
 // 获取是否登录并且进行跳转
-function getSession2Redirect(system) {
-    if(system && !sessionStorage.system){
-        sessionStorage.system = system;
-    }
+function getSession2Redirect() {
     $.ajax({
         type: "GET",
         url: "/api/account/session"
     }).done(function (data) {
         if (data.success === "true") {
-            if(data.result.visitor.role == 1) {
+            if(data.result.visitor.role == "1" || data.result.visitor.role == "3") {
                 window.location.href = "/main.html";
             }else{
                 window.location.href = "/admin_users.html";
             }
-        } else {
         }
     });
     loginActions();
 }
-
-//重写url
-$.ajaxPrefilter( function( options ) {
-    if(sessionStorage.system && sessionStorage.system == 1 ){
-        options.url  = options.url.lastIndexOf("?")!=-1?(options.url+'&system=1'):(options.url+"?system=1");
-    }
-});
-
-$.ajaxSetup({
-    error: function (XMLHttpRequest, textStatus, errorThrown) {
-        var system = getQueryString("system");
-        if(errorThrown!=''){
-            return;
-        }
-        if((system == null || system == 'undefined' || system == 0) && (sessionStorage.system == null || sessionStorage.system == 0) ){
-            sessionStorage.system = 0;
-            if(getQueryString("jump")){
-                Util.cookie.set("jumpUrl",location.href);
-            }
-            var serviceUrl = location.protocol + '//' + location.host + "/api/cas/login";
-            location.href = "http://sso.ops.ymatou.cn/login?service=" + serviceUrl;
-        }else{
-            sessionStorage.system = 1;
-        }
-    }
-});
-
 
 function getQueryString(name, url) {
     var str = url || document.location.search || document.location.hash,
@@ -144,9 +104,6 @@ function addInterceptor(app) {
     function HttpInterceptor($q) {
         return {
             request: function(config){
-                if(sessionStorage.system && sessionStorage.system == 1 ){
-                    config.url  = config.url.lastIndexOf("?")!=-1?(config.url+'&system=1'):(config.url+"?system=1");
-                }
                 return config;
             },
             requestError: function(err){

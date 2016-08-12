@@ -1,22 +1,23 @@
 package com.baidu.disconf.web.web.auth.login.impl;
 
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.baidu.disconf.web.service.sign.service.SignMgr;
-import com.baidu.disconf.web.service.user.service.UserMgr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.baidu.disconf.web.service.app.service.AppMgr;
+import com.baidu.disconf.web.service.role.bo.RoleEnum;
+import com.baidu.disconf.web.service.sign.service.SignMgr;
 import com.baidu.disconf.web.service.user.bo.User;
 import com.baidu.disconf.web.service.user.constant.UserConstant;
 import com.baidu.disconf.web.service.user.dto.Visitor;
-import com.baidu.disconf.web.web.auth.constant.LoginConstant;
+import com.baidu.disconf.web.service.user.service.UserMgr;
 import com.baidu.disconf.web.web.auth.login.SessionLogin;
 import com.baidu.ub.common.commons.ThreadContext;
-import com.github.knightliao.apollo.redis.RedisCacheManager;
-import com.github.knightliao.apollo.utils.web.CookieUtils;
 
 /**
  * @author liaoqiqi
@@ -31,6 +32,8 @@ public class SessionLoginImpl implements SessionLogin {
     private SignMgr signMgr;
     @Autowired
     private UserMgr userMgr;
+    @Autowired
+    private AppMgr appMgr;
 
     /**
      * 登录
@@ -47,7 +50,11 @@ public class SessionLoginImpl implements SessionLogin {
         visitor.setLoginUserId(user.getId());
         visitor.setLoginUserName(user.getName());
         visitor.setRoleId(user.getRoleId());
-        visitor.setAppIds(userMgr.findUserAppAuthByUserId(user.getId()));
+        if(user.getRoleId().equals(RoleEnum.ADMIN.getValue())){//管理员给所有app权限
+            visitor.setAppIds(appMgr.getAppList().stream().map(app -> (Long)app.getId()).collect(Collectors.toSet()));
+        }else {
+            visitor.setAppIds(userMgr.findUserAppAuthByUserId(user.getId()));
+        }
 
         //
         // 更新session

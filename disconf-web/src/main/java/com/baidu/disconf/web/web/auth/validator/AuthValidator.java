@@ -29,20 +29,18 @@ public class AuthValidator {
      * 验证登录
      */
     public void validateLogin(SigninForm signinForm) {
-        if(LdapHelper.authenticate(signinForm.getName(), signinForm.getPassword())){
-            
-        }else if(signinForm.getName().toLowerCase().startsWith("admin")){
+        if (signinForm.getName().toLowerCase().startsWith("admin")) {
             //
             User user = signMgr.getUserByName(signinForm.getName());
             if (user == null) {
                 throw new FieldException(SigninForm.Name, "user.not.exist", null);
             }
-    
+
             // 校验密码
             if (!signMgr.validate(user.getPassword(), signinForm.getPassword())) {
                 throw new FieldException(SigninForm.PASSWORD, "password.not.right", null);
             }
-        }else{
+        } else if (!LdapHelper.authenticate(signinForm.getName(), signinForm.getPassword())) {
             throw new FieldException(SigninForm.PASSWORD, "password.not.right", null);
         }
     }

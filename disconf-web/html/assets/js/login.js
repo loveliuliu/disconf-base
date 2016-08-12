@@ -2,7 +2,7 @@
 
     $("#indexMain").attr("href", "/");
 
-    getSession2Redirect(1);
+    getSession2Redirect();
 
     document.onkeydown=function(event){
         if (event.keyCode == 13){
@@ -37,7 +37,7 @@
                 window.VISITOR = data.result.visitor;
                 $("#loginError").hide();
                 headShowInit();
-                if(VISITOR.role == 1) {
+                if(VISITOR.role == "1" || VISITOR.role == "3") {
                     window.location.href = "/main.html";
                 }else{
                     window.location.href = "/admin_users.html";
