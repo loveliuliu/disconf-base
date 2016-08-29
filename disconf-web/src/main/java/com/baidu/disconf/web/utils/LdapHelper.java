@@ -22,13 +22,13 @@ public class LdapHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(LdapHelper.class);
 
-    public static boolean authenticate(String userName, String password) {
+    public static boolean authenticate(String userName, String password,String ldapUrl) {
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, "YMT\\" + userName);
         env.put(Context.SECURITY_CREDENTIALS, password);
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, "ldap://ymt-ad-01.ymt.corp");
+        env.put(Context.PROVIDER_URL, "ldap://"+ldapUrl);
         try {
             DirContext ctx = new InitialDirContext(env);
             ctx.close();
@@ -40,8 +40,8 @@ public class LdapHelper {
     }
 
     public static void main(String[] args) {
-        System.out.println(authenticate("YMT\\luoshiqian", "Loushi135"));
-        System.out.println(authenticate("YMT\\luoshiqian", "Loushi135abc"));
-        System.out.println(authenticate("luoshiqian", "Loushi135"));
+        System.out.println(authenticate("YMT\\luoshiqian", "Loushi135","ymt-ad-01.ymt.corp"));
+        System.out.println(authenticate("YMT\\luoshiqian", "Loushi135abc","ymt-ad-01.ymt.corp"));
+        System.out.println(authenticate("luoshiqian", "Loushi135","ymt-ad-01.ymt.corp"));
     }
 }

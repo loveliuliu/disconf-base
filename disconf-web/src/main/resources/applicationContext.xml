@@ -61,6 +61,7 @@
         <property name="emailMonitorOn" value="${EMAIL_MONITOR_ON}"/>
         <property name="checkConsistencyOn" value="${CHECK_CONSISTENCY_ON}"/>
         <property name="domain" value="${domain}"/>
+        <property name="ldapUrl" value="${ldapUrl}"/>
     </bean>
 
     <!-- import -->

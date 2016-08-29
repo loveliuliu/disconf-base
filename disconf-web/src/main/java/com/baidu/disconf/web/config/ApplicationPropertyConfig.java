@@ -32,6 +32,8 @@ public class ApplicationPropertyConfig {
 
     private boolean checkConsistencyOn = false;
 
+    private String ldapUrl;
+
     //
     // domain
     //
@@ -107,6 +109,14 @@ public class ApplicationPropertyConfig {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public String getLdapUrl() {
+        return ldapUrl;
+    }
+
+    public void setLdapUrl(String ldapUrl) {
+        this.ldapUrl = ldapUrl;
     }
 
     @Override

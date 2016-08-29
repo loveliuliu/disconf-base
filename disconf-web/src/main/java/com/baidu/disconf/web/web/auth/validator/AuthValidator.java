@@ -1,5 +1,6 @@
 package com.baidu.disconf.web.web.auth.validator;
 
+import com.baidu.disconf.web.config.ApplicationPropertyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,9 @@ public class AuthValidator {
     @Autowired
     private UserMgr userMgr;
 
+    @Autowired
+    private ApplicationPropertyConfig applicationPropertyConfig;
+
     /**
      * 验证登录
      */
@@ -40,7 +44,7 @@ public class AuthValidator {
             if (!signMgr.validate(user.getPassword(), signinForm.getPassword())) {
                 throw new FieldException(SigninForm.PASSWORD, "password.not.right", null);
             }
-        } else if (!LdapHelper.authenticate(signinForm.getName(), signinForm.getPassword())) {
+        } else if (!LdapHelper.authenticate(signinForm.getName(), signinForm.getPassword(),applicationPropertyConfig.getLdapUrl())) {
             throw new FieldException(SigninForm.PASSWORD, "password.not.right", null);
         }
     }
