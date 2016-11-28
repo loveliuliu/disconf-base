@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <property name="pattern"
+		value="%date [%thread] %-5level %logger{40} KEY[%X{logPrefix}] - %msg%n" />
+  <property name="log.basedir" value="/opt/logs" />
+  <property name="level" value="debug" />
+  <property name="charset" value="UTF-8" />
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+		<charset>${charset}</charset>
+		<pattern>${pattern}</pattern>
+	</encoder>
+  </appender>
+
+  <logger name="org.springframework">
+    <level value="INFO" />
+  </logger>
+
+  <logger name="com.baidu">
+    <level value="${level}" />
+  </logger>
+
+  <logger name="java.util.sql">
+    <level value="${level}" />
+  </logger>
+
+  <root level="${level}">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
