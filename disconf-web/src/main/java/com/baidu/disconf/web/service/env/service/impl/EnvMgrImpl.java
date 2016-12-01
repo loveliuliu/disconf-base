@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import com.baidu.disconf.web.service.env.vo.EnvListVo;
  */
 @Service
 public class EnvMgrImpl implements EnvMgr {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EnvMgrImpl.class);
 
     @Autowired
     private EnvDao envDao;
@@ -89,5 +93,6 @@ public class EnvMgrImpl implements EnvMgr {
                 break;
             }
         }
+        LOGGER.info("system init current env is :{}", Constants.IS_STG_PRD ? "PRD" : "UAT");
     }
 }
