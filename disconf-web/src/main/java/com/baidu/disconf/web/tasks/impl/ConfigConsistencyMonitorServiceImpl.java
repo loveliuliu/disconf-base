@@ -137,7 +137,6 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
     private void checkAppEnvVersionConfigConsistency(App app, Env env, String version) {
 
         String monitorInfo = "APP:"+app.getName() + "\r ENV:"+ env.getName() + "\r VERSION:"+ version + " \r 出现一致性问题 <br/>";
-        LOG.info(monitorInfo);
 
         //
         //
@@ -183,7 +182,7 @@ public class ConfigConsistencyMonitorServiceImpl implements IConfigConsistencyMo
         }
 
         if (!error.equals("")) {
-
+            LOG.info(monitorInfo);
             logMailBean.sendHtmlEmail(toEmails, "配置中心["+app.getName()+"]["+env.getName()+"]["+version+"] 出现一致性问题",
                     "<br/>" + error);
         }

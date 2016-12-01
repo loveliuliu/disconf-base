@@ -51,8 +51,9 @@
 
 	<!-- 我提交的任务列表  -->
 	<select id="findMySubmitTask"  resultType="TaskDto">
-		SELECT <include refid="columns"/>, audit.curAuditUserIds,
-		audit.curAuditUserNames
+		SELECT <include refid="columns"/>,
+		CONCAT_WS(',',IFNULL(audit.curAuditUserIds ,''),ifnull(au.dbaAuditUserIds,'')) as curAuditUserIds,
+		CONCAT_WS(',',IFNULL(audit.curAuditUserNames,''),IFNULL(au.dbaAuditUserNames,'')) as curAuditUserNames
 		FROM task t
 		LEFT JOIN (
 		SELECT
@@ -64,6 +65,13 @@
 		WHERE ua.user_id = u.user_id GROUP BY ua.app_id
 		) audit
 		ON audit.app_id = t.app_id
+
+		LEFT JOIN (
+		SELECT au.* ,dbaUser.* from task_audit au ,(SELECT
+		GROUP_CONCAT(DISTINCT u.user_id) AS dbaAuditUserIds,
+		GROUP_CONCAT(DISTINCT u.NAME) AS dbaAuditUserNames
+		from user u group by u.role_id HAVING u.role_id = 4) dbaUser where au.audit_type = 'DBA'
+		) au on au.task_id = t.task_id
 		<where>
 			t.create_user_id = #{task.curUserId}
 			AND t.audit_status = 'wait_audit'
@@ -74,7 +82,8 @@
 
 	<!-- 我的待办任务  -->
 	<select id="findMyToDoTask"  resultType="TaskDto">
-		SELECT <include refid="columns"/>, u. NAME AS createUserName
+		select * from (
+		SELECT <include refid="columns"/>, u. NAME AS createUserName,au.id as taskAuditId
 		FROM task t,(
 				SELECT
 				app_id
@@ -83,23 +92,44 @@
 				WHERE
 				user_id = #{task.curUserId}
 				AND type = 'auditor'
-			) ua, USER u
+			) ua, USER u,task_audit au
 		<where>
 			t.app_id = ua.app_id
+			AND u.user_id = t.create_user_id
+			AND t.task_id = au.task_id
+			AND au.audit_type = 'AUDITOR'
+			and au.audit_status = 'wait_audit'
+			AND t.audit_status = 'wait_audit'
+			<include refid="taskWhere"/>
+		</where>
+
+		UNION
+		SELECT <include refid="columns"/>, u. NAME AS createUserName,au.id as taskAuditId
+		FROM task t, USER u,task_audit au,user u1
+		<where>
+			u.user_id = t.create_user_id
+		    AND t.task_id = au.task_id
+			and au.audit_type = 'DBA'
+			and au.audit_status = 'wait_audit'
+			and u1.role_id = 4
+			and u1.user_id = #{task.curUserId}
 			AND u.user_id = t.create_user_id
 			AND t.audit_status = 'wait_audit'
 			<include refid="taskWhere"/>
 		</where>
+		) myTodoTask
 	</select>
 
 	<!-- 我的已办任务  -->
 	<select id="findMyDoneTask"  resultType="TaskDto">
-		SELECT <include refid="columns"/>, u. NAME AS createUserName
-		FROM task t,USER u
+		SELECT <include refid="columns"/>, u. NAME AS createUserName,au.audit_status as myAuditStatus
+		FROM task t,USER u,task_audit au
 		<where>
 			t.create_user_id = u.user_id
-			AND t.audit_status IN ('pass', 'fail')
-			AND t.audit_user_id = #{task.curUserId}
+			and t.task_id = au.task_id
+			AND t.audit_status IN ('pass', 'fail','wait_audit')
+			and au.audit_status IN ('pass', 'fail')
+			AND au.audit_user_id = #{task.curUserId}
 			<include refid="taskWhere"/>
 		</where>
 	</select>
@@ -121,11 +151,24 @@
 	</update>
 
 	<select id="findMyFinishedTask"  resultType="TaskDto">
-		SELECT <include refid="columns"/>, u. NAME AS auditUserName
-		FROM task t,USER u
+		SELECT <include refid="columns"/>,
+		(
+			SELECT
+			GROUP_CONCAT(NAME)
+			FROM USER WHERE
+			user_id IN (
+				SELECT
+				audit_user_id
+				FROM
+				task_audit
+				WHERE
+				task_id = t.task_id
+				AND audit_user_id IS NOT NULL
+			)
+		) as auditUserName
+		FROM task t
 		<where>
-			t.audit_user_id = u.user_id
-			AND t.audit_status != 'wait_audit'
+		   t.audit_status != 'wait_audit'
 			AND t.create_user_id = #{task.curUserId}
 			<include refid="taskWhere"/>
 		</where>
@@ -150,6 +193,14 @@
 		<if test="task.version !=null "> AND t.version = #{task.version}</if>
 	</select>
 
+
+	<select id="findTaskAuditDtoByTaskId" resultType="TaskAuditDto">
+		select
+		ta.id as id,ta.task_id as taskId,ta.audit_user_id as auditUserId,ta.audit_time as auditTime,ta.audit_comment as auditComment,
+		ta.audit_status as auditStatus,
+		u.name as auditUserName
+		 from task_audit ta,user u where ta.audit_user_id = u.user_id and ta.task_id = #{taskId}
+	</select>
 
 
 </mapper>

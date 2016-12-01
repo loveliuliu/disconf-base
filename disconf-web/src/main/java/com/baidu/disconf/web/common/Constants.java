@@ -9,4 +9,6 @@ public class Constants {
     public final static Integer STATUS_NORMAL = 1;
     public final static Integer STATUS_DELETE = 0;
 
+
+    public static Boolean IS_STG_PRD = Boolean.FALSE;
 }

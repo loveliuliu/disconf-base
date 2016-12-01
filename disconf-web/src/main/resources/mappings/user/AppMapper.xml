@@ -30,7 +30,8 @@
 
 	<select id="findAppDtoByAppDto"  resultType="AppDto">
 		SELECT <include refid="columns"/>
-			,u.user_id as belongUserIds,u.name as belongUserNames
+			,u.user_id as belongUserIds,u.name as belongUserNames,
+		(select GROUP_CONCAT(DISTINCT tag_name) from app_tag where app_id = t.app_id) as usedTagNames
 		FROM
 		app t
 		JOIN (
@@ -50,7 +51,8 @@
 	
 	<select id="findAppDtoByAppDtoForManager"  resultType="AppDto">
 		SELECT <include refid="columns"/>
-			,u.user_id as belongUserIds,u.name as belongUserNames
+			,u.user_id as belongUserIds,u.name as belongUserNames,
+		(select GROUP_CONCAT(DISTINCT tag_name) from app_tag where app_id = t.app_id) as usedTagNames
 		FROM
 		app t
 		LEFT JOIN ( <!-- 管理员LEFT JOIN -->

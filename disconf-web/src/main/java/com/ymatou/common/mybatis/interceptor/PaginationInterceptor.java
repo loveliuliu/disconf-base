@@ -63,6 +63,9 @@ public class PaginationInterceptor extends BaseInterceptor {
                 Connection connection = mappedStatement.getConfiguration().getEnvironment().getDataSource().getConnection();
                 //得到总记录数
                 long totalRecord = SQLHelper.getCount(DIALECT,originalSql,connection,mappedStatement,parameterObject,boundSql,log);
+                if(ThreadContext.getContext() == null){
+                    ThreadContext.init();
+                }
                 ThreadContext.putContext("page_totalRecord",totalRecord);
                 //分页查询 本地化对象 修改数据库注意修改实现
                 String pageSql = SQLHelper.generatePageSql(originalSql, pageable, DIALECT);
@@ -106,10 +109,12 @@ public class PaginationInterceptor extends BaseInterceptor {
                     List<Page> pageList = new ArrayList<Page>();
                     pageList.add(page);
 
+                    ThreadContext.getContext().remove("page_totalRecord");
+
                     return pageList;
                 }
             } catch (Exception e) {
-                throw new Exception("Overwrite SQL : Fail!");
+                throw new Exception("Overwrite SQL : Fail!",e);
             }
 
         }

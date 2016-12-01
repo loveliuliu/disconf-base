@@ -3,6 +3,7 @@ package com.baidu.disconf.web.service.task.service;
 import com.baidu.disconf.web.service.config.bo.ConfigDraft;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
 import com.baidu.disconf.web.service.task.bo.Task;
+import com.baidu.disconf.web.service.task.dto.TaskAuditDto;
 import com.baidu.disconf.web.service.task.dto.TaskDto;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.data.domain.Page;
@@ -36,7 +37,13 @@ public interface TaskMgr {
 
     TaskDto findById(Long id);
 
-    void taskAudit(Long id,String status,String auditComment);
+    List<TaskAuditDto> findTaskAuditDtoByTaskId(Long taskId);
+
+    Task taskAudit(Long id,Long taskAuditId,String status,String auditComment);
+
+    void decideExecTask(Task task);
+
+    void systemAutoAuditPass(Long id);
 
 
     List<Task> findAuditingOrNotExecTask(Task task);

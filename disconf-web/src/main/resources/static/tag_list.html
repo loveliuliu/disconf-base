@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!--
+  ~ /*
+  ~  (C) Copyright 2016 Ymatou (http://www.ymatou.com/).
+  ~  All rights reserved.
+  ~  */
+  -->
+
+<html class="en">
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Disconf - 分布式配置管理平台</title>
+
+        <link rel="stylesheet" href="dep/bootstrap/css/bootstrap.css" />
+        <!--[if lte IE 6]>
+        <link rel="stylesheet" href="dep/bootstrap/css/bootstrap-ie6.css" />
+        <![endif]-->
+        <!--[if lte IE 7]>
+        <link rel="stylesheet" href="dep/bootstrap/css/ie.css" />
+        <![endif]-->
+        <![if !IE]>
+        <link rel="stylesheet" href="dep/bootstrap/css/noie.css" />
+        <![endif]>
+        <link rel="stylesheet" href="dep/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css" />
+        <link rel="stylesheet" type="text/css" href="assets/css/project.css" />
+    </head>
+
+    <body>
+        
+        <div class="navbar navbar-fixed-top clearfix">
+            <div class="navbar-inner zu-top">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div class="nav-collapse collapse">
+
+                        <a id="brand_url" href="/admin_apps.html" class="brand" style="margin-left:0px;padding:8px;"> <span class="zu-top-nav-link">Disconf</span> </a>
+
+                        <span class="span2"> </span>
+                        <form class="navbar-form pull-left">
+                            <!-- <button class="btn btn-warning" title="GitHub" type="button" style=""  onclick="window.open('https://github.com/knightliao/disconf', '_blank');">
+                                <i class="icon-circle-arrow-up  icon-white"></i> <b>GitHub</b>
+                            </button> -->
+                        </form>
+                        
+                        <ul class="nav pull-right" >
+                            
+                            <div class="login-yes"  style="display:none;padding:10px;">
+                                <li style="display:inline;">
+                                    <a href="#">
+                                        <span class="zu-top-nav-link loginName" id="username"></span>
+                                    </a>
+                                </li>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <li style="display:inline;" class="dropdown">
+                                    <a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">
+                                        <span class="zu-top-nav-link">新建/管理<b class="caret"></b></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="/newconfig_item.html">新建配置项</a></li>
+                                        <li><a href="/newconfig_file.html">新建配置文件</a></li>
+                                        <li><a href="/newconfig_copy.html">复制配置</a></li>
+                                        <li><a href="/admin_users.html">管理中心</a></li>
+                                        <li><a href="/my_config_draft.html">任务中心</a></li>
+                                    </ul>
+                                </li>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <li style="display:inline;">
+                                    <a href="#" id="signout">
+                                        <span class="zu-top-nav-link" >退出</span>
+                                    </a>
+                                </li>
+                            </div>
+                            
+                            <div class="login-no"  style="padding:10px;">
+                                <li style="display:inline;">
+                                    <a href="/login.html"><span class="zu-top-nav-link">登录</span></a>
+                                </li>   
+                            </div>
+                            
+                        </ul>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    
+
+
+<div id="Wrapper" class="clearfix">
+    <div id="Main" style="margin-top:50px;">
+        <div class="container-fluid">
+            <div class="row-fluid" style="min-height:400px;">
+                <div class="sidebar span2" style="float:left;overflow:visible;">
+
+                    <div class="dropdown" style="margin-top:20px;width:100%">
+                        <span id="appDropdownMenuTitle" style="font-weight:bold;font-size: 20px;text-align: center">管理中心</span>
+                    </div>
+
+                    <ul id="envChoice" class="nav nav-pills nav-stacked" style="margin-top:20px;">
+                        <li><a href="/admin_users.html">用户管理</a></li>
+                        <li><a href="/admin_apps.html">APP管理</a></li>
+                        <li class="active"><a href="/tag_list.html">标签管理</a></li>
+                    </ul>
+
+                </div>
+                <div class="span10" style="float:left">
+                    <div ng-app="listPage" ng-controller="listPageControl">
+                        <div id="zk_deploy" class="row-fluid" style="margin-bottom:5px">
+                        <span id="env_info" href="#" class="muted" style="float:left" title="" type="">
+                        </span>
+                        <span id="app_info" href="#" class="muted" style="float:left" title="" type="">
+                        </span>
+                        </div>
+
+                        <div id="zk_deploy_info" style="padding-bottom:20px;">
+                            <form novalidate>
+                            <pre id="zk_deploy_info_pre" style="padding-top: 10px;white-space: nowrap">
+                                标签名称<input name="tagName" type="text" ng-model="tag.tagName" >
+                                标签值<input name="tagValue" type="text" ng-model="tag.tagValue" >
+                                说明<input name="memo" type="text" ng-model="tag.memo" >
+                                <button class="btn-primary btn-large" ng-click="search()" >查询</button>
+                                <button id="createTag" class="btn btn-info btn-large" ng-click="add()" >新建标签</button>
+                            </pre>
+                            </form>
+                        </div>
+
+                        <div class="row-fluid">
+
+                            <div class="contentWrap clearfix">
+                                <div id="mainlist_error" class="alert alert-warning" role="alert" style="display: none"></div>
+                                <table id="mainlist"
+                                       class="table table-bordered table-condensed table-hover account-tableWrap table-striped"
+                                       style="display:table">
+                                    <thead>
+                                    <tr>
+                                        <td>ID</td>
+                                        <td>标签名称</td>
+                                        <td width="20%">标签值</td>
+                                        <td>app使用个数</td>
+                                        <td>app使用详情</td>
+                                        <td>说明</td>
+                                        <td>操作</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody style="overflow-wrap: break-word;word-wrap: break-word;word-break:break-all"
+                                           >
+                                    <tr ng-repeat="data in dataList">
+                                        <td>{{data.id}}</td>
+                                        <td>{{data.tagName}}</td>
+                                        <td>{{data.decryptTagValue }}</td>
+                                        <td>{{data.usedAppNums}}</td>
+                                        <td title="点击查看所有"><a ng-show="data.appNames != null" ng-click="viewAppInfos(data.id,data.appNames)" id="appInfo{{data.id}}" style="cursor: pointer; cursor: hand; ">{{data.appNames | limit:true:30:'...'}}</a></td>
+                                        <td style="max-width:100px" title="{{data.memo}}">{{data.memo}}</td>
+                                        <td>
+                                            <a ng-click="modify(data.id)" style="cursor: pointer; cursor: hand; "><i title="修改" class="icon-edit"></i></a><a ng-click="delete(data.id)" style="cursor: pointer; cursor: hand; "><i title="删除" class="icon-remove"></i></a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <paging
+                                page="page"
+                                page-size="pageSize"
+                                total="total"
+                                text-first="第一页"
+                                text-last="最后一页"
+                                text-next="下一页"
+                                text-prev="上一页"
+                                show-prev-next="true"
+                                show-first-last="true"
+                                scroll-top="true"
+                                paging-action="pagingAction(page, pageSize)"
+                        ></paging>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+        <div id="footer">
+            <div id="BottomMain">
+                <div class="inner">
+
+                    <strong>
+                        <a href="#" class="dark">关于</a> &nbsp; 
+                    </strong>
+                    <strong>
+                        <a href="#" class="dark">升级</a> &nbsp; 
+                    </strong>
+                    <div class="sep10"></div>
+                    <span>分布式配置管理平台</span>
+                    <div class="sep10"></div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="assets/js/jquery-1.11.0.js"></script>
+        <script src="dep/jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.js"></script>
+        <script src="dep/bootstrap/js/bootstrap.js"></script>
+        <script src="dep/layer/layer.js"></script>
+        <script src="dep/angular/1.4.6/angular.min.js"></script>
+        <script src="dep/angular/plugin/paging.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/common.js"></script>
+        <script>
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "//hm.baidu.com/hm.js?c4578bda90040ec19ded56112b82246f";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+        </script>
+
+
+<script src="assets/js/tag_list.js"></script>
+
+        <script src="assets/js/footer.js"></script>
+    
+    </body>
+</html>
+

@@ -1,14 +1,13 @@
 package com.baidu.disconf.web.service.env.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.baidu.disconf.web.common.Constants;
 import com.baidu.disconf.web.service.env.bo.Env;
 import com.baidu.disconf.web.service.env.dao.EnvDao;
 import com.baidu.disconf.web.service.env.service.EnvMgr;
@@ -80,4 +79,15 @@ public class EnvMgrImpl implements EnvMgr {
         return envDao.findAll();
     }
 
+
+    @PostConstruct
+    public void initDefineEnv(){
+        List<Env> envList = getList();
+        for (Env env : envList) {
+            if(env.getName().equals("STG")||env.getName().equals("PRD")){
+                Constants.IS_STG_PRD = true;
+                break;
+            }
+        }
+    }
 }

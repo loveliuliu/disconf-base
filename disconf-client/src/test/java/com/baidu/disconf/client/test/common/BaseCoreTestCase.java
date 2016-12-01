@@ -5,6 +5,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 
+import mockit.internal.startup.Startup;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -31,11 +32,15 @@ public class BaseCoreTestCase {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(BaseCoreTestCase.class);
 
+    static { Startup.initializeIfPossible(); }
+
     /**
      * 导入配置
      */
     @Before
     public void init() {
+
+
 
         //
         // 设置Mock服务数据

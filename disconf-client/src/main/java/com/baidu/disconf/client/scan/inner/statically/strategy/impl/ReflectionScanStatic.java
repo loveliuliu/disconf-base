@@ -67,7 +67,8 @@ public class ReflectionScanStatic implements ScanStaticStrategy {
         //
         // filter
         //
-        FilterBuilder filterBuilder = new FilterBuilder().includePackage(Constants.DISCONF_PACK_NAME);
+        FilterBuilder filterBuilder = new FilterBuilder()
+                .includePackage(Constants.DISCONF_PACK_NAME);
 
         for (String packName : packNameList) {
             filterBuilder = filterBuilder.includePackage(packName);

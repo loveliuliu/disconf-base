@@ -1,5 +1,7 @@
 package com.baidu.disconf.client.watch;
 
+import com.baidu.disconf.core.common.constants.Constants;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +11,8 @@ import com.baidu.disconf.client.config.DisClientSysConfig;
 import com.baidu.disconf.client.fetcher.FetcherMgr;
 import com.baidu.disconf.client.watch.impl.WatchMgrImpl;
 import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
+
+import java.util.Map;
 
 /**
  * 监控器 实例 工厂
@@ -34,35 +38,53 @@ public class WatchFactory {
         }
 
         if (hosts == null || zooPrefix == null) {
-            synchronized(hostsSync) {
+            synchronized (hostsSync) {
                 if (hosts == null || zooPrefix == null) {
 
-                    // 获取 Zoo Hosts
-                    try {
+                    Map<String,String> map = getZooHostAndPrefix(fetcherMgr);
 
-                        hosts = fetcherMgr.getValueFromServer(DisconfWebPathMgr.getZooHostsUrl(DisClientSysConfig
-                                                                                                   .getInstance()
-                                                                                                   .CONF_SERVER_ZOO_ACTION));
+                    hosts = map.get("hosts");
+                    zooPrefix = map.get("zooPrefix");
 
-                        zooPrefix = fetcherMgr.getValueFromServer(DisconfWebPathMgr.getZooPrefixUrl(DisClientSysConfig
-                                                                                                        .getInstance
-                                                                                                             ()
-                                                                                                        .CONF_SERVER_ZOO_ACTION));
-
-                        WatchMgr watchMgr = new WatchMgrImpl();
-                        watchMgr.init(hosts, zooPrefix, DisClientConfig.getInstance().DEBUG);
-
-                        return watchMgr;
-
-                    } catch (Exception e) {
-
-                        LOGGER.error("cannot get watch module", e);
-
+                    if (hosts != null && zooPrefix != null) {
+                        try {
+                            WatchMgr watchMgr = new WatchMgrImpl();
+                            watchMgr.init(hosts, zooPrefix, DisClientConfig.getInstance().DEBUG);
+                            return watchMgr;
+                        } catch (Exception e) {
+                            LOGGER.error("watch zoo error", e);
+                        }
                     }
+
                 }
             }
         }
 
         return null;
+    }
+
+    public static Map<String,String> getZooHostAndPrefix(FetcherMgr fetcherMgr){
+        String hosts = null;
+        String zooPrefix = null;
+        try {
+
+            hosts = fetcherMgr.getValueFromServer(DisconfWebPathMgr.getZooHostsUrl(DisClientSysConfig
+                    .getInstance().CONF_SERVER_ZOO_ACTION));
+
+            zooPrefix = fetcherMgr.getValueFromServer(DisconfWebPathMgr.getZooPrefixUrl(DisClientSysConfig
+                    .getInstance().CONF_SERVER_ZOO_ACTION));
+        } catch (Exception e) {
+
+            LOGGER.error(
+                    "cannot get zoo hosts ,consider disconf iapi is down,make global down flag is true ",
+                    e);
+
+            // 获取不到zoo 就可以表示，disconf iapi挂了，之后所有文件获取都从本地
+            Constants.DISCONF_IAPI_IS_DOWN = true;
+        }
+        Map<String,String> map = Maps.newHashMap();
+        map.put("hosts",hosts);
+        map.put("zooPrefix",zooPrefix);
+        return map;
     }
 }

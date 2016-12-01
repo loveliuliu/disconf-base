@@ -3,6 +3,7 @@ package com.baidu.disconf.core.common.restful.impl;
 import java.io.File;
 import java.net.URL;
 
+import com.baidu.disconf.core.common.constants.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,24 +94,28 @@ public class RestfulMgrImpl implements RestfulMgr {
         // 目标地址文件
         File localFile = new File(OsUtil.pathJoin(localFileDir, fileName));
 
-        //
-        // 进行下载、mv、copy
-        //
-        try {
+        if(Constants.DISCONF_IAPI_IS_DOWN){
+            LOGGER.error("disconf iapi global down flag is true  , try to using previous download file.");
+        }else {
+            //
+            // 进行下载、mv、copy
+            //
+            try {
 
-            // 可重试的下载
-            File tmpFilePathUniqueFile =
-                    retryDownload(OsUtil.pathJoin(localFileDir, "temp_download"), fileName, remoteUrl, retryTimes,
-                            retrySleepSeconds);
+                // 可重试的下载
+                File tmpFilePathUniqueFile =
+                        retryDownload(OsUtil.pathJoin(localFileDir, "temp_download"), fileName, remoteUrl, retryTimes,
+                                retrySleepSeconds);
 
-            // 将 tmp file copy localFileDir
-            localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, localFileDir, fileName, true);
+                // 将 tmp file copy localFileDir
+                localFile = transfer2SpecifyDir(tmpFilePathUniqueFile, localFileDir, fileName, true);
 
-            LOGGER.debug("Move to: " + localFile.getAbsolutePath());
+                LOGGER.debug("Move to: " + localFile.getAbsolutePath());
 
-        } catch (Exception e) {
+            } catch (Exception e) {
 
-            LOGGER.error("download file failed, using previous download file.", e);
+                LOGGER.error("download file failed, using previous download file.", e);
+            }
         }
 
         if (localFile == null || !localFile.exists()) {

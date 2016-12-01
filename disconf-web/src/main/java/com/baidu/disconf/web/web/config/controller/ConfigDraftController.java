@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -69,6 +70,8 @@ public class ConfigDraftController extends BaseController {
 
     @Autowired
     private LogMailBean logMailBean;
+    @Autowired
+    private TaskExecutor proExecutor;
 
     @RequestMapping(value = "/list")
     @ResponseBody
@@ -125,20 +128,26 @@ public class ConfigDraftController extends BaseController {
 
         Task task = configDraftMgr.submit(confDraftSubmitForm);
 
+        //UAT环境，直接系统自动审核通过
+        if(!Constants.IS_STG_PRD){
+            taskMgr.systemAutoAuditPass(task.getId());
+        }
         //发送审核mail
         String emailToList = userMgr.getMailToList(confDraftSubmitForm.getAppId(), UserAppTypeEnum.auditor.name());
         String url = applicationPropertyConfig.getDomain() + "/task_config_audit.html?id="
                 + task.getId() + "&jump=1";
         if(applicationPropertyConfig.isEmailMonitorOn()){
-            StringBuilder titile = new StringBuilder();
-            titile.append("请审核配置变更: [").append(task.getAppName()).append("][").append(task.getEnvName())
-                .append("][").append(task.getVersion()).append("]");
-            StringBuilder text = new StringBuilder();
-            User user = userMgr.getUser(task.getCreateUserId());
-            text.append("请审核").append(user.getName()).append("提交的配置变更!");
+            proExecutor.execute(() -> {
+                StringBuilder title = new StringBuilder();
+                title.append("请审核配置变更: [").append(task.getAppName()).append("][").append(task.getEnvName())
+                        .append("][").append(task.getVersion()).append("]");
+                StringBuilder text = new StringBuilder();
+                User user = userMgr.getUser(task.getCreateUserId());
+                text.append("请审核").append(user.getName()).append("提交的配置变更!");
 
-            logMailBean.sendHtmlEmail(emailToList, titile.toString(),
-                    "<br/><br/><a href='" + url + "'>" + text + "</a>");
+                logMailBean.sendHtmlEmail(emailToList, title.toString(),
+                        "<br/><br/><a href='" + url + "'>" + text + "</a>");
+            });
         }
 
         return buildSuccess("提交成功!");
@@ -236,6 +245,7 @@ public class ConfigDraftController extends BaseController {
         if(!CollectionUtils.isEmpty(taskList)){
             throw new ValidationException("此版本已存在正在审核中的任务或审核通过还未执行的任务，不能提交!");
         }
+
     }
 
     private void updateFileText(long id,byte fileContentByte[]){

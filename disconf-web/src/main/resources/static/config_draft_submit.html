@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<title>Disconf - 分布式配置管理平台</title>
+
+
+	<link rel="stylesheet" href="dep/bootstrap/css/bootstrap.css" />
+	<!--[if lte IE 6]>
+	<link rel="stylesheet" href="dep/bootstrap/css/bootstrap-ie6.css" />
+	<![endif]-->
+	<!--[if lte IE 7]>
+	<link rel="stylesheet" href="dep/bootstrap/css/ie.css" />
+	<![endif]-->
+	<![if !IE]>
+	<link rel="stylesheet" href="dep/bootstrap/css/noie.css" />
+	<![endif]>
+	<link rel="stylesheet" href="dep/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css" />
+	<link rel="stylesheet" type="text/css" href="assets/css/project.css" />
+	<link rel="stylesheet" type="text/css" href="dep/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" />
+</head>
+
+<body>
+<div id="Wrapper" >
+	<div >
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
+
+					<div class="content">
+						<form id="form" action="/config/" method="post" enctype="multipart/form-data"
+							  class="private-form clearfix">
+							<h2 class="autoPush-detail-title" style="margin: 10px;"> 提交草稿</h2>
+
+							<div class="private-item">
+								<span class="private-item-key">APP选择:</span>
+
+								<div class="btn-group">
+									<a id="appChoiceA" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+										<span style="margin-right:2px;">选择APP</span> </span></span><span
+											class="caret"></span> </a>
+									<ul class="dropdown-menu" id="appChoice"></ul>
+								</div>
+							</div>
+							<div class="private-item">
+								<span class="private-item-key">环境：</span>
+
+								<div class="btn-group">
+									<a id="envChoiceA" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+										<span style="margin-right:2px;">选择环境 </span><span class="caret"></span> </a>
+									<ul class="dropdown-menu" id="envChoice"></ul>
+								</div>
+							</div>
+							<div class="private-item">
+								<span class="private-item-key">版本：</span>
+
+								<div class="btn-group">
+									<a id="versionChoiceA" class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+										<span style="margin-right:2px;">选择版本 </span><span class="caret"></span> </a>
+									<ul class="dropdown-menu" id="versionChoice"></ul>
+								</div>
+							</div>
+							<div class="private-item" id="selfversion" style="display:none">
+								<span class="private-item-key">自定义版本：</span>
+								<input id="selfversion_value" type="text" class="private-item-value"/>
+							</div>
+							<div class="private-item">
+								<span class="private-item-key">生效时间：</span>
+								<input name="isNowExec" type="radio" checked  value="1" class="private-item-value"/>立刻
+								<input name="isNowExec" type="radio" value="0" class="private-item-value"/>固定时间
+								<input type="text" value="" disabled id="execTime" data-date-format="yyyy-mm-dd hh:ii">
+							</div>
+							<div class="private-item">
+								<span class="private-item-key">任务说明：</span>
+                                <textarea id="memo"  class="private-item-value"
+										  style="min-width:400px;height:100px;"></textarea>
+							</div>
+							<div id="error" class="alert alert-warning hide" style="margin-bottom: 10px;" role="alert">
+								表单选项不能为空或填写格式错误！
+							</div>
+							<div id="warn" class="alert alert-warning" style="margin-bottom: 10px;" role="alert">
+								此次提交会将您选中的某个app、环境、版本下您的所有草稿提交
+							</div>
+							<div class="private-item" style="text-align:center">
+								<a id="item_submit"  class="btn btn-primary"> 提交 </a>
+							</div>
+
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="dep/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="dep/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="dep/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+<script type="text/javascript" src="dep/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script src="dep/angular/1.4.6/angular.min.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/config_draft_submit.js"></script>
+
+</body>
+</html>
+

@@ -15,6 +15,9 @@ import com.baidu.disconf.core.common.path.ZooPathMgr;
 import com.baidu.disconf.core.common.utils.ZooUtils;
 import com.baidu.disconf.core.common.zookeeper.ZookeeperMgr;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Watch 模块的一个实现
  *
@@ -24,6 +27,7 @@ import com.baidu.disconf.core.common.zookeeper.ZookeeperMgr;
 public class WatchMgrImpl implements WatchMgr {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(WatchMgrImpl.class);
+    private static final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     /**
      * zoo prefix
@@ -38,13 +42,23 @@ public class WatchMgrImpl implements WatchMgr {
     /**
      * @Description: 获取自己的主备类型
      */
-    public void init(String hosts, String zooUrlPrefix, boolean debug) throws Exception {
+    public void init(final String hosts, final String zooUrlPrefix, final boolean debug) throws Exception {
 
         this.zooUrlPrefix = zooUrlPrefix;
         this.debug = debug;
 
+
         // init zookeeper
-        ZookeeperMgr.getInstance().init(hosts, zooUrlPrefix, debug);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ZookeeperMgr.getInstance().init(hosts, zooUrlPrefix, debug);
+                } catch (Exception e) {
+                    LOGGER.error("zookeeper init error,host:{},zooUrlPrefix:{}",hosts,zooUrlPrefix,e);
+                }
+            }
+        });
     }
 
     /**
@@ -94,9 +108,14 @@ public class WatchMgrImpl implements WatchMgr {
     /**
      * 创建路径
      */
-    private void makePath(String path, String data) {
+    private void makePath(final String path, final String data) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                ZookeeperMgr.getInstance().makeDir(path, data);
+            }
+        });
 
-        ZookeeperMgr.getInstance().makeDir(path, data);
     }
 
     /**
@@ -117,17 +136,29 @@ public class WatchMgrImpl implements WatchMgr {
     /**
      * 监控路径,监控前会事先创建路径,并且会新建一个自己的Temp子结点
      */
-    public void watchPath(DisconfCoreProcessor disconfCoreMgr, DisConfCommonModel disConfCommonModel, String keyName,
-                          DisConfigTypeEnum disConfigTypeEnum, String value) throws Exception {
+    public void watchPath(DisconfCoreProcessor disconfCoreMgr, final DisConfCommonModel disConfCommonModel, final String keyName,
+                          final DisConfigTypeEnum disConfigTypeEnum, final String value) throws Exception {
 
+        final DisconfCoreProcessor finalCore = disconfCoreMgr;
         // 新建
-        String monitorPath = makeMonitorPath(disConfigTypeEnum, disConfCommonModel, keyName, value);
 
-        // 进行监控
-        NodeWatcher nodeWatcher =
-                new NodeWatcher(disconfCoreMgr, monitorPath, keyName, disConfigTypeEnum, new DisconfSysUpdateCallback(),
-                        debug);
-        nodeWatcher.monitorMaster();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final String monitorPath = makeMonitorPath(disConfigTypeEnum, disConfCommonModel, keyName, value);
+                    // 进行监控
+                    NodeWatcher nodeWatcher =
+                            new NodeWatcher(finalCore, monitorPath, keyName, disConfigTypeEnum, new DisconfSysUpdateCallback(),
+                                    debug);
+                    nodeWatcher.monitorMaster();
+                } catch (Exception e) {
+                    LOGGER.error("watchPath error",e);
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -137,8 +168,10 @@ public class WatchMgrImpl implements WatchMgr {
             ZookeeperMgr.getInstance().release();
         } catch (InterruptedException e) {
 
-            LOGGER.error(e.toString());
+            LOGGER.error(e.toString(),e);
         }
+
+        executor.shutdown();
     }
 
 }

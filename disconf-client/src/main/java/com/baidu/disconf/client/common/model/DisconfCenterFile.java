@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.baidu.disconf.client.common.constants.SupportFileTypeEnum;
 import com.baidu.disconf.client.config.DisClientConfig;
+import com.baidu.disconf.client.utils.AppTagHelper;
 import com.baidu.disconf.core.common.utils.ClassLoaderUtil;
 import com.baidu.disconf.core.common.utils.OsUtil;
 
@@ -79,15 +81,29 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
 
     @Override
     public String toString() {
-        return "\n\tDisconfCenterFile [\n\tkeyMaps=" + keyMaps + "\n\tcls=" + cls + "\n\tfileName=" + fileName
+        return "\n\tDisconfCenterFile [\n\tkeyMaps=" + printKeyMaps(keyMaps,fileName) + "\n\tcls=" + cls + "\n\tfileName=" + fileName
                  +
                 super.toString() + "]";
     }
 
     @Override
     public String infoString() {
-        return "\n\tDisconfCenterFile [\n\tkeyMaps=" + keyMaps + "\n" +
+        return "\n\tDisconfCenterFile [\n\tkeyMaps=" + printKeyMaps(keyMaps,fileName) + "\n" +
                 "\tadditionalKeyMaps=" + additionalKeyMaps + "\n\tcls=" + cls + super.infoString() + "]";
+    }
+
+    private String printKeyMaps(Map<String, FileItemValue> keyMaps, String fileName) {
+        if (AppTagHelper.USED_TAG_File_FIELDS.containsKey(getFilePath(fileName))) {
+            Set<String> fields = AppTagHelper.USED_TAG_File_FIELDS.get(getFilePath(fileName));
+            StringBuffer stringBuffer = new StringBuffer("keymaps={");
+            for (Map.Entry<String, FileItemValue> entry : keyMaps.entrySet()) {
+                stringBuffer.append(
+                        entry.getKey() + "=" + entry.getValue().toEncryptString(fields.contains(entry.getKey())));
+            }
+            stringBuffer.append("}");
+            return stringBuffer.toString();
+        }
+        return keyMaps.toString();
     }
 
     /**
@@ -189,11 +205,19 @@ public class DisconfCenterFile extends DisconfCenterBaseModel {
                     '}';
         }
 
+        public String toEncryptString(boolean isTag) {
+            
+            return "FileItemValue{" +
+                    "value=" + (isTag ? "${}" : value) +
+                    ", field=" + field +
+                    ", setMethod=" + setMethod +
+                    '}';
+        }
+
         public FileItemValue(Object value, Field field) {
             super();
             this.value = value;
             this.field = field;
-
         }
 
         public FileItemValue(Object value, Field field, Method setMethod) {

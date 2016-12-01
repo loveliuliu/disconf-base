@@ -24,7 +24,7 @@
 
     </bean>
     <bean id="disconfMgrBean2" class="com.baidu.disconf.client.DisconfMgrBeanSecond"
-          init-method="init" destroy-method="destroy">
+          init-method="init" destroy-method="destroy" depends-on="disconfMgrBean">
     </bean>
     
     

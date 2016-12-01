@@ -30,7 +30,13 @@ public class TaskDto extends Task{
 
     private Long curUserId;//当前登录人员
 
+    private String myAuditStatus;
+    private String myAuditStatusStr;
+
+    private Long taskAuditId;
+
     private List<ConfigDraft> configDraftList =Lists.newArrayList();
+    private List<TaskAuditDto> taskAuditDtoList = Lists.newArrayList();
 
     public TaskDto(){
 
@@ -95,6 +101,17 @@ public class TaskDto extends Task{
         return execStatusStr;
     }
 
+    public String getMyAuditStatusStr() {
+        if(!StringUtils.isEmpty(myAuditStatus)){
+            myAuditStatusStr = TaskAuditStatusEnum.getByValue(myAuditStatus).getDesc();
+        }
+        return myAuditStatusStr;
+    }
+
+    public void setMyAuditStatusStr(String myAuditStatusStr) {
+        this.myAuditStatusStr = myAuditStatusStr;
+    }
+
     public void setExecStatusStr(String execStatusStr) {
         this.execStatusStr = execStatusStr;
     }
@@ -121,5 +138,29 @@ public class TaskDto extends Task{
 
     public void setCurAuditUserNames(String curAuditUserNames) {
         this.curAuditUserNames = curAuditUserNames;
+    }
+
+    public Long getTaskAuditId() {
+        return taskAuditId;
+    }
+
+    public void setTaskAuditId(Long taskAuditId) {
+        this.taskAuditId = taskAuditId;
+    }
+
+    public String getMyAuditStatus() {
+        return myAuditStatus;
+    }
+
+    public void setMyAuditStatus(String myAuditStatus) {
+        this.myAuditStatus = myAuditStatus;
+    }
+
+    public List<TaskAuditDto> getTaskAuditDtoList() {
+        return taskAuditDtoList;
+    }
+
+    public void setTaskAuditDtoList(List<TaskAuditDto> taskAuditDtoList) {
+        this.taskAuditDtoList = taskAuditDtoList;
     }
 }

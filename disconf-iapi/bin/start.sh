@@ -6,9 +6,9 @@ MAIN_CLASS="com.baidu.disconf.web.starter.IApiApplication"
 APP_NAME="disconf.iapi.ymatou.com"
 CLASS_PATH="lib/*:conf"
 JAVA_OPTS=" -server \
-            -Xms12288m -Xmx12288m \
+            -Xms4096m -Xmx4096m \
             -XX:MaxMetaspaceSize=512m \
-            -Xmn10240M \
+            -Xmn1500M \
             -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled \
             -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=75 \
             -XX:+ScavengeBeforeFullGC -XX:+CMSScavengeBeforeRemark \

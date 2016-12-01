@@ -5,5 +5,5 @@ package com.baidu.disconf.web.tasks;
  */
 public interface DraftToConfigService {
 
-    public void doService();
+    void doService();
 }

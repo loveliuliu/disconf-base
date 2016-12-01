@@ -93,4 +93,13 @@ public class DisconfWebPathMgr {
 
         return urlPrefix + Constants.SEP_STRING + Constants.ZOO_HOSTS_URL_PREFIX_KEY;
     }
+
+    /**
+     * 获取 disconf-iapi 上 apptag url  /api/config/tag?app=appName
+     * @param urlPrefix
+     * @return
+     */
+    public static String getAppTagUrl(String urlPrefix,String appName){
+        return urlPrefix + Constants.SEP_STRING + Constants.APP_TAG_URL_KEY + "?" + Constants.APP + "=" + appName;
+    }
 }

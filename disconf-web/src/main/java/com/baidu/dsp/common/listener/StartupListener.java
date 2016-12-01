@@ -25,7 +25,7 @@ public class StartupListener implements ServletContextListener {
 
         try {
             try {
-                final String props = "/config/application.properties";
+                final String props = "/application.properties";
                 final Properties propsFromFile = new Properties();
                 propsFromFile.load(getClass().getResourceAsStream(props));
                 String domain = propsFromFile.getProperty("domain");

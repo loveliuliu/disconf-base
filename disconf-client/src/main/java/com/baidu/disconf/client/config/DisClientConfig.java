@@ -1,9 +1,19 @@
 package com.baidu.disconf.client.config;
 
+import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.baidu.disconf.client.common.model.CmdbEnv;
+import com.baidu.disconf.client.utils.EnvHelper;
+import com.baidu.disconf.client.utils.IpUtils;
+import com.baidu.disconf.client.utils.StringUtil;
+import com.baidu.disconf.core.common.restful.type.RestfulGet;
+import com.baidu.disconf.core.common.utils.http.HttpClientUtil;
+import com.google.gson.Gson;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -51,6 +61,8 @@ public final class DisClientConfig {
         }
 
         DisconfAutowareConfig.autowareConfigFromFileSystem(INSTANCE, propertiesLocation);
+
+        EnvHelper.fillEnv(INSTANCE);
 
         isLoaded = true;
     }
@@ -132,7 +144,7 @@ public final class DisClientConfig {
      * @author
      * @since 1.0.0
      */
-    @DisInnerConfigAnnotation(name = "disconf.conf_server_url_retry_times", defaultValue = "3")
+    @DisInnerConfigAnnotation(name = "disconf.conf_server_url_retry_times", defaultValue = "2")
     public int CONF_SERVER_URL_RETRY_TIMES = 3;
 
 
@@ -142,7 +154,7 @@ public final class DisClientConfig {
      * @author
      * @since 1.0.0
      */
-    @DisInnerConfigAnnotation(name = "disconf.conf_server_url_retry_sleep_seconds", defaultValue = "2")
+    @DisInnerConfigAnnotation(name = "disconf.conf_server_url_retry_sleep_seconds", defaultValue = "1")
     public int confServerUrlRetrySleepSeconds = 2;
     
     

@@ -32,6 +32,8 @@ public interface ConfigDao extends BaseDao<Long, Config> {
      */
     List<Config> getConfByAppEnv(Long appId, Long envId);
 
+    List<Config> getConfByApp(Long appId);
+
     /**
      * @param appId
      * @param envId

@@ -6,6 +6,7 @@ import org.springframework.core.io.Resource;
 
 import com.baidu.disconf.client.config.inner.DisClientComConfig;
 import com.baidu.disconf.client.config.inner.DisInnerConfigHelper;
+import com.baidu.disconf.client.utils.AppTagHelper;
 
 /**
  * 配置模块
@@ -42,7 +43,7 @@ public class ConfigMgr {
 
         // 校验 用户配置
         DisInnerConfigHelper.verifyUserConfig();
-        
+
         if ( "local".equalsIgnoreCase(DisClientConfig.getInstance().ENV) ) {
             LOGGER.info("Disconf is running in LOCAL env, all config files are loaded from classpath");
             DisClientConfig.getInstance().unitTestMode = true;

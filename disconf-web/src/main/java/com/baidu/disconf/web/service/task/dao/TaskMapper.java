@@ -4,6 +4,7 @@ package com.baidu.disconf.web.service.task.dao;
 import com.baidu.disconf.web.service.config.bo.ConfigDraft;
 import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
 import com.baidu.disconf.web.service.task.bo.Task;
+import com.baidu.disconf.web.service.task.dto.TaskAuditDto;
 import com.baidu.disconf.web.service.task.dto.TaskDto;
 import com.ymatou.common.mybatis.annotation.MyBatisDao;
 import org.apache.ibatis.annotations.Param;
@@ -40,4 +41,6 @@ public interface TaskMapper {
     List<Task> findToBeActiveTask(@Param("task") Task task);
 
     int updateTaskExecStatusById(@Param("task") Task task);
+
+    List<TaskAuditDto> findTaskAuditDtoByTaskId(@Param("taskId") Long taskId);
 }

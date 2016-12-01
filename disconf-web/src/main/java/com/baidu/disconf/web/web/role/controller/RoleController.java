@@ -48,6 +48,10 @@ public class RoleController extends BaseController {
         List<Role> roles = roleMgr.findAll();
         if(RoleEnum.APP_ADMIN.getValue() == Integer.valueOf(userMgr.getCurVisitor().getRole())){
             roles.removeIf(r -> r.getId() == RoleEnum.ADMIN.getValue());//应用管理员不允许看到管理员
+        }else if(RoleEnum.DBA.getValue() == Integer.valueOf(userMgr.getCurVisitor().getRole())){
+            roles.removeIf(r -> r.getId() == RoleEnum.ADMIN.getValue()
+                    || r.getId() == RoleEnum.APP_ADMIN.getValue()
+            );//DBA只能设置普通用户和DBA
         }
         return buildSuccess(roles);
     }

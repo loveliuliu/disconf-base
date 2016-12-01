@@ -4,9 +4,14 @@ import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.web.common.Constants;
 import com.baidu.disconf.web.service.app.bo.App;
 import com.baidu.disconf.web.service.app.dao.AppDao;
+import com.baidu.disconf.web.service.app.dto.AppTagDto;
+import com.baidu.disconf.web.service.app.dto.TagDto;
+import com.baidu.disconf.web.service.app.service.TagMgr;
 import com.baidu.disconf.web.service.config.bo.Config;
 import com.baidu.disconf.web.service.config.bo.ConfigDraft;
 import com.baidu.disconf.web.service.config.condition.ConfigDraftCondition;
+import com.baidu.disconf.web.service.config.constant.ConfigDraftTypeEnum;
+import com.baidu.disconf.web.service.config.dao.ConfigDao;
 import com.baidu.disconf.web.service.config.dao.ConfigDraftDao;
 import com.baidu.disconf.web.service.config.dao.ConfigDraftMapper;
 import com.baidu.disconf.web.service.config.form.ConfDraftSubmitForm;
@@ -18,13 +23,17 @@ import com.baidu.disconf.web.service.task.bo.Task;
 import com.baidu.disconf.web.service.task.constant.TaskExecStatusEnum;
 import com.baidu.disconf.web.service.task.dao.TaskDao;
 import com.baidu.disconf.web.service.task.dao.TaskMapper;
+import com.baidu.disconf.web.service.task.service.TaskAuditMgr;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
+import com.baidu.disconf.web.service.task.vo.TaskAuditTypeEnum;
 import com.baidu.disconf.web.service.user.dto.Visitor;
 import com.baidu.disconf.web.utils.CodeUtils;
 import com.baidu.dsp.common.constant.DataFormatConstants;
 import com.baidu.dsp.common.exception.ValidationException;
+import com.baidu.dsp.common.utils.PatternUtils;
 import com.baidu.ub.common.commons.ThreadContext;
 import com.github.knightliao.apollo.utils.time.DateUtils;
+import org.apache.commons.collections.list.SetUniqueList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,6 +75,18 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
     @Autowired
     private ConfigMgr configMgr;
+
+    @Autowired
+    private TagMgr tagMgr;
+
+    @Autowired
+    private ConfigDao configDao;
+
+    @Autowired
+    private TaskAuditMgr taskAuditMgr;
+
+    private static Object lock = new Object();
+
 
     @Override
     public ConfigDraft getConfByParameter(Long appId, Long envId, String version, String key, DisConfigTypeEnum disConfigTypeEnum) {
@@ -114,6 +135,34 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
             throw new ValidationException("您没有需要提交的草稿!");
         }
 
+        //找到需要替换的标签，没有值的话不能提交
+        List<String> tagNames = SetUniqueList.decorate(new ArrayList<>());
+        //是否需要dba审核
+        boolean isNeedDbaAudit = false;
+        for (ConfigDraft configDraft : configDraftList){
+
+            List<String> draftUsingTagNames = PatternUtils.findMatchedTagNames(configDraft.getValue());
+            tagNames.addAll(draftUsingTagNames);
+            if((configDraft.getDraftType().equals(ConfigDraftTypeEnum.create.name())
+                    || configDraft.getDraftType().equals(ConfigDraftTypeEnum.modify.name())) && !CollectionUtils.isEmpty(draftUsingTagNames)
+                    ){
+                //todo 确认什么情况下需要dba审核
+                isNeedDbaAudit = true;
+            }
+        }
+
+        if(!CollectionUtils.isEmpty(tagNames)){
+            List<TagDto> matchedTags = tagMgr.findEnableTagByTagNames(tagNames);
+            if(matchedTags.size() != tagNames.size()){//有不存在的标签，默认认为所有标签都有值，新增、修改时保证
+                throw new ValidationException(
+                        "存在没有配置的标签，请联系dba, 标签:["
+                                + tagNames.stream()
+                                    .filter(str -> matchedTags.stream().noneMatch(tagDto -> tagDto.getTagName().equals(str)))
+                                    .reduce((s, s2) -> s +","+s2).get()
+                                + "]");
+            }
+        }
+
         //创建待审核任务
         App app = appDao.get(appId);
         Env env = envDao.get(envId);
@@ -134,6 +183,13 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
         taskDao.create(task);
 
+        //创建正常的审核员的审核任务
+        taskAuditMgr.createTaskAudit(TaskAuditTypeEnum.AUDITOR,task.getId());
+        //创建dba的审核任务
+        if(isNeedDbaAudit){
+            taskAuditMgr.createTaskAudit(TaskAuditTypeEnum.DBA,task.getId());
+        }
+
         //更新所有草稿状态 以及 邦定任务id
         for (ConfigDraft configDraft : configDraftList){
             configDraft.setStatus(Constants.STATUS_SUBMITED);
@@ -141,6 +197,7 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
             configDraft.setUpdateTime(curTime);
         }
         configDraftDao.update(configDraftList);
+
 
         return task;
     }
@@ -158,13 +215,19 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
 
     @Override
     public List<ConfigDraft> getTobeActiveConfigDraft(Task task) {
-        return  configDraftMapper.findTobeActiveConfigDraft(task);
+        return configDraftMapper.findTobeActiveConfigDraft(task);
     }
 
     @Transactional
     @Override
     public List<Config> draftToConfig(Task task){
-
+        //再次同步确定task状态为待执行,防止 定时任务和马上执行同时执行 (只能防止本台机器的定时任务，可能性比较小，暂时不处理)
+        synchronized (lock){
+            Task realTask = taskDao.get(task.getId());
+            if(!realTask.getExecStatus().equals(TaskExecStatusEnum.wait.getValue())){
+                return null;
+            }
+        }
         //生效task相关联的configDraft
         List<Config> configList = new ArrayList<>();
         List<ConfigDraft> configDraftList = getTobeActiveConfigDraft(task);
@@ -182,6 +245,32 @@ public class ConfigDraftMgrImpl implements ConfigDraftMgr{
         condition.setId(task.getId());
         condition.setExecStatus(TaskExecStatusEnum.done.getValue());
         taskMgr.updateTaskExecStatus(condition);
+
+        List<String> tagNames = SetUniqueList.decorate(new ArrayList<>());
+        Long appId = task.getAppId();
+        List<Config> allConfig = configDao.getConfByApp(appId);
+        if(!CollectionUtils.isEmpty(allConfig)){
+            allConfig.forEach(config -> {
+                tagNames.addAll(PatternUtils.findMatchedTagNames(config.getValue()));
+            });
+        }
+        //add or modify apptag
+        if(!CollectionUtils.isEmpty(tagNames)){
+            //先删除 未使用的app_tag
+            tagMgr.disableTagByTagNames(task.getAppId(),tagNames);
+
+            List<AppTagDto> tagDtoList = tagMgr.findEnableAppTagByTagNames(tagNames,task.getAppId());
+
+            //保存新增app_tag
+            List<String> needAddTagNames = SetUniqueList.decorate(new ArrayList<>());
+            tagNames.stream()
+                    .filter(str -> tagDtoList.stream().noneMatch(tagDto -> tagDto.getTagName().equals(str)))
+                    .forEach(s -> needAddTagNames.add(s));
+
+            if(!CollectionUtils.isEmpty(needAddTagNames)){
+                tagMgr.useTag(task.getAppId(), task.getAppName(), needAddTagNames);
+            }
+        }
 
         return configList;
     }

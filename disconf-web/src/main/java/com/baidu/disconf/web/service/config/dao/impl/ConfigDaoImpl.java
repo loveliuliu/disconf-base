@@ -68,6 +68,18 @@ public class ConfigDaoImpl extends AbstractDao<Long, Config> implements ConfigDa
         }
     }
 
+
+    @Override
+    public List<Config> getConfByApp(Long appId) {
+
+        List<Order> orders = Lists.newArrayList(new Order(Columns.VERSION,false));
+        List<Match> matches = Lists.newArrayList();
+
+        matches.add(new Match(Columns.APP_ID, appId));
+        matches.add(new Match(Columns.STATUS, Constants.STATUS_NORMAL));
+        return find(matches,orders);
+    }
+
     /**
      *
      */

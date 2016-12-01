@@ -34,7 +34,7 @@ public class AuthValidator {
      */
     public void validateLogin(SigninForm signinForm) {
         if (signinForm.getName().toLowerCase().startsWith("admin")) {
-            //
+
             User user = signMgr.getUserByName(signinForm.getName());
             if (user == null) {
                 throw new FieldException(SigninForm.Name, "user.not.exist", null);

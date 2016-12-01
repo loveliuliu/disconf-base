@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  (C) Copyright 2016 Ymatou (http://www.ymatou.com/).
+  ~  All rights reserved.
+  ~  */
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baidu.disconf.web.service.app.dao.TagMapper">
+
+
+	<sql id="columns">
+		t.id as id,
+		t.tag_name as tagName,
+		t.tag_value as tagValue,
+		t.memo as memo,
+		t.status as status,
+		t.create_time as createTime,
+		t.create_user as createUser,
+		t.update_time as updateTime,
+		t.update_user as updateUser
+	</sql>
+	
+	<sql id="dynamicWhere">
+		<where>
+			<if test="tag.id !=null "> AND t.id = #{tag.id} </if>
+			<if test="tag.tagName !=null and tag.tagName != '' "> AND t.tag_name like CONCAT('%',#{tag.tagName},'%' )</if>
+			<if test="tag.tagValue !=null and tag.tagValue != '' "> AND t.tag_value like CONCAT('%',#{tag.tagValue},'%' )</if>
+			<if test="tag.memo !=null and tag.memo != '' "> AND t.memo like CONCAT('%',#{tag.memo},'%' )</if>
+			<if test="tag.status !=null and tag.status != '' "> AND t.status = #{tag.status}</if>
+		</where>
+	</sql>
+
+
+    <select id="findByTag" resultType="Tag">
+        SELECT <include refid="columns"/>
+        FROM tag t
+        <include refid="dynamicWhere"/>
+    </select>
+
+	<select id="findTagDto" resultType="TagDto">
+		SELECT <include refid="columns"/>,nums.appNums as usedAppNums,nums.appNames as appNames
+		FROM tag t
+		left JOIN ( SELECT
+			tem.tag_name as tagName,count(0) as appNums,GROUP_CONCAT(tem.app_name) as appNames
+			FROM
+			(
+				SELECT
+				app_name,tag_name
+				FROM
+				app_tag
+				WHERE
+				STATUS = "ENABLE"
+				GROUP BY
+				app_name,tag_name
+			)tem GROUP BY tem.tag_name
+		) nums on t.tag_name = nums.tagName
+		<include refid="dynamicWhere"/>
+	</select>
+
+	<select id="findAppNamesByTagName" resultType="String">
+		select DISTINCT  app_name from app_tag where tag_name = #{tagName} and status = "ENABLE"
+	</select>
+
+	<select id="findEnableTagByTagNames" resultType="TagDto">
+		SELECT <include refid="columns"/> from tag t
+			where t.tag_name in
+					<foreach collection="tagNames" separator="," open="(" close=")" item="tagName" >
+						#{tagName}
+					</foreach>
+				 and t.status = "ENABLE"
+	</select>
+
+
+	<select id="findEnableAppTagByTagNames" resultType="AppTagDto">
+		select a.id,a.app_id as appId,a.app_name as appName,a.tag_name as tagName,a.status
+		from app_tag a
+		where a.app_id = #{appId}
+			and a.tag_name in
+			<foreach collection="tagNames" separator="," open="(" close=")" item="tagName" >
+				#{tagName}
+			</foreach>
+		and a.status = "ENABLE"
+	</select>
+
+	<update id="disableTagByTagNames">
+		update app_tag set status = "DISABLE" where app_id = #{appId} and tag_name not in
+		<foreach collection="tagNames" separator="," open="(" close=")" item="tagName" >
+			#{tagName}
+		</foreach>
+	</update>
+
+	<insert id="insertAppTag">
+		insert into app_tag (app_id,app_name,tag_name,status)
+		values
+		<foreach collection="tagNames" item="tagName" separator="," >
+			(#{appId},#{appName},#{tagName},"ENABLE")
+		</foreach>
+
+	</insert>
+
+</mapper>

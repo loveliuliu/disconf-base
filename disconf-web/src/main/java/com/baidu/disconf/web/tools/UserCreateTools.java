@@ -22,7 +22,7 @@ public class UserCreateTools {
 
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext();
         ctx.getEnvironment().setActiveProfiles("production");
-        ctx.setConfigLocation("applicationContext.xml");
+        ctx.setConfigLocation("spring/applicationContext.xml");
         ctx.refresh();
 
         userDao = (UserDao) ctx.getBean("userDaoImpl");

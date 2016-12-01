@@ -24,4 +24,6 @@ public interface FetcherMgr {
      * 释放资源
      */
     void release();
+
+
 }

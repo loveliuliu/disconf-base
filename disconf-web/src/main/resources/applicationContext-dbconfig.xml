@@ -99,6 +99,7 @@
           class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="onedbMultiDataSource"/>
     </bean>
-    <tx:annotation-driven transaction-manager="onedbTransactionManager"/>
+
+    <tx:annotation-driven transaction-manager="onedbTransactionManager" proxy-target-class="true"/>
 
 </beans>

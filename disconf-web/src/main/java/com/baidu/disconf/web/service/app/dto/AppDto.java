@@ -10,6 +10,7 @@ public class AppDto extends App{
 
     private String belongUserIds;
     private String belongUserNames;
+    private String usedTagNames;
     private Long userId;
     private String roleId;
 
@@ -43,5 +44,13 @@ public class AppDto extends App{
 
     public void setRoleId(String roleId) {
         this.roleId = roleId;
+    }
+
+    public String getUsedTagNames() {
+        return usedTagNames;
+    }
+
+    public void setUsedTagNames(String usedTagNames) {
+        this.usedTagNames = usedTagNames;
     }
 }

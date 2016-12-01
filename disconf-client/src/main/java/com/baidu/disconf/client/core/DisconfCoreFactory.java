@@ -5,6 +5,7 @@ import com.baidu.disconf.client.core.impl.DisconfCoreMgrImpl;
 import com.baidu.disconf.client.fetcher.FetcherFactory;
 import com.baidu.disconf.client.fetcher.FetcherMgr;
 import com.baidu.disconf.client.support.registry.Registry;
+import com.baidu.disconf.client.utils.AppTagHelper;
 import com.baidu.disconf.client.watch.WatchFactory;
 import com.baidu.disconf.client.watch.WatchMgr;
 
@@ -30,6 +31,10 @@ public class DisconfCoreFactory {
         if (DisClientConfig.getInstance().ENABLE_DISCONF) {
             // Watch 模块
             watchMgr = WatchFactory.getWatchMgr(fetcherMgr);
+
+            //apptag helper
+            AppTagHelper.registerFetcherMgr(fetcherMgr);
+            AppTagHelper.loadTag();
         }
 
         return new DisconfCoreMgrImpl(watchMgr, fetcherMgr, registry);

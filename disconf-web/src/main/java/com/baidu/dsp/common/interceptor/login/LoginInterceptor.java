@@ -1,6 +1,7 @@
 package com.baidu.dsp.common.interceptor.login;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -82,7 +83,7 @@ public class LoginInterceptor extends WebCommonInterceptor {
 
             // 更精确的定位
             for (String path : notInterceptPathList) {
-                if (requestPath.contains(path)) {
+                if (requestPath.contains(path) || Pattern.matches(path,requestPath)) {
                     return true;
                 }
             }

@@ -1,6 +1,7 @@
 package com.baidu.disconf.web.web.task.controller;
 
 import com.baidu.disconf.web.service.task.bo.Task;
+import com.baidu.disconf.web.service.task.dto.TaskAuditDto;
 import com.baidu.disconf.web.service.task.dto.TaskDto;
 import com.baidu.disconf.web.service.task.service.TaskMgr;
 import com.baidu.dsp.common.constant.WebConstants;
@@ -14,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 /**
  * @author liaoqiqi
@@ -95,14 +98,19 @@ public class TaskController extends BaseController {
 
         TaskDto task = taskMgr.findById(id);
 
+        List<TaskAuditDto> taskAuditDtoList = taskMgr.findTaskAuditDtoByTaskId(id);
+
+        task.setTaskAuditDtoList(taskAuditDtoList);
         return buildSuccess(task);
     }
 
     @RequestMapping(value = "/taskAudit")
     @ResponseBody
-    public JsonObjectBase taskAudit(Long id,String status,String auditComment){
+    public JsonObjectBase taskAudit(Long id,Long taskAuditId,String status,String auditComment){
 
-        taskMgr.taskAudit(id,status,auditComment);
+        Task task = taskMgr.taskAudit(id,taskAuditId,status,auditComment);
+
+        taskMgr.decideExecTask(task);
 
         return buildSuccess("操作成功!");
     }

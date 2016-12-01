@@ -33,6 +33,7 @@ public class Constants {
      */
     public final static String STORE_FILE_URL_KEY = "file";
     public final static String STORE_ITEM_URL_KEY = "item";
+    public final static String APP_TAG_URL_KEY = "tag";
     public final static String ZOO_HOSTS_URL_KEY = "hosts";
     public final static String ZOO_HOSTS_URL_PREFIX_KEY = "prefix";
     public final static String LOCK_PATH = "locks";
@@ -47,4 +48,10 @@ public class Constants {
 
     // 通知Zookeeper更新配置的消息
     public final static String ZOO_UPDATE_STRING = "UPDATE-NOTIFYING";
+
+
+    /**
+     * 全局标记 iapi是否挂了
+     */
+    public static Boolean DISCONF_IAPI_IS_DOWN = Boolean.FALSE;
 }
