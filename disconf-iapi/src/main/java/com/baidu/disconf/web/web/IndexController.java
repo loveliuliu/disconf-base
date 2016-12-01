@@ -16,6 +16,7 @@ package com.baidu.disconf.web.web;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author luoshiqian 2016/11/9 12:13
@@ -27,5 +28,11 @@ public class IndexController {
     @RequestMapping("/")
     public String index(){
         return "redirect:version.html";
+    }
+
+    @ResponseBody
+    @RequestMapping("/warmup")
+    public String warmup() {
+        return "ok";
     }
 }
