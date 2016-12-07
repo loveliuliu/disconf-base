@@ -66,7 +66,6 @@ public class DisconfAspectJ {
                         DisconfStoreProcessorFactory.getDisconfStoreFileProcessor();
                 Object ret = disconfStoreProcessor.getConfig(disconfFile.fileName(), disconfFileItem.name());
                 if (ret != null) {
-                    //todo 替换值 ${placeHolder}
                     LOGGER.debug("using disconf store value: " + disconfFile.fileName() + " ("
                             + disconfFileItem.name() +
                             " , " + ret + ")");
