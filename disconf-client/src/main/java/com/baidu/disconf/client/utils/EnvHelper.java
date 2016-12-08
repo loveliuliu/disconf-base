@@ -136,7 +136,7 @@ public class EnvHelper {
      * @throws Exception
      */
     public static CmdbEnv remoteCallCmdbEnv(String app, String ip) throws Exception {
-        URL url = new URL("http://environment.ops.ymatou.cn/api?application=" + app + "&ipaddress=" + ip);
+        URL url = new URL("http://environment.ops.ymatou.com/api?application=" + app + "&ipaddress=" + ip);
         return new RestfulGet<>(CmdbEnv.class, url).call();
     }
 }
