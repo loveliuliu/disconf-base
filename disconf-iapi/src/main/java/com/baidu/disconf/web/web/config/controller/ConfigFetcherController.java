@@ -2,6 +2,8 @@ package com.baidu.disconf.web.web.config.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,14 +132,14 @@ public class ConfigFetcherController {
     public HttpEntity<byte[]> downloadDspBill(String fileName, String value) {
 
         HttpHeaders header = new HttpHeaders();
-        byte[] res = value.getBytes();
+        byte[] res = value.getBytes(Charset.forName("UTF-8"));
 
         String name = null;
 
         try {
             name = URLEncoder.encode(fileName, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            LOG.error("download file encode error",e);
         }
 
         header.set("Content-Disposition", "attachment; filename=" + name);
