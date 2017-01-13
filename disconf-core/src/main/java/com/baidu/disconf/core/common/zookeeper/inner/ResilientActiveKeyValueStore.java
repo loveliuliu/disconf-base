@@ -26,10 +26,10 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
     private static final Charset CHARSET = Charset.forName("UTF-8");
 
     // 最大重试次数
-    public static final int MAX_RETRIES = 3;
+    public static final int MAX_RETRIES = Integer.MAX_VALUE;
 
     // 每次重试超时时间
-    public static final int RETRY_PERIOD_SECONDS = 2;
+    public static final int RETRY_PERIOD_SECONDS = 3;
 
     /**
      * @param debug
@@ -82,7 +82,7 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
                     throw e;
                 }
                 // sleep then retry
-                int sec = RETRY_PERIOD_SECONDS * retries;
+                int sec = RETRY_PERIOD_SECONDS;
                 LOGGER.warn("sleep " + sec);
                 TimeUnit.SECONDS.sleep(sec);
             }
@@ -133,7 +133,7 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
                     throw e;
                 }
                 // sleep then retry
-                int sec = RETRY_PERIOD_SECONDS * retries;
+                int sec = RETRY_PERIOD_SECONDS;
                 LOGGER.warn("sleep " + sec);
                 TimeUnit.SECONDS.sleep(sec);
             }
@@ -182,7 +182,7 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
                 }
 
                 // sleep then retry
-                int sec = RETRY_PERIOD_SECONDS * retries;
+                int sec = RETRY_PERIOD_SECONDS;
                 LOGGER.warn("sleep " + sec);
                 TimeUnit.SECONDS.sleep(sec);
             }
