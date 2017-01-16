@@ -99,7 +99,7 @@ public class FileTypeProcessorUtils {
         return dataMap;
     }
 
-    private static class MapPlaceholderConfigurerResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
+    public static class MapPlaceholderConfigurerResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
         @Override
         public String resolvePlaceholder(String placeholderName) {
             return AppTagHelper.TAG_STORE.get(placeholderName);

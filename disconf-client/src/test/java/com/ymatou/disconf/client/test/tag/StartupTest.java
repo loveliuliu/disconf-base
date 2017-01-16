@@ -123,6 +123,16 @@ public class StartupTest extends BaseCoreTestCase {
         ClassPathXmlApplicationContext appContext =
                 new ClassPathXmlApplicationContext("/integration/applicationContext-tag-test.xml");
         System.out.println("--------------------------application started----------------------");
+
+        TagConfig tagConfig = appContext.getBean(TagConfig.class);
+        System.out.println(tagConfig.getConfig1());
+        System.out.println(tagConfig.getConfig2());
+
+        NoTagConfig noTagConfig= appContext.getBean(NoTagConfig.class);
+        System.out.println(noTagConfig.getNoTagConfig1());
+        System.out.println(noTagConfig.getNoTagConfig2());
+
+
         try {
             System.in.read();
         } catch (IOException e) {

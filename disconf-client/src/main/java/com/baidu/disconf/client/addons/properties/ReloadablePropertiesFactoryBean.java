@@ -1,11 +1,10 @@
 package com.baidu.disconf.client.addons.properties;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
+import com.baidu.disconf.client.DisconfMgr;
+import com.baidu.disconf.client.common.model.DisconfCenterFile;
+import com.baidu.disconf.client.core.filetype.FileTypeProcessorUtils;
+import com.baidu.disconf.client.utils.AppTagHelper;
+import com.baidu.disconf.client.utils.PatternUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +13,19 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.PropertyPlaceholderHelper;
+import org.springframework.util.StreamUtils;
 
-import com.baidu.disconf.client.DisconfMgr;
-import com.baidu.disconf.client.common.model.DisconfCenterFile;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * A properties factory bean that creates a reconfigurable Properties object.
@@ -32,6 +39,8 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
 
     private static ApplicationContext applicationContext;
 
+    private static final PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}", null, false);
+    private static final FileTypeProcessorUtils.MapPlaceholderConfigurerResolver resolver = new FileTypeProcessorUtils.MapPlaceholderConfigurerResolver();
     protected static final Logger log = LoggerFactory.getLogger(ReloadablePropertiesFactoryBean.class);
 
     private Resource[] locations;
@@ -43,7 +52,7 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
      *
      * @param fileNames
      */
-    public void setLocation(final String fileNames) {
+    public void setLocation(final String fileNames)throws Exception {
         List<String> list = new ArrayList<String>();
         list.add(fileNames);
         setLocations(list);
@@ -51,7 +60,7 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
 
     /**
      */
-    public void setLocations(List<String> fileNames) {
+    public void setLocations(List<String> fileNames)throws Exception {
 
         List<Resource> resources = new ArrayList<Resource>();
         for (String fileName : fileNames) {
@@ -74,6 +83,19 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
             String ext = FilenameUtils.getExtension(fileName);
             if (ext.equals("properties")) {
                 Resource resource = new FileSystemResource(DisconfCenterFile.getFilePath(fileName));
+
+                String fileStr = StreamUtils.copyToString(resource.getInputStream(), Charset.forName("UTF-8"));
+                List<String> matchedTagNames = PatternUtils.findMatchedTagNames(fileStr);
+                if(!CollectionUtils.isEmpty(matchedTagNames)){
+                    for(String tagName : matchedTagNames){
+                        if(!AppTagHelper.TAG_STORE.containsKey(tagName)){
+                            throw new RuntimeException(("found tagName:" + tagName + ",but tagStore do not had it "));
+                        }
+                    }
+                    String replacedValue = propertyPlaceholderHelper.replacePlaceholders(fileStr, resolver);
+                    resource = new ByteArrayResource(replacedValue.getBytes(Charset.forName("UTF-8")));
+                }
+
                 resources.add(resource);
             }
         }
