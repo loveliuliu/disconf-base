@@ -127,7 +127,7 @@ public class ResilientActiveKeyValueStore extends ConnectionWatcher {
 
             } catch (KeeperException e) {
 
-                LOGGER.warn("createEphemeralNode connect lost... will retry " + retries + "\t" + e.toString());
+                LOGGER.warn("createEphemeralNode connect lost... will retry " + retries + "\t" + e.toString(),e);
 
                 if (retries++ == MAX_RETRIES) {
                     throw e;

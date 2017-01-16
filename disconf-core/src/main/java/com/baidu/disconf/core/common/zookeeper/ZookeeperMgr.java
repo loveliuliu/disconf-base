@@ -111,12 +111,13 @@ public class ZookeeperMgr {
     public void makeDir(String dir, String data) {
 
         try {
-
+            LOGGER.info("try to make path:{},data:{}",dir,data);
             boolean deafult_path_exist = store.exists(dir);
             if (!deafult_path_exist) {
-                LOGGER.info("create: " + dir);
+                LOGGER.info("path created: " + dir);
                 this.writePersistentUrl(dir, data);
             } else {
+                LOGGER.info("path :{} exist,ignore",dir);
             }
 
         } catch (KeeperException e) {

@@ -77,12 +77,10 @@ public class WatchMgrImpl implements WatchMgr {
                 disConfCommonModel.getEnv(),
                 disConfCommonModel.getVersion());
 
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                ZookeeperMgr.getInstance().makeDir(clientRootZooPath, ZooUtils.getIp());
-            }
-        });
+        /**
+         * 创建目录/disconf/appName_version_env
+         */
+        makePath(clientRootZooPath,ZooUtils.getIp());
 
 
         // 监控路径
@@ -91,6 +89,10 @@ public class WatchMgrImpl implements WatchMgr {
 
             // 新建Zoo Store目录
             String clientDisconfFileZooPath = ZooPathMgr.getFileZooPath(clientRootZooPath);
+
+            /**
+             * 创建目录/disconf/appName_version_env/file
+             */
             makePath(clientDisconfFileZooPath, ZooUtils.getIp());
 
             monitorPath = ZooPathMgr.joinPath(clientDisconfFileZooPath, key);
@@ -99,10 +101,17 @@ public class WatchMgrImpl implements WatchMgr {
 
             // 新建Zoo Store目录
             String clientDisconfItemZooPath = ZooPathMgr.getItemZooPath(clientRootZooPath);
+
+            /**
+             * 创建目录/disconf/appName_version_env/item
+             */
             makePath(clientDisconfItemZooPath, ZooUtils.getIp());
             monitorPath = ZooPathMgr.joinPath(clientDisconfItemZooPath, key);
         }
 
+        /**
+         * 创建目录/disconf/appName_version_env/file|item/xxx.properties
+         */
         // 先新建路径
         makePath(monitorPath, "");
 
@@ -128,16 +137,20 @@ public class WatchMgrImpl implements WatchMgr {
     /**
      * 在指定路径下创建一个临时结点
      */
-    private void makeTempChildPath(String path, String data) {
+    private void makeTempChildPath(final String path, final String data) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                String finerPrint = DisClientComConfig.getInstance().getInstanceFingerprint();
 
-        String finerPrint = DisClientComConfig.getInstance().getInstanceFingerprint();
-
-        String mainTypeFullStr = path + "/" + finerPrint;
-        try {
-            ZookeeperMgr.getInstance().createEphemeralNode(mainTypeFullStr, data, CreateMode.EPHEMERAL);
-        } catch (Exception e) {
-            LOGGER.error("cannot create: " + mainTypeFullStr + "\t" + e.toString(),e);
-        }
+                String mainTypeFullStr = path + "/" + finerPrint;
+                try {
+                    ZookeeperMgr.getInstance().createEphemeralNode(mainTypeFullStr, data, CreateMode.EPHEMERAL);
+                } catch (Exception e) {
+                    LOGGER.error("cannot create: " + mainTypeFullStr + "\t" + e.toString(), e);
+                }
+            }
+        });
     }
 
     /**
@@ -149,11 +162,11 @@ public class WatchMgrImpl implements WatchMgr {
         final DisconfCoreProcessor finalCore = disconfCoreMgr;
         // 新建
 
+        final String monitorPath = makeMonitorPath(disConfigTypeEnum, disConfCommonModel, keyName, value);
         executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    final String monitorPath = makeMonitorPath(disConfigTypeEnum, disConfCommonModel, keyName, value);
                     // 进行监控
                     NodeWatcher nodeWatcher =
                             new NodeWatcher(finalCore, monitorPath, keyName, disConfigTypeEnum, new DisconfSysUpdateCallback(),
