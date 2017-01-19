@@ -33,7 +33,7 @@ app.controller('validateCtrl',['$scope','$http', function($scope,$http) {
             shadeClose: true,
             // shade: false,
             maxmin: true, //开启最大化最小化按钮
-            area: ['960px', '600px'],
+            area: ['1380px', '800px'],
             content: '/config_campare.html?id='+id
         });
 

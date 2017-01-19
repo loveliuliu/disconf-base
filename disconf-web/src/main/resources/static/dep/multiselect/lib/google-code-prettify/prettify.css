@@ -23,6 +23,8 @@ ol.linenums {
   margin: 0 0 0 2px; /* IE indents via margin-left */
 } 
 ol.linenums li {
+  word-wrap: break-word;
+  white-space: pre-wrap;
   padding-left: 12px;
   color: #bebec5;
   line-height: 18px;

@@ -14,7 +14,9 @@
 	<title>Disconf - 分布式配置管理平台</title>
 
 	<link rel="stylesheet" href="dep/bootstrap/3.3.6/css/bootstrap.min.css" />
-    <link rel="stylesheet" type="text/css" href="dep/multiselect/lib/google-code-prettify/prettify.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="dep/multiselect/lib/google-code-prettify/prettify.css"/>-->
+    <link rel="stylesheet" type="text/css" href="dep/codemirror/codemirror.css"/>
+    <link rel="stylesheet" type="text/css" href="dep/codemirror/mergely.css"/>
 </head>
 
 <body>
@@ -23,23 +25,29 @@
     <div class="col-xs-12" style="width: 49.3%;float: left;padding-right: 5px">
         <h5>变更内容</h5>
 
-		<pre class="prettyprint linenums" id="draftContent">
+		<!--<pre class="prettyprint linenums" id="draftContent">-->
 
-		</pre>
+		<!--</pre>-->
     </div>
 
 	<div class="col-xs-12" style="width: 49.3%;float: right;padding-right: 5px">
 		<h5>当前生效内容</h5>
-		<pre class="prettyprint linenums" id="configContent">
+		<!--<pre class="prettyprint linenums" id="configContent">-->
 
-		</pre>
+		<!--</pre>-->
+	</div>
+	<div id="mergely-resizer">
+		<div id="compare">
+		</div>
 	</div>
 </div>
 </div>
 <script type="text/javascript" src="dep/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="dep/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="dep/angular/1.4.6/angular.min.js"></script>
-<script type="text/javascript" src="dep/prettify/prettify.min.js"></script>
+<!--<script type="text/javascript" src="dep/prettify/prettify.min.js"></script>-->
+<script type="text/javascript" src="dep/codemirror/codemirror.js"></script>
+<script type="text/javascript" src="dep/codemirror/mergely.js"></script>
 <script src="assets/js/common.js"></script>
 <script type="text/javascript">
 
@@ -58,15 +66,30 @@
 				var config = data.result.config;
 				var configDraft = data.result.configDraft;
 
+				var configContent = "无";
 				if(config==null || config==''){
-					$("#configContent").text("无");
+//					$("#configContent").text("无");
 				}else{
-					$scope.configContent = config.value;
-					$("#configContent").text(config.value);
+//					$scope.configContent = config.value;
+//					$("#configContent").text(config.value);
+					configContent = config.value;
 				}
 				$("#draftContent").text(configDraft.value);
 
-				window.prettyPrint && prettyPrint();
+//				window.prettyPrint && prettyPrint();
+
+				$('#compare').mergely({
+					cmsettings: { readOnly: true, lineWrapping: true, lineNumbers: true,height:"600px"},
+					lhs: function(setValue) {
+						setValue(configDraft.value);
+					},
+					rhs: function(setValue) {
+						setValue(configContent);
+					},
+					ignorews:true,
+					wrap_lines:true,
+					editor_height:"600px"
+				});
 			}
 		});
 

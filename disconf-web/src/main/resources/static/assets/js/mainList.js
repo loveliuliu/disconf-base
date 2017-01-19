@@ -240,8 +240,8 @@
                 type = '<i title="配置文件" class="icon-file"></i>';
             }
 
-            var data_fetch_url = '<a href="javascript:void(0);" class="valuefetch'
-                + item.configId + '" data-placement="left">点击获取</a>'
+            var data_fetch_url = '<a href="javascript:void(0);"  class="valuefetch'
+                + item.configId + '" data-placement="left" data-title="'+item.key+'">点击获取</a>'
 
             var isRight = "OK";
             var style = "";
@@ -251,7 +251,7 @@
             }
             var machine_url = '<a href="javascript:void(0);" class="' + style
                 + ' machineinfo' + item.configId
-                + '" data-placement="left">' + item.machineSize + '台 '
+                + '" data-placement="left" data-title="'+item.key+'">' + item.machineSize + '台 '
                 + isRight + '</a>'
 
             return Util.string.format(mainTpl,'', item.appId,
@@ -271,7 +271,7 @@
         if (machinelist.length == 0) {
             tip = "";
         } else {
-            tip = '<div style="overflow-y:scroll;max-height:400px;"><table class="table-bordered"><tr><th>机器</th><th>值</th><th>状态</th></tr>';
+            tip = '<div style="overflow-y:scroll;max-height:520px;"><table class="table-bordered"><tr><th>机器</th><th>值</th><th>状态</th></tr>';
             for (var i = 0; i < machinelist.length; i++) {
                 var item = machinelist[i];
 
@@ -308,11 +308,21 @@
                 if (data.success === "true") {
                     var result = data.result;
 
-                    var e = object;
-                    e.popover({
-                        content: "<pre>" + Util.input.escapeHtml(result.value) + "</pre>",
-                        html: true
-                    }).popover('show');
+                    // var e = object;
+                    // e.popover({
+                    //     content: "<pre style='max-height: 800px;overflow-y: auto;'>" + Util.input.escapeHtml(result.value) + "</pre>",
+                    //     html: true
+                    // }).popover('show');
+
+                    layer.open({
+                        title:object.attr("data-title"),
+                        type: 1,
+                        shadeClose: true,
+                        // shade: false,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['960px', '600px'],
+                        content: "<pre style='margin:5px;'>" + Util.input.escapeHtml(result.value) + "</pre>",
+                    });
                 }
             });
     }
@@ -331,12 +341,24 @@
             function (data) {
                 if (data.success === "true") {
                     var result = data.result;
+                    if(result.datalist != null && result.datalist.length > 0 ){
 
-                    var e = object;
-                    e.popover({
-                        content: getMachineList(result.datalist),
-                        html: true
-                    }).popover('show');
+                        layer.open({
+                            title:object.attr("data-title")+"：实例列表",
+                            type: 1,
+                            shadeClose: true,
+                            // shade: false,
+                            maxmin: true, //开启最大化最小化按钮
+                            area: ['960px', '600px'],
+                            content: "<pre style='margin:5px;'>" + getMachineList(result.datalist) + "</pre>",
+                        });
+
+                        // var e = object;
+                        // e.popover({
+                        //     content: getMachineList(result.datalist),
+                        //     html: true
+                        // }).popover('show');
+                    }
                 }
             });
     }
@@ -357,13 +379,13 @@
 
             $(".valuefetch" + id).on('click', function () {
                 var e = $(this);
-                e.unbind('click');
+                // e.unbind('click');
                 fetchConfigValue(id, e);
             });
 
             $(".machineinfo" + id).on('click', function () {
                 var e = $(this);
-                e.unbind('click');
+                // e.unbind('click');
                 fetchZkInfo(id, e);
             });
 
