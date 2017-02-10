@@ -3,6 +3,7 @@ package com.baidu.disconf.client.core.processor.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.baidu.disconf.client.utils.AppTagHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,6 +141,9 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
      */
     @Override
     public void updateOneConfAndCallback(String key) throws Exception {
+
+        // 更新tag 使disconf可以动态增加标签
+        AppTagHelper.loadTag();
 
         // 更新 配置
         updateOneConf(key);

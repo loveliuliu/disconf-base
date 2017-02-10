@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.baidu.disconf.client.utils.AppTagHelper;
 import com.baidu.disconf.client.utils.PatternUtils;
+import com.baidu.disconf.client.utils.TagPlaceholderHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +23,6 @@ public class FileTypeProcessorUtils {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(FileTypeProcessorUtils.class);
 
-    private static final PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}", null, false);
-    private static final MapPlaceholderConfigurerResolver resolver = new MapPlaceholderConfigurerResolver();
     private static final Object lock = new Object();
     /**
      * 输入文件名，返回其相应的k-v数据
@@ -79,7 +78,7 @@ public class FileTypeProcessorUtils {
                             throw new Exception("found tagName:" + tagName + ",but tagStore do not had it ");
                         }
                     }
-                    String replacedValue = propertyPlaceholderHelper.replacePlaceholders(value, resolver);
+                    String replacedValue = TagPlaceholderHelper.replaceTag(value);
                     dataMap.put(key,replacedValue);
 
                     //保存已使用标签的
@@ -97,13 +96,6 @@ public class FileTypeProcessorUtils {
         }
 
         return dataMap;
-    }
-
-    public static class MapPlaceholderConfigurerResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
-        @Override
-        public String resolvePlaceholder(String placeholderName) {
-            return AppTagHelper.TAG_STORE.get(placeholderName);
-        }
     }
 
 }

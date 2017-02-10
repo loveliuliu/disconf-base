@@ -5,6 +5,7 @@ import com.baidu.disconf.client.common.model.DisconfCenterFile;
 import com.baidu.disconf.client.core.filetype.FileTypeProcessorUtils;
 import com.baidu.disconf.client.utils.AppTagHelper;
 import com.baidu.disconf.client.utils.PatternUtils;
+import com.baidu.disconf.client.utils.TagPlaceholderHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,6 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
 
     private static ApplicationContext applicationContext;
 
-    private static final PropertyPlaceholderHelper propertyPlaceholderHelper = new PropertyPlaceholderHelper("${", "}", null, false);
-    private static final FileTypeProcessorUtils.MapPlaceholderConfigurerResolver resolver = new FileTypeProcessorUtils.MapPlaceholderConfigurerResolver();
     protected static final Logger log = LoggerFactory.getLogger(ReloadablePropertiesFactoryBean.class);
 
     private Resource[] locations;
@@ -92,7 +91,7 @@ public class ReloadablePropertiesFactoryBean extends PropertiesFactoryBean imple
                             throw new RuntimeException(("found tagName:" + tagName + ",but tagStore do not had it "));
                         }
                     }
-                    String replacedValue = propertyPlaceholderHelper.replacePlaceholders(fileStr, resolver);
+                    String replacedValue = TagPlaceholderHelper.replaceTag(fileStr);
                     resource = new ByteArrayResource(replacedValue.getBytes(Charset.forName("UTF-8")));
                 }
 
