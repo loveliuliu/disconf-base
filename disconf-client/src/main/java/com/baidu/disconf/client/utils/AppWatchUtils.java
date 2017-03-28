@@ -42,15 +42,17 @@ public class AppWatchUtils {
     }
 
 
-    public static void notify(String appName, String version, String value) {
+    public static boolean notify(String appName, String version, String value) {
         final String zookeeperPath =
                 ZooPathMgr.getZooBaseUrl(zooUrlPrefix, appName, DisClientConfig.getInstance().ENV, version);
-
+        boolean success = true;
         try {
             ZookeeperMgr.getInstance().writePersistentUrl(zookeeperPath, value);
         } catch (Exception e) {
             LOGGER.error("notify error", e);
+            success = false;
         }
+        return success;
     }
 
 }

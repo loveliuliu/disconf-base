@@ -36,7 +36,7 @@ public class DisConf {
      * @param appName
      * @param version
      */
-    public static void notify(String appName,String version,String value){
-        AppWatchUtils.notify(appName,version,value);
+    public static boolean notify(String appName,String version,String value){
+        return AppWatchUtils.notify(appName,version,value);
     }
 }
