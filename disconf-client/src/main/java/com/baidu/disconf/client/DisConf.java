@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.baidu.disconf.client.common.model.DisconfCenterFile;
 import com.baidu.disconf.client.config.ConfigMgr;
+import com.baidu.disconf.client.utils.AppWatchUtils;
 
 /**
  * 
@@ -27,5 +28,15 @@ public class DisConf {
         }
         return new File(DisconfCenterFile.getFilePath(fileName));
 
+    }
+
+
+    /**
+     * 通知某个app version,同一个环境，修改的值
+     * @param appName
+     * @param version
+     */
+    public static void notify(String appName,String version,String value){
+        AppWatchUtils.notify(appName,version,value);
     }
 }

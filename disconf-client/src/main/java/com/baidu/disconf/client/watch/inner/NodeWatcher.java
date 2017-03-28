@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.baidu.disconf.client.core.processor.DisconfCoreProcessor;
+import com.baidu.disconf.client.utils.AppWatchUtils;
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
 import com.baidu.disconf.core.common.zookeeper.ZookeeperMgr;
 
@@ -28,6 +29,7 @@ public class NodeWatcher implements Watcher {
     private DisConfigTypeEnum disConfigTypeEnum;
     private DisconfSysUpdateCallback disconfSysUpdateCallback;
     private boolean debug;
+    private boolean isAppWatch;
 
     private DisconfCoreProcessor disconfCoreMgr;
 
@@ -35,7 +37,7 @@ public class NodeWatcher implements Watcher {
      */
     public NodeWatcher(DisconfCoreProcessor disconfCoreMgr, String monitorPath, String keyName,
                        DisConfigTypeEnum disConfigTypeEnum, DisconfSysUpdateCallback disconfSysUpdateCallback,
-                       boolean debug) {
+                       boolean debug,boolean isAppWatch) {
 
         super();
         this.debug = debug;
@@ -44,6 +46,7 @@ public class NodeWatcher implements Watcher {
         this.keyName = keyName;
         this.disConfigTypeEnum = disConfigTypeEnum;
         this.disconfSysUpdateCallback = disconfSysUpdateCallback;
+        this.isAppWatch = isAppWatch;
     }
 
     /**
@@ -66,7 +69,7 @@ public class NodeWatcher implements Watcher {
             LOGGER.error("cannot monitor " + monitorPath, e);
         }
 
-        LOGGER.debug("monitor path: (" + monitorPath + "," + keyName + "," + disConfigTypeEnum.getModelName() +
+        LOGGER.info("monitor path: (" + monitorPath + "," + keyName + "," + disConfigTypeEnum.getModelName() +
                 ") has been added!");
     }
 
@@ -85,13 +88,21 @@ public class NodeWatcher implements Watcher {
 
                 LOGGER.info("============GOT UPDATE EVENT " + event.toString() + ": (" + monitorPath + "," + keyName
                         + "," + disConfigTypeEnum.getModelName() + ")======================");
-
-                // 调用回调函数, 回调函数里会重新进行监控
-                callback();
+                if(isAppWatch){
+                    String value = ZookeeperMgr.getInstance().read(monitorPath,null,null);
+                    appWatchCallback(value);
+                }else {
+                    // 调用回调函数, 回调函数里会重新进行监控
+                    callback();
+                }
 
             } catch (Exception e) {
 
                 LOGGER.error("monitor node exception. " + monitorPath, e);
+            } finally {
+                if(isAppWatch){
+                    monitorMaster();
+                }
             }
         }
 
@@ -121,11 +132,14 @@ public class NodeWatcher implements Watcher {
 
                 LOGGER.error("============GOT Expired  " + event.toString() + ": (" + monitorPath + "," + keyName
                         + "," + disConfigTypeEnum.getModelName() + ")======================");
-
                 // 重新连接
                 ZookeeperMgr.getInstance().reconnect();
 
-                callback();
+                if(!isAppWatch){//正常节点回调
+                    callback();
+                }else {
+                    monitorMaster();
+                }
             } else {
                 LOGGER.debug("============DEBUG MODE: GOT Expired  " + event.toString() + ": (" + monitorPath + ","
                         + "" + keyName + "," + disConfigTypeEnum.getModelName() + ")======================");
@@ -149,7 +163,23 @@ public class NodeWatcher implements Watcher {
 
         } catch (Exception e) {
 
-            LOGGER.error("monitor node exception. " + monitorPath, e);
+            LOGGER.error("monitor callback exception. " + monitorPath, e);
         }
+    }
+
+
+    private void appWatchCallback(String value){
+        try {
+
+            try {
+                AppWatchUtils.notifyApp(value);
+            } catch (Exception e) {
+                LOGGER.error(e.toString(), e);
+            }
+        } catch (Exception e) {
+
+            LOGGER.error("monitor appWatchCallback exception. " + monitorPath, e);
+        }
+
     }
 }

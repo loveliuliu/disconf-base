@@ -8,11 +8,13 @@ package com.ymatou.disconf.client.test.tag;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import com.google.common.collect.Maps;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.baidu.disconf.client.DisConf;
 import com.baidu.disconf.client.common.model.CmdbEnv;
 import com.baidu.disconf.client.fetcher.impl.FetcherMgrImpl;
 import com.baidu.disconf.client.test.common.BaseCoreTestCase;
@@ -20,6 +22,7 @@ import com.baidu.disconf.client.test.watch.mock.WatchMgrMock;
 import com.baidu.disconf.client.utils.EnvHelper;
 import com.baidu.disconf.client.watch.WatchFactory;
 import com.baidu.disconf.client.watch.WatchMgr;
+import com.google.common.collect.Maps;
 
 import mockit.Expectations;
 
@@ -174,5 +177,48 @@ public class StartupTest extends BaseCoreTestCase {
             }
         };
 
+    }
+
+
+
+    @Test
+    public void testAppWatch() {
+
+        System.setProperty("disconf.env", "UAT");
+
+        ClassPathXmlApplicationContext appContext =
+                new ClassPathXmlApplicationContext("/integration/applicationContext-tag-test.xml");
+        System.out.println("--------------------------application started----------------------");
+
+        DisConf.notify("disconf_demo","1_0_0_0","new Data");
+
+        try {
+            System.in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testNofity(){
+
+        System.setProperty("disconf.env", "UAT");
+        ClassPathXmlApplicationContext appContext =
+                new ClassPathXmlApplicationContext("/integration/applicationContext-tag-test.xml");
+        System.out.println("--------------------------application started----------------------");
+
+        DisConf.notify("disconf_demo","1_0_0_0","new Data");
+
+        int i = 0;
+        while (true){
+
+            DisConf.notify("disconf_demo", "1_0_0_0", "nofityTime:" + i + "str:" + RandomStringUtils.randomNumeric(10));
+            i++;
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

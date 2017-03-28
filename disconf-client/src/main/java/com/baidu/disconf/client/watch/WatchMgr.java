@@ -25,5 +25,12 @@ public interface WatchMgr {
     void watchPath(DisconfCoreProcessor disconfCoreMgr, DisConfCommonModel disConfCommonModel, String keyName,
                    DisConfigTypeEnum disConfigTypeEnum, String value) throws Exception;
 
+
+    /**
+     * 监听/disconf/appName_version_env
+     * @param disConfCommonModel
+     */
+    void watchApp(final DisConfCommonModel disConfCommonModel);
+
     void release();
 }

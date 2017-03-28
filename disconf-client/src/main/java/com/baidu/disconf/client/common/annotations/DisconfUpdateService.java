@@ -32,4 +32,10 @@ public @interface DisconfUpdateService {
      * 配置项
      */
     String[] itemKeys() default {};
+
+    /**
+     * 是否是监控app通知
+     * @return
+     */
+    boolean isAppWatch() default false;
 }

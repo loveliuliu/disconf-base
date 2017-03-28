@@ -20,12 +20,12 @@ public class ScanVerify {
     /**
      * 判断回调函数实现的接口是否正确
      */
-    public static boolean hasIDisconfUpdate(Class<?> disconfUpdateServiceClass) {
+    public static boolean hasIDisconfUpdate(Class<?> disconfUpdateServiceClass,Class clazz) {
 
         Class<?>[] interfaceClasses = disconfUpdateServiceClass.getInterfaces();
         boolean hasInterface = false;
         for (Class<?> infClass : interfaceClasses) {
-            if (infClass.equals(IDisconfUpdate.class)) {
+            if (infClass.equals(clazz)) {
                 hasInterface = true;
             }
         }

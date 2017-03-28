@@ -170,7 +170,7 @@ public class WatchMgrImpl implements WatchMgr {
                     // 进行监控
                     NodeWatcher nodeWatcher =
                             new NodeWatcher(finalCore, monitorPath, keyName, disConfigTypeEnum, new DisconfSysUpdateCallback(),
-                                    debug);
+                                    debug,false);
                     nodeWatcher.monitorMaster();
                 } catch (Exception e) {
                     LOGGER.error("watchPath error",e);
@@ -179,6 +179,39 @@ public class WatchMgrImpl implements WatchMgr {
         });
 
 
+    }
+
+    /**
+     * 监听/disconf/appName_version_env
+     * @param disConfCommonModel
+     */
+    public void watchApp(final DisConfCommonModel disConfCommonModel){
+         /*
+            应用程序的 Zoo 根目录
+        */
+        final String clientRootZooPath = ZooPathMgr.getZooBaseUrl(zooUrlPrefix, disConfCommonModel.getApp(),
+                disConfCommonModel.getEnv(),
+                disConfCommonModel.getVersion());
+
+        /**
+         * 创建目录/disconf/appName_version_env
+         */
+        makePath(clientRootZooPath,ZooUtils.getIp());
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // 进行监控
+                    NodeWatcher nodeWatcher =
+                            new NodeWatcher(null, clientRootZooPath, "", DisConfigTypeEnum.FILE, new DisconfSysUpdateCallback(),
+                                    debug,true);
+                    nodeWatcher.monitorMaster();
+                } catch (Exception e) {
+                    LOGGER.error("watchPath error",e);
+                }
+            }
+        });
     }
 
     @Override

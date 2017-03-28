@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.baidu.disconf.client.DisConf;
+import com.baidu.disconf.client.common.update.IDisconfAppUpdate;
+import com.baidu.disconf.client.utils.AppWatchUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,22 +64,35 @@ public class ScanDynamicStoreAdapter {
             DisconfUpdateService disconfUpdateService =
                     disconfUpdateServiceClass.getAnnotation(DisconfUpdateService.class);
 
-            //
-            // 校验是否有继承正确,是否继承IDisconfUpdate
-            if (!ScanVerify.hasIDisconfUpdate(disconfUpdateServiceClass)) {
-                continue;
+            if(disconfUpdateService.isAppWatch()){
+                // 校验是否有继承正确,IDisconfAppUpdate
+                if (!ScanVerify.hasIDisconfUpdate(disconfUpdateServiceClass, IDisconfAppUpdate.class)) {
+                    continue;
+                }
+                //保存appwatch回调
+                IDisconfAppUpdate iDisconfAppUpdate = (IDisconfAppUpdate)registry.getFirstByType(disconfUpdateServiceClass);
+                if(iDisconfAppUpdate != null){
+                    AppWatchUtils.add(iDisconfAppUpdate);
+                }
+
+            }else {
+                // 校验是否有继承正确,是否继承IDisconfUpdate
+                if (!ScanVerify.hasIDisconfUpdate(disconfUpdateServiceClass,IDisconfUpdate.class)) {
+                    continue;
+                }
+
+                //
+                // 获取回调接口实例
+                IDisconfUpdate iDisconfUpdate = getIDisconfUpdateInstance(disconfUpdateServiceClass, registry);
+                if (iDisconfUpdate == null) {
+                    continue;
+                }
+
+                //
+                // 配置文件
+                processFiles(inverseMap, disconfUpdateService, iDisconfUpdate);
             }
 
-            //
-            // 获取回调接口实例
-            IDisconfUpdate iDisconfUpdate = getIDisconfUpdateInstance(disconfUpdateServiceClass, registry);
-            if (iDisconfUpdate == null) {
-                continue;
-            }
-
-            //
-            // 配置文件
-            processFiles(inverseMap, disconfUpdateService, iDisconfUpdate);
 
         }
 

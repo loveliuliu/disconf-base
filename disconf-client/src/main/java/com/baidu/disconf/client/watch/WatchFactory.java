@@ -1,5 +1,6 @@
 package com.baidu.disconf.client.watch;
 
+import com.baidu.disconf.client.utils.AppWatchUtils;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -50,6 +51,8 @@ public class WatchFactory {
                         try {
                             WatchMgr watchMgr = new WatchMgrImpl();
                             watchMgr.init(hosts, zooPrefix, DisClientConfig.getInstance().DEBUG);
+
+                            AppWatchUtils.zooUrlPrefix = zooPrefix;
                             return watchMgr;
                         } catch (Exception e) {
                             LOGGER.error("watch zoo error", e);

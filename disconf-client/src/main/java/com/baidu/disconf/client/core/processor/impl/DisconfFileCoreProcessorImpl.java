@@ -3,7 +3,6 @@ package com.baidu.disconf.client.core.processor.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.baidu.disconf.client.utils.AppTagHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +16,7 @@ import com.baidu.disconf.client.store.DisconfStoreProcessor;
 import com.baidu.disconf.client.store.DisconfStoreProcessorFactory;
 import com.baidu.disconf.client.store.processor.model.DisconfValue;
 import com.baidu.disconf.client.support.registry.Registry;
+import com.baidu.disconf.client.utils.AppTagHelper;
 import com.baidu.disconf.client.utils.ConfigLoaderUtils;
 import com.baidu.disconf.client.watch.WatchMgr;
 import com.baidu.disconf.core.common.constants.DisConfigTypeEnum;
@@ -57,6 +57,9 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
     @Override
     public void processAllItems() throws Exception {
 
+        // add appwatch
+        addAppWatch();
+
         /**
          * 配置文件列表处理
          */
@@ -64,6 +67,31 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
 
             processOneItem(fileName);
 
+        }
+    }
+
+    /**
+     * watch app notify
+     */
+    private void addAppWatch(){
+        if (DisClientConfig.getInstance().ENABLE_DISCONF) {
+            //
+            // Watch
+            //
+            try {
+                DisConfCommonModel disConfCommonModel = new DisConfCommonModel();
+                disConfCommonModel.setApp(DisClientConfig.getInstance().APP);
+                disConfCommonModel.setEnv(DisClientConfig.getInstance().ENV);
+                disConfCommonModel.setVersion(DisClientConfig.getInstance().VERSION);
+                if (watchMgr != null) {
+                    watchMgr.watchApp(disConfCommonModel);
+                    LOGGER.debug("watch ok.");
+                } else {
+                    LOGGER.warn("cannot monitor {} because watch mgr is null", disConfCommonModel);
+                }
+            } catch (Throwable t) {
+                LOGGER.error("register file to zookeeper failue:", t);
+            }
         }
     }
     

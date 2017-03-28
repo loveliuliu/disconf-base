@@ -35,10 +35,13 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
     
     //disconf.properties位置
     private Resource propertiesLocation = null;
-    
+
+    private DisconfMgrBeanSecond disconfMgrBeanSecond;
+
+    private DisconfInitCallback disconfInitCallback;
 
     public void destroy() {
-
+        disconfMgrBeanSecond.destroy();
         DisconfMgr.getInstance().close();
     }
 
@@ -50,6 +53,11 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
     public void setPropertiesLocation(Resource propertiesLocation) {
         this.propertiesLocation = propertiesLocation;
+    }
+
+
+    public void setDisconfInitCallback(DisconfInitCallback disconfInitCallback) {
+        this.disconfInitCallback = disconfInitCallback;
     }
 
     @Override
@@ -93,8 +101,6 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
             throw new RuntimeException("Failed to load disconf properties from:" + propertiesLocation);
         }
         
-
-        
         try {
             DisconfMgr.getInstance().firstScan(scanPackList, propertiesLocation); 
         } catch ( Exception e ) {
@@ -103,6 +109,17 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
         // register java bean
         registerAspect(registry);
+
+        disconfMgrBeanSecond = new DisconfMgrBeanSecond();
+        try {
+            disconfMgrBeanSecond.init();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        if(disconfInitCallback != null){
+            disconfInitCallback.callback();
+        }
     }
 
     @Override
