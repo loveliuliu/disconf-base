@@ -1,9 +1,6 @@
 package com.baidu.disconf.client.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.Properties;
@@ -114,18 +111,24 @@ public final class ConfigLoaderUtils {
 
         Properties props = new Properties();
         if ( propertyFilePath.startsWith("/")) {
-            props.load(new FileInputStream(propertyFilePath));
+            propertiesLoadWithUTF8(props,new FileInputStream(propertyFilePath));
         } else {
             File f = new File(WORK_DIR, propertyFilePath);
-            props.load(new FileInputStream(f));
+            propertiesLoadWithUTF8(props,new FileInputStream(f));
         }
+
         return props;
     }
-    
+
+    private static void propertiesLoadWithUTF8(Properties properties,FileInputStream fileInputStream)throws Exception{
+        Reader reader = new InputStreamReader(fileInputStream, "UTF-8");
+        properties.load(reader);
+    }
+
     
     public static void main(String[] args ) throws Exception {
-        System.out.println(ConfigLoaderUtils.loadFromFileSystem("/opt/config/disconf/application.properties"));
-        System.out.println(ConfigLoaderUtils.loadFromFileSystem("src/test/resources/disconf.properties"));
+//        System.out.println(ConfigLoaderUtils.loadFromFileSystem("/opt/config/disconf/application.properties"));
+        System.out.println(ConfigLoaderUtils.loadFromFileSystem("disconf-client/src/test/resources/disconf.properties"));
     }
     
     
